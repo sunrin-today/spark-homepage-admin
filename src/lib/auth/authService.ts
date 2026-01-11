@@ -7,6 +7,8 @@ import {
 } from "firebase/auth";
 import { auth } from "./firebase";
 
+const TOKEN_KEY = "firebase_auth_token";
+
 // Google Provider 설정
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({
@@ -22,8 +24,8 @@ export async function signInWithGoogle(): Promise<User> {
     // ID 토큰 가져오기
     const idToken = await user.getIdToken();
 
-    // 백엔드에 토큰 전송 
-    await sendTokenToBackend(idToken);
+    // localStorage에 토큰 저장
+    saveTokenToLocalStorage(idToken);
 
     return user;
   } catch (error: any) {
@@ -34,6 +36,9 @@ export async function signInWithGoogle(): Promise<User> {
 
 export async function signOut(): Promise<void> {
   try {
+    // localStorage에서 토큰 제거
+    removeTokenFromLocalStorage();
+    
     await firebaseSignOut(auth);
   } catch (error: any) {
     console.error("로그아웃 실패:", error);
@@ -42,33 +47,89 @@ export async function signOut(): Promise<void> {
 }
 
 export function onAuthStateChange(callback: (user: User | null) => void) {
-  return onAuthStateChanged(auth, callback);
+  return onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      // 사용자가 로그인 상태일 때 토큰 갱신
+      try {
+        const idToken = await user.getIdToken();
+        saveTokenToLocalStorage(idToken);
+      } catch (error) {
+        console.error("토큰 갱신 실패:", error);
+      }
+    } else {
+      // 로그아웃 상태일 때 토큰 제거
+      removeTokenFromLocalStorage();
+    }
+    callback(user);
+  });
 }
 
 export function getCurrentUser(): User | null {
   return auth.currentUser;
 }
 
-async function sendTokenToBackend(idToken: string): Promise<void> {
+// localStorage에 토큰 저장
+function saveTokenToLocalStorage(token: string): void {
   try {
+    localStorage.setItem(TOKEN_KEY, token);
+    console.log("토큰이 localStorage에 저장되었습니다.");
+  } catch (error) {
+    console.error("localStorage 저장 실패:", error);
+  }
+}
+
+// localStorage에서 토큰 제거
+function removeTokenFromLocalStorage(): void {
+  try {
+    localStorage.removeItem(TOKEN_KEY);
+    console.log("토큰이 localStorage에서 제거되었습니다.");
+  } catch (error) {
+    console.error("localStorage 제거 실패:", error);
+  }
+}
+
+// localStorage에서 토큰 가져오기
+export function getTokenFromLocalStorage(): string | null {
+  try {
+    return localStorage.getItem(TOKEN_KEY);
+  } catch (error) {
+    console.error("localStorage 읽기 실패:", error);
+    return null;
+  }
+}
+
+// API 요청 시 사용할 헤더에 토큰 추가
+export function getAuthHeaders(): HeadersInit {
+  const token = getTokenFromLocalStorage();
+  return {
+    "Content-Type": "application/json",
+    ...(token && { Authorization: `Bearer ${token}` }),
+  };
+}
+
+// 사용자 정보 가져오기
+export async function getCurrentUserInfo(): Promise<any> {
+  try {
+    const token = getTokenFromLocalStorage();
+    if (!token) {
+      throw new Error("토큰이 없습니다.");
+    }
+
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me`,
       {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ idToken }),
+        method: "GET",
+        headers: getAuthHeaders(),
       }
     );
 
     if (!response.ok) {
-      throw new Error("백엔드 인증 실패");
+      throw new Error("사용자 정보를 가져올 수 없습니다.");
     }
 
-    const data = await response.json();
-    console.log("백엔드 인증 성공:", data);
+    return await response.json();
   } catch (error) {
-    console.error("백엔드 토큰 전송 실패:", error);
+    console.error("사용자 정보 조회 실패:", error);
+    throw error;
   }
 }

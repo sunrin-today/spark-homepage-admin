@@ -19,8 +19,40 @@ export default function LoginPage() {
 
       await login();
 
-      // 로그인 성공 시 홈으로 리다이렉트
-      router.push("/");
+      // 로그인 성공 시 사용자 정보 확인
+      const token = localStorage.getItem("firebase_auth_token");
+      console.log("저장된 토큰:", token);
+      console.log("토큰 길이:", token?.length);
+      console.log("토큰 시작 부분:", token?.substring(0, 50));
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("응답 상태:", response.status);
+      
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error("에러 응답:", errorData);
+        throw new Error(`사용자 정보를 가져올 수 없습니다. (${response.status}): ${errorData}`);
+      }
+
+      const userData = await response.json();
+      console.log("사용자 데이터:", userData);
+
+      // role이 admin이면 어드민 페이지로, 아니면 홈으로 리다이렉트
+      if (userData.role === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/");
+      }
     } catch (error: any) {
       console.error("로그인 실패:", error);
       setError(error.message || "로그인에 실패했습니다.");
@@ -30,20 +62,20 @@ export default function LoginPage() {
   };
 
   return (
-      <LoginCard>
-        <div className="mb-12">
-          <img src="/logo/logo.svg" alt="SPARK!" className="w-64" />
-        </div>
+    <LoginCard>
+      <div className="mb-12">
+        <img src="/logo/logo.svg" alt="SPARK!" className="w-64" />
+      </div>
 
-        <GoogleLoginButton onClick={handleGoogleLogin} />
+      <GoogleLoginButton onClick={handleGoogleLogin} />
 
-        {/* 로딩 상태 */}
-        {isLoading && (
-          <p className="mt-4 text-sm text-gray-600">로그인 중...</p>
-        )}
+      {/* 로딩 상태 */}
+      {isLoading && (
+        <p className="mt-4 text-sm text-gray-600">로그인 중...</p>
+      )}
 
-        {/* 에러 메시지 */}
-        {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
-      </LoginCard>
+      {/* 에러 메시지 */}
+      {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
+    </LoginCard>
   );
 }
