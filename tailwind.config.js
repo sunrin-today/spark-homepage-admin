@@ -8,7 +8,14 @@ export default {
   theme: {
     extend: {},
     colors: {
-      
+      white: "#F9F9F9",
+      black: "#1B1B1B",
+      council: "#6CA9FF",
+      software: "#F79447",
+      computersecurity: "#6CA9FF",
+      itmanagement: "#85C879",
+      contentsdesign: "#6CA9FF",
+      gray: "#767676",
     }
   },
   plugins: [],
