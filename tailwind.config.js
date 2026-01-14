@@ -16,6 +16,7 @@ export default {
       itmanagement: "#85C879",
       contentsdesign: "#6CA9FF",
       gray: "#767676",
+      "toggle-checked": "#6BDA72",
     }
   },
   plugins: [],

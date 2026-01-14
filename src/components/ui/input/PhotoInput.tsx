@@ -83,7 +83,8 @@ export const PhotoInput = ({
         relative w-full h-48 border border-gray rounded-lg 
         flex flex-col items-center justify-center cursor-pointer 
         max-w-[400px]
-        transition-colors ${className} text-gray
+        transition-colors ${className} text-gray 
+        hover:bg-[#DDDDDD] hover:border-dashed hover:border-[1.5px]
       `}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
@@ -100,22 +101,30 @@ export const PhotoInput = ({
       />
 
       {preview ? (
-        <div className="relative w-full h-full">
-          <img
-            src={preview}
-            alt="Preview"
-            className="w-full h-full object-contain rounded-md"
-          />
+        <div 
+          className="relative w-full h-full flex items-center justify-center"
+          style={{
+            backgroundImage: `url(${preview})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
+          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="flex flex-col items-center text-white">
+              <Upload size={24} className="mb-2" />
+              <p className="text-sm">클릭하거나 드래그하여 파일을 업로드해주세요.</p>
+            </div>
+          </div>
           <button
             type="button"
             onClick={clearFile}
-            className="absolute top-[8px] right-[8px] bg-red-500 text-gray rounded-full p-1 hover:bg-red-600 transition-colors"
+            className="absolute top-[8px] right-[8px] bg-red-500rounded-full p-1 hover:bg-red-600 transition-colors"
           >
             <X size={16} />
           </button>
         </div>
       ) : (
-        <div className="flex flex-col items-center text-gray">
+        <div className="flex flex-col items-center">
           <Upload size={24} className="mb-2" />
           <p className="text-sm">클릭하거나 드래그하여 파일을 업로드해주세요.</p>
         </div>
