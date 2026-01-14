@@ -11,7 +11,7 @@ import {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: () => Promise<void>;
+  login: () => Promise<string>; // 토큰 반환
   logout: () => Promise<void>;
 }
 
@@ -33,8 +33,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async () => {
     try {
       setLoading(true);
-      const user = await signInWithGoogle();
+      const { user, token } = await signInWithGoogle();
       setUser(user);
+      return token; // 토큰 반환
     } catch (error) {
       console.error("로그인 실패:", error);
       throw error;
