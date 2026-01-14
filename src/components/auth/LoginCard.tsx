@@ -6,7 +6,7 @@ interface LoginCardProps {
 
 export default function LoginCard({ children }: LoginCardProps) {
   return (
-    <div className="bg-white rounded-3xl shadow-2xl px-20 py-16 flex flex-col items-center">
+    <div className="bg-[#fff] rounded-3xl px-20 py-16 flex flex-col items-center">
       {children}
     </div>
   );

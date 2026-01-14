@@ -17,16 +17,12 @@ export default function LoginPage() {
       setIsLoading(true);
       setError(null);
 
-      await login();
-
-      // 로그인 성공 시 사용자 정보 확인
-      const token = localStorage.getItem("firebase_auth_token");
-      console.log("저장된 토큰:", token);
-      console.log("토큰 길이:", token?.length);
-      console.log("토큰 시작 부분:", token?.substring(0, 50));
+      // login()에서 직접 받음
+      const token = await login();
+      console.log("받은 토큰:", token);
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/me`,
         {
           method: "GET",
           headers: {
@@ -62,20 +58,22 @@ export default function LoginPage() {
   };
 
   return (
-    <LoginCard>
-      <div className="mb-12">
-        <img src="/logo/logo.svg" alt="SPARK!" className="w-64" />
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <LoginCard>
+        <div className="mb-12">
+          <img src="/logo/logo.svg" alt="SPARK!" className="w-64" />
+        </div>
 
-      <GoogleLoginButton onClick={handleGoogleLogin} />
+        <GoogleLoginButton onClick={handleGoogleLogin} />
 
-      {/* 로딩 상태 */}
-      {isLoading && (
-        <p className="mt-4 text-sm text-gray-600">로그인 중...</p>
-      )}
+        {/* 로딩 상태 */}
+        {isLoading && (
+          <p className="mt-4 text-sm text-gray-600">로그인 중...</p>
+        )}
 
-      {/* 에러 메시지 */}
-      {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
-    </LoginCard>
+        {/* 에러 메시지 */}
+        {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
+      </LoginCard>
+    </div>
   );
 }
