@@ -17,6 +17,18 @@ const transformNoticeFromApi = (apiNotice: NoticeDetailResponse): Notice => {
   };
 };
 
+interface CreateNoticeData {
+  title: string;
+  content: string;
+  images?: string[];
+}
+
+interface UpdateNoticeData {
+  title?: string;
+  content?: string;
+  images?: string[];
+}
+
 export const noticesApi = {
   getNotices: async (): Promise<Notice[]> => {
     try {
@@ -37,6 +49,35 @@ export const noticesApi = {
       return transformNoticeFromApi(response.data);
     } catch (error) {
       console.error('Failed to fetch notice:', error);
+      throw error;
+    }
+  },
+
+  createNotice: async (data: CreateNoticeData): Promise<Notice> => {
+    try {
+      const response = await api.post<NoticeDetailResponse>('/api/notice', data);
+      return transformNoticeFromApi(response.data);
+    } catch (error) {
+      console.error('Failed to create notice:', error);
+      throw error;
+    }
+  },
+
+  updateNotice: async (id: string, data: UpdateNoticeData): Promise<Notice> => {
+    try {
+      const response = await api.patch<NoticeDetailResponse>(`/api/notice/${id}`, data);
+      return transformNoticeFromApi(response.data);
+    } catch (error) {
+      console.error('Failed to update notice:', error);
+      throw error;
+    }
+  },
+
+  deleteNotice: async (id: string): Promise<void> => {
+    try {
+      await api.delete(`/api/notice/${id}`);
+    } catch (error) {
+      console.error('Failed to delete notice:', error);
       throw error;
     }
   },
