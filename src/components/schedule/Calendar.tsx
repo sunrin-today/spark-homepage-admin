@@ -77,12 +77,17 @@ const Calendar: React.FC<CalendarProps> = ({
   };
 
   const getDateColor = (date: Date, dayOfWeek: number) => {
+    const baseColor = dayOfWeek === 0 
+      ? 'text-sunday' 
+      : dayOfWeek === 6 
+      ? 'text-saturday' 
+      : 'text-black';
+    
     if (!isCurrentMonth(date)) {
-      return 'text-gray-300';
+      return `${baseColor} opacity-40`;
     }
-    if (dayOfWeek === 0) return 'text-red-500';
-    if (dayOfWeek === 6) return 'text-blue-500';
-    return 'text-black';
+    
+    return baseColor;
   };
 
   return (
@@ -140,9 +145,9 @@ const Calendar: React.FC<CalendarProps> = ({
             key={day}
             className={`text-center text-sm py-2 ${
               index === 0
-                ? 'text-red-500'
+                ? 'text-sunday'
                 : index === 6
-                ? 'text-blue-500'
+                ? 'text-saturday'
                 : 'text-black'
             }`}
           >

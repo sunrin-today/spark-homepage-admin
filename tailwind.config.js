@@ -16,6 +16,8 @@ export default {
       itmanagement: "#85C879",
       contentsdesign: "#6CA9FF",
       gray: "#767676",
+      sunday: '#FA5353',
+      saturday: '#4D71FF',
       
     }
   },
