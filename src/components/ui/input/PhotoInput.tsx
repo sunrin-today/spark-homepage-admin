@@ -1,5 +1,5 @@
 // src/components/ui/input/PhotoInput.tsx
-import { useCallback, useState } from "react";
+import { useCallback, useState, useRef } from "react";
 import { Upload, X } from "lucide-react";
 
 interface PhotoInputProps {
@@ -13,10 +13,11 @@ interface PhotoInputProps {
 export const PhotoInput = ({
   onFileSelect,
   className = "",
-  maxSizeMB = 5,
+  maxSizeMB = 10,
   accept = "image/*",
   multiple = false,
 }: PhotoInputProps) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -89,10 +90,10 @@ export const PhotoInput = ({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      onClick={() => document.getElementById("file-upload")?.click()}
+      onClick={() => fileInputRef.current?.click()}
     >
       <input
-        id="file-upload"
+        ref={fileInputRef}
         type="file"
         accept={accept}
         multiple={multiple}
