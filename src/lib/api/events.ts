@@ -1,4 +1,4 @@
-import EventFormData, { Event } from '@/lib/types/events';
+import { Event, EventCreateForm, EventUpdateForm } from '@/lib/types/events';
 import { ListResponse } from '@/lib/types/common';
 import api from './api';
 
@@ -17,7 +17,7 @@ const eventsApi = {
         return response.data;
     },
 
-    createEvent: async (eventData: EventFormData) => {
+    createEvent: async (eventData: EventCreateForm) => {
         const formData = new FormData();
 
         formData.append('name', eventData.name);
@@ -38,7 +38,7 @@ const eventsApi = {
                 }
             });
         }
-
+        console.log("EventData" , eventData)
         const response = await api.post<Event>('/api/event', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -48,8 +48,36 @@ const eventsApi = {
     },
   
     // 이벤트 수정
-    updateEvent: async (id: string, eventData: Partial<Event>) => {
-        const response = await api.patch<Event>(`/api/event/${id}`, eventData);
+    updateEvent: async (id: string, eventData: EventUpdateForm) => {
+        const formData = new FormData();
+
+        formData.append('name', eventData.name);
+        formData.append('description', eventData.description);
+        formData.append('startedAt', eventData.startedAt);
+        formData.append('deadline', eventData.deadline);
+        formData.append('link', eventData.link);
+        formData.append('isLinkOn', String(eventData.isLinkOn));
+
+        if (eventData.thumbnail !== null) {
+            formData.append('thumbnail', eventData.thumbnail);
+        }
+        else {
+            formData.append('thumbnail', "null");
+        }
+        formData.append('deletes', JSON.stringify(eventData.deletes));
+
+        if (eventData.newImages?.length) {
+            eventData.newImages.forEach((file) => {
+                if (file instanceof File) {
+                    formData.append('newImages', file);
+                }
+            });
+        }
+        const response = await api.put<Event>(`/api/event/${id}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
         return response.data;
     },
   

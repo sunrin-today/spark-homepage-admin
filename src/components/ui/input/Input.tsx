@@ -10,6 +10,7 @@ interface BaseInputProps {
   className?: string;
   onClick?: () => void; // DateInput 등 특수 클릭 이벤트
   readOnly?: boolean;
+  required?: boolean;
 }
 // 예시
 /*
@@ -23,7 +24,7 @@ interface BaseInputProps {
 </InputWrapper>
 */
 const BaseInput = forwardRef<HTMLInputElement | HTMLTextAreaElement, BaseInputProps>(
-  ({ leftIcon, rightIcon, value, name, onChange, placeholder, className, onClick, readOnly }, ref) => {
+  ({ leftIcon, rightIcon, value, name, onChange, placeholder, className, onClick, readOnly, required }, ref) => {
     return (
       <div
         className={`flex items-center px-[20px] py-[16px] border border-gray text-gray rounded-[12px] max-w-[400px] w-full min-w-0 focus-within:border-2 focus-within:border-gray focus-within:ring-0 ${className}`}
@@ -41,6 +42,7 @@ const BaseInput = forwardRef<HTMLInputElement | HTMLTextAreaElement, BaseInputPr
             placeholder={placeholder}
             className="w-full outline-none focus:outline-none text-black bg-white"
             readOnly={readOnly}
+            required={required}
           />
         </div>
         {value && <span className="flex-shrink-0 ml-2 cursor-pointer" onClick={(e) => { e.stopPropagation(); onChange("") }}><X size={20} /></span>}

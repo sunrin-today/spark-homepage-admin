@@ -10,17 +10,20 @@ export const EventCard = ({event}: {event: Event}) => {
         console.log('이벤트 메뉴 표시', event.id);
     };
     return (
-        <div className="max-w-[400px] flex flex-col items-start">
-            <Link href={`/events/${event.id}`}>
+        <div className=" w-full h-full flex flex-col items-start">
+            <div className="w-full relative">
                 <Image
-                    src="https://placehold.co/400x250"
+                    src={event.thumbnail}
                     alt="이벤트 이미지"
-                    width={350}
+                    width={400} 
                     height={250}
-                    className="h-[250px] w-full object-cover rounded-xl"
+                    className="w-full h-[250px] object-cover rounded-xl"
                     unoptimized
                 />
-            </Link>
+                <p className="absolute bottom-2 left-2 text-xs px-3 py-2 bg-white bg-opacity-80 text-black rounded-full">
+                    {GetRemainingDays(event.deadline)}일 남음
+                </p>
+            </div>
             <div className="flex items-center w-full pt-3 pb-1 min-w-0">
                 <h2 className="text-lg text-black font-semibold truncate flex-1 min-w-0 pr-2">
                     {event.name}
@@ -32,10 +35,10 @@ export const EventCard = ({event}: {event: Event}) => {
                     />
                 </div>
             </div>
-            <div className="text-sm text-gray line-clamp-2 mb-3">
+            <div className="text-sm text-gray line-clamp-2">
                 {event.description}
             </div>
-            <p className="text-xs px-3 py-2 bg-[#010101] bg-opacity-20 text-black rounded-full">{GetRemainingDays(event.deadline)}일 남음</p>
+            
         </div>
     );
 };

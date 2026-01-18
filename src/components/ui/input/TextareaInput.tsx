@@ -8,6 +8,7 @@ interface TextareaInputProps {
   maxLength?: number;
   name?: string;
   showCounter?: boolean;
+  required?: boolean;
 }
 
 export const TextareaInput = ({ 
@@ -16,7 +17,8 @@ export const TextareaInput = ({
   placeholder, 
   maxLength = 500,
   name,
-  showCounter = true 
+  showCounter = true,
+  required = false
 }: TextareaInputProps) => {
   const [charCount, setCharCount] = useState(value.length);
 
@@ -41,6 +43,7 @@ export const TextareaInput = ({
         placeholder={placeholder}
         maxLength={maxLength}
         name={name}
+        required={required}
       />
       { value.length > 0 && (
         <X size={20} className="absolute top-[20px] text-gray right-[20px] cursor-pointer" onClick={() => onChange("")}/>

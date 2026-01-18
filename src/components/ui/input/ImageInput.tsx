@@ -1,25 +1,29 @@
 // src/components/ui/input/PhotoInput.tsx
-import { useCallback, useState, useRef } from "react";
+import { useCallback, useState, useRef, useEffect } from "react";
 import { Upload, X } from "lucide-react";
 
-interface PhotoInputProps {
-  onFileSelect: (file: File | null) => void;
+interface ImageInputProps {
   className?: string;
   maxSizeMB?: number;
   accept?: string;
   multiple?: boolean;
+  onFileSelect: (file: File ) => void;
+  onFileRemove: () => void;
+  preview: string | null;
+  required?: boolean;
 }
 
-export const PhotoInput = ({
+export const ImageInput = ({
   onFileSelect,
+  onFileRemove,
   className = "",
   maxSizeMB = 10,
   accept = "image/*",
   multiple = false,
-}: PhotoInputProps) => {
+  preview,
+  required = false,
+}: ImageInputProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [preview, setPreview] = useState<string | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
 
   const handleFileChange = useCallback(
     (file: File) => {
@@ -30,12 +34,9 @@ export const PhotoInput = ({
         return;
       }
 
-      if (file.type.startsWith("image/")) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          setPreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
+      if (!file.type.startsWith("image/")) {
+        alert("이미지 파일만 업로드할 수 있습니다.");
+        return;
       }
 
       onFileSelect(file);
@@ -46,20 +47,17 @@ export const PhotoInput = ({
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragging(true);
   }, []);
 
   const handleDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragging(false);
   }, []);
 
   const handleDrop = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
       e.stopPropagation();
-      setIsDragging(false);
 
       const file = e.dataTransfer.files?.[0];
       if (file) handleFileChange(file);
@@ -72,11 +70,6 @@ export const PhotoInput = ({
     if (file) handleFileChange(file);
   };
 
-  const clearFile = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setPreview(null);
-    onFileSelect(null);
-  };
 
   return (
     <div
@@ -118,8 +111,12 @@ export const PhotoInput = ({
           </div>
           <button
             type="button"
-            onClick={clearFile}
-            className="absolute top-[8px] right-[8px] bg-red-500rounded-full p-1 hover:bg-red-600 transition-colors"
+            onClick={(e) => {
+               e.stopPropagation()
+              onFileRemove()
+
+            }}
+            className="absolute top-[8px] right-[8px] rounded-full p-1 text-white"
           >
             <X size={16} />
           </button>
