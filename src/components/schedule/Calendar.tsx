@@ -1,47 +1,53 @@
 import React, { useState } from 'react';
 
+interface Schedule {
+  id: string;
+  title: string;
+  startDate: string;
+  endDate: string;
+  color: string;
+  description: string;
+}
+
 interface CalendarProps {
   selectedDate?: Date;
   onDateSelect?: (date: Date) => void;
   highlightedDates?: Date[];
+  schedules?: Schedule[];
+  onScheduleClick?: (schedules: Schedule[], position: { top: number; left: number }) => void;
 }
 
 const Calendar: React.FC<CalendarProps> = ({
   selectedDate,
   onDateSelect,
   highlightedDates = [],
+  schedules = [],
+  onScheduleClick,
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
-  // 달의 첫날과 마지막날 구하기
   const firstDayOfMonth = new Date(year, month, 1);
   const lastDayOfMonth = new Date(year, month + 1, 0);
 
-  // 달력에 표시할 시작일 (이전 달의 날짜 포함)
-  const startDay = firstDayOfMonth.getDay(); // 0 (일요일) ~ 6 (토요일)
-  const endDay = lastDayOfMonth.getDay(); // 0 (일요일) ~ 6 (토요일)
+  const startDay = firstDayOfMonth.getDay();
+  const endDay = lastDayOfMonth.getDay();
   const daysInMonth = lastDayOfMonth.getDate();
 
-  // 이전 달 마지막 날
   const prevMonthLastDay = new Date(year, month, 0).getDate();
 
-  // 달력 날짜 배열 생성
   const calendarDays: Date[] = [];
 
-  // 이전 달 날짜 (일요일부터 시작하지 않는 경우만)
   for (let i = startDay - 1; i >= 0; i--) {
     calendarDays.push(new Date(year, month - 1, prevMonthLastDay - i));
   }
 
-  // 이번 달 날짜
   for (let i = 1; i <= daysInMonth; i++) {
     calendarDays.push(new Date(year, month, i));
   }
 
-  // 다음 달 날짜 (토요일로 끝나지 않는 경우만)
   if (endDay !== 6) {
     for (let i = 1; i <= 6 - endDay; i++) {
       calendarDays.push(new Date(year, month + 1, i));
@@ -88,6 +94,60 @@ const Calendar: React.FC<CalendarProps> = ({
     }
     
     return baseColor;
+  };
+
+  const getScheduleRanges = () => {
+    const ranges: { schedule: Schedule; startCol: number; endCol: number; row: number }[] = [];
+    
+    schedules.forEach(schedule => {
+      const startDate = new Date(schedule.startDate);
+      const endDate = new Date(schedule.endDate);
+      
+      calendarDays.forEach((day, index) => {
+        const row = Math.floor(index / 7);
+        const col = index % 7;
+        
+        if (day >= startDate && day <= endDate) {
+          const existingRange = ranges.find(
+            r => r.schedule.id === schedule.id && r.row === row
+          );
+          
+          if (existingRange) {
+            existingRange.endCol = col;
+          } else {
+            ranges.push({
+              schedule,
+              startCol: col,
+              endCol: col,
+              row
+            });
+          }
+        }
+      });
+    });
+    
+    return ranges;
+  };
+
+  const scheduleRanges = getScheduleRanges();
+
+  const handleScheduleClick = (e: React.MouseEvent, clickedSchedule: Schedule) => {
+    e.stopPropagation();
+    if (onScheduleClick) {
+      // 클릭한 일정과 겹치는 모든 일정을 찾음
+      const clickedDate = new Date(clickedSchedule.startDate);
+      const overlappingSchedules = schedules.filter(s => {
+        const start = new Date(s.startDate);
+        const end = new Date(s.endDate);
+        return clickedDate >= start && clickedDate <= end;
+      });
+      
+      const rect = e.currentTarget.getBoundingClientRect();
+      onScheduleClick(overlappingSchedules, {
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX
+      });
+    }
   };
 
   return (
@@ -158,30 +218,75 @@ const Calendar: React.FC<CalendarProps> = ({
 
       <div className="border-t border-gray-200 mb-2"></div>
 
-      <div className="grid grid-cols-7">
-        {calendarDays.map((date, index) => {
-          const dayOfWeek = date.getDay();
-          const isSelected = selectedDate && isSameDay(date, selectedDate);
-          const isToday = isSameDay(date, new Date());
+      <div className="relative">
+        <div className="grid grid-cols-7">
+          {calendarDays.map((date, index) => {
+            const dayOfWeek = date.getDay();
+            const isSelected = selectedDate && isSameDay(date, selectedDate);
+            const isToday = isSameDay(date, new Date());
 
-          return (
-            <button
-              key={index}
-              onClick={() => handleDateClick(date)}
-              className={`
-                aspect-square flex items-center justify-center text-sm
-                relative
-                ${getDateColor(date, dayOfWeek)}
-                ${isSelected ? 'bg-black text-white rounded-lg' : ''}
-                ${!isSelected && isToday ? 'font-bold' : ''}
-                hover:bg-gray-100 transition-colors
-                ${isSelected ? 'hover:bg-black' : ''}
-              `}
-            >
-              {date.getDate()}
-            </button>
-          );
-        })}
+            return (
+              <button
+                key={index}
+                onClick={() => handleDateClick(date)}
+                className={`
+                  aspect-square flex items-center justify-center text-sm
+                  relative
+                  ${getDateColor(date, dayOfWeek)}
+                  ${isToday ? 'font-bold' : ''}
+                  hover:bg-gray-100 transition-colors
+                `}
+              >
+                {date.getDate()}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* 일정 띠 렌더링 */}
+        <div className="absolute top-0 left-0 right-0 pointer-events-none" style={{ height: '100%' }}>
+          {scheduleRanges.map((range, idx) => {
+            const cellWidth = 100 / 7;
+            const cellHeight = 100 / Math.ceil(calendarDays.length / 7);
+            
+            const width = (range.endCol - range.startCol + 1) * cellWidth;
+            const left = range.startCol * cellWidth;
+            const top = range.row * cellHeight;
+            
+            const isStart = range.startCol === 0 || 
+              !scheduleRanges.some(r => 
+                r.schedule.id === range.schedule.id && 
+                r.row === range.row && 
+                r.endCol === range.startCol - 1
+              );
+            
+            const isEnd = range.endCol === 6 || 
+              !scheduleRanges.some(r => 
+                r.schedule.id === range.schedule.id && 
+                r.row === range.row && 
+                r.startCol === range.endCol + 1
+              );
+
+            return (
+              <div
+                key={`${range.schedule.id}-${idx}`}
+                onClick={(e) => handleScheduleClick(e, range.schedule)}
+                className="absolute pointer-events-auto cursor-pointer hover:opacity-80 transition-opacity"
+                style={{
+                  left: `${left}%`,
+                  top: `calc(${top}% + 50%)`,
+                  width: `${width}%`,
+                  height: `${cellHeight * 0.4}%`,
+                  backgroundColor: range.schedule.color,
+                  opacity: 0.7,
+                  borderRadius: isStart && isEnd ? '999px' : 
+                               isStart ? '999px 0 0 999px' : 
+                               isEnd ? '0 999px 999px 0' : '0',
+                }}
+              />
+            );
+          })}
+        </div>
       </div>
     </div>
   );
