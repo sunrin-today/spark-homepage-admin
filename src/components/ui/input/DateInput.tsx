@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { CalendarDaysIcon } from "lucide-react";
 import BaseInput from "./Input";
+import { formatKoreanDate } from "@/utils/date";
 
 interface DateInputProps {
   value: string;
@@ -18,12 +19,6 @@ export const DateInput = ({
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // "2023-12-31" -> "2023년 12월 31일"
-  const formatDisplayDate = (dateStr: string) => {
-    if (!dateStr) return "";
-    const [year, month, day] = dateStr.split("-");
-    return `${year}년 ${month}월 ${day}일`;
-  };
 
   const handleInputClick = () => {
     setIsCalendarOpen(true);
@@ -42,7 +37,7 @@ export const DateInput = ({
       <div onClick={handleInputClick} className="cursor-pointer">
         <BaseInput
           leftIcon={<CalendarDaysIcon size={20}/>}
-          value={formatDisplayDate(value)}
+          value={formatKoreanDate(value)}
           onChange={() => {}} // Read-only
           placeholder={placeholder}
           readOnly
