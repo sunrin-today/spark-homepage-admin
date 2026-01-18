@@ -13,7 +13,7 @@ export default function EventsPage() {
   useEffect(() => {
     
     eventsApi.getEvents().then((data) => {
-        setEvents(Array(10).fill(null).flatMap(() => data.items));
+        setEvents(data.items);
     });
   }, []);
   useEffect(() => {
