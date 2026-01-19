@@ -65,3 +65,19 @@ const ActionBar: React.FC<ActionBarProps> = ({ title, items }) => {
 };
 
 export default ActionBar;
+
+
+// 사용 예시 
+
+// import { Edit } from 'lucide-react';
+// const actionItems: ActionBarItem[] = [
+//   {
+//     icon: <Edit size={24} />,
+//     label: '수정',
+//     backgroundColor: '#F9F9F9',
+//     iconColor: '#FDC019',
+//     textColor: '#000000',
+//     onClick: () => console.log('수정'),
+//   },
+// ];
+// <ActionBar title="액션" items={actionItems} />
