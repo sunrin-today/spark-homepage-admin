@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DateInput } from "@/components/ui/input/DateInput";
-import { ImageInput } from "@/components/ui/input/ImageInput";
+import { SingleImageField } from "@/components/ui/input/SingleImageInput";
 import { InputWrapper } from "@/components/ui/input/InputWrapper";
 import { TextareaInput } from "@/components/ui/input/TextareaInput";
 import BaseInput from "@/components/ui/input/Input";
@@ -11,7 +11,8 @@ import { X, File } from "lucide-react";
 import { validateEventLink } from "@/utils/events";
 import {EventFormState, EventFormProps} from "@/lib/types/events";
 import { buildCreatePayload, buildUpdatePayload } from "@/utils/events";
-
+import { DetailImageGrid } from "@/components/image/DetailImageGrid";
+import { FormImageListItem } from "@/lib/types/common";
 export default function EventForm(props: EventFormProps) {
 
   const { mode, onSubmit, submitText = "저장" } = props;
@@ -30,11 +31,12 @@ export default function EventForm(props: EventFormProps) {
         isLinkOn: initialData.isLinkOn ?? true,
 
         thumbnail: null, // 새로 선택 안 하면 null
-        existingThumbnailUrl: initialData.thumbnail,
+        existingThumbnailUrl: initialData.thumbnail.url,
 
-        detailImages: initialData.detailImages.map((url) => ({
+        detailImages: initialData.detailImages.map((image) => ({
           type: "exists",
-          url,
+          url: image.url,
+          id: crypto.randomUUID(),
         })),
       };
     }
@@ -45,7 +47,7 @@ export default function EventForm(props: EventFormProps) {
       description: "",
       startedAt: new Date().toISOString().split("T")[0],
       deadline: new Date(
-        Date.now() + 7 * 24 * 60 * 60 * 1000
+        Date.now() + 7 * 24 * 60 * 60 * 1000 // 일주일 뒤
       )
         .toISOString()
         .split("T")[0],
@@ -56,7 +58,11 @@ export default function EventForm(props: EventFormProps) {
       detailImages: [],
     };
   });
-
+  
+  useEffect(() => {
+    console.log("formData", formData);
+  }, [formData]);
+  
   const setThumbnail = (file: File | null) => {
     setFormData(prev => ({ ...prev, thumbnail: file }));
     if (file) {
@@ -81,18 +87,8 @@ export default function EventForm(props: EventFormProps) {
     setFormData(prev => ({ ...prev, [field]: date }));
   };
   
-  const handleAddDetailImage = (file: File) => {
-    setFormData(prev => ({
-      ...prev,
-      detailImages: [...prev.detailImages, { type: "new", file, preview: URL.createObjectURL(file) }],
-    }));
-  };
-
-  const handleRemoveImage = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      detailImages: prev.detailImages.filter((_, i) => i !== index),
-    }));
+  const setDetailImages = (images: FormImageListItem[]) => {
+    setFormData(prev => ({ ...prev, detailImages: images }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -111,7 +107,6 @@ export default function EventForm(props: EventFormProps) {
         await onSubmit(buildCreatePayload(formData));
         return;
     }
-    console.log(formData.isLinkOn);
     await onSubmit(
         buildUpdatePayload(formData, props.initialData.detailImages ?? [])
     );
@@ -120,9 +115,9 @@ export default function EventForm(props: EventFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <InputWrapper label="썸네일 이미지" htmlFor="thumbnail">
-        <ImageInput 
-            onFileSelect={setThumbnail}
-            onFileRemove={() => setThumbnail(null)}
+        <SingleImageField 
+            onChange={setThumbnail}
+            onRemove={() => setThumbnail(null)}
             preview={formData.existingThumbnailUrl || null} 
         />
       </InputWrapper>
@@ -177,23 +172,10 @@ export default function EventForm(props: EventFormProps) {
       </InputWrapper>
 
       <InputWrapper label="상세 이미지" htmlFor="detailImages">
-        <div className="max-h-[400px] overflow-y-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {Array.from({ length: 10 }).map((_, index) => (
-              <ImageInput
-                key={index}
-                onFileSelect={handleAddDetailImage}
-                onFileRemove={() => handleRemoveImage(index)}
-                preview={
-                  formData.detailImages[index]?.type === "new"
-                    ? formData.detailImages[index]?.preview
-                    : formData.detailImages[index]?.url || null
-                }
-                required={index < 2}
-              />
-            ))}
-          </div>
-        </div>
+        <DetailImageGrid
+          value={formData.detailImages}
+          onChange={setDetailImages}
+        />
       </InputWrapper>
 
       <InputWrapper label="이벤트 설명" htmlFor="description">

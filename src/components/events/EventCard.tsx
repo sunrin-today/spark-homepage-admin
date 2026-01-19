@@ -13,7 +13,7 @@ export const EventCard = ({event}: {event: Event}) => {
         <div className=" w-full h-full flex flex-col items-start">
             <div className="w-full relative">
                 <Image
-                    src={event.thumbnail}
+                    src={event.thumbnail.url}
                     alt="이벤트 이미지"
                     width={400} 
                     height={250}

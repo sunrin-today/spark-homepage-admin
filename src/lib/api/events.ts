@@ -64,6 +64,8 @@ const eventsApi = {
         else {
             formData.append('thumbnail', "null");
         }
+        formData.append("exists", JSON.stringify(eventData.exists));
+        formData.append('imageIndexes', JSON.stringify(eventData.imageIndexes));
         formData.append('deletes', JSON.stringify(eventData.deletes));
 
         if (eventData.newImages?.length) {
@@ -73,6 +75,7 @@ const eventsApi = {
                 }
             });
         }
+        console.log("FormData", formData);
         const response = await api.put<Event>(`/api/event/${id}`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',

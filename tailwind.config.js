@@ -17,6 +17,8 @@ export default {
       contentsdesign: "#6CA9FF",
       gray: "#767676",
       "toggle-checked": "#6BDA72",
+      darkgray: "#777777",
+      inputborder: "#D5D5D5"
     }
   },
   plugins: [],

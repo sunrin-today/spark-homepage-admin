@@ -6,6 +6,7 @@ import { Plus } from "lucide-react";
 import { Event } from "@/lib/types/events";
 import eventsApi from "@/lib/api/events";
 import Link from "next/link";
+import PageHeader from "@/components/layout/page/PageHeader";
 
 export default function EventsPage() {
   const [searchValue, setSearchValue] = useState("");
@@ -26,13 +27,13 @@ export default function EventsPage() {
   };
   return (
     <div className="px-8 py-12 mx-auto max-w-[1440px]"> {/*TODO: Page Container 컴포넌트로 변환*/}
-        <h1 className="text-xl font-bold pb-4">이벤트 목록</h1>  {/*TODO: Heading 컴포넌트로 변환 또는 Page Container 내부 요소로 전환*/}
-            <SearchBar 
-            value={searchValue}
-            placeholder="검색어를 입력하세요"
-            onChangeText={setSearchValue}
-            onSubmit={handleSearch}
-            />
+        <PageHeader title="이벤트 목록" /> 
+        <SearchBar 
+        value={searchValue}
+        placeholder="검색어를 입력하세요"
+        onChangeText={setSearchValue}
+        onSubmit={handleSearch}
+        />
         <div className="flex flex-col py-3">
             <div className="flex justify-end pb-4">
             <Link href="/events/add" className="bg-black text-white text-base p-3 rounded-2xl flex w-fit items-center gap-2">

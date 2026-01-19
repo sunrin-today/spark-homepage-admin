@@ -6,6 +6,9 @@ export interface ListResponse<T> {
 }
 
 
-export type ImageListItem =
-  | { type: "exists"; url: string }
-  | { type: "new"; file: File; preview: string };
+export type FormImageListItem =
+  | { type: "exists"; url: string; id: string }
+  | { type: "new"; file: File; preview: string; id: string };
+
+export type ImageItem = { url: string; index: number }
+  

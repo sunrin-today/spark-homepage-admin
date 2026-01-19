@@ -1,5 +1,5 @@
 import { EventFormState } from "@/lib/types/events";
-import { ImageListItem } from "@/lib/types/common";
+import { FormImageListItem, ImageItem } from "@/lib/types/common";
 function isValidURL(str: string): boolean {
   try {
     new URL(str);
@@ -19,26 +19,38 @@ function buildCreatePayload(form: EventFormState) {
     thumbnail: form.thumbnail!, // create에서는 필수
 
     detailImages: form.detailImages
-      .filter((i): i is Extract<ImageListItem, { type: "new" }> => i.type === "new")
+      .filter((i): i is Extract<FormImageListItem, { type: "new" }> => i && i.type === "new")
       .map((i) => i.file),
   };
 }
 function buildUpdatePayload(
   form: EventFormState,
-  initialDetailImages: string[]
+  initialDetailImages: ImageItem[]
 ) {
   const exists = form.detailImages
-    .filter((i): i is Extract<ImageListItem, { type: "exists" }> => i.type === "exists")
-    .map((i) => i.url);
+  .map((item, index) =>
+    item?.type === "exists"
+      ? { url: item.url, index }
+      : null
+  )
+  .filter((i): i is { url: string; index: number } => i !== null);
 
-  const newImages = form.detailImages
-    .filter((i): i is Extract<ImageListItem, { type: "new" }> => i.type === "new")
-    .map((i) => i.file);
+ const imageIndexes = form.detailImages
+  .map((item, index) => (item?.type === "new" ? index : null))
+  .filter((i): i is number => i !== null);
+ const newImages = form.detailImages
+  .filter((i): i is NonNullable<typeof i> => i !== null)  
+  .filter((i): i is Extract<FormImageListItem, { type: "new" }> => i.type === "new")
+  .map((i) => i.file);
 
-  const deletes = initialDetailImages.filter(
-    (url) => !exists.includes(url)
-  );
 
+  const deletes: string[] = initialDetailImages.filter( 
+    (item) => !exists.some((existing) => existing.url === item.url)
+  ).map((item) => item.url); // {url, index}에서 url만 추출
+  
+  console.log("exists", exists)
+  console.log("deletes", deletes)
+  console.log("imageIndexes", imageIndexes);
   return {
     name: form.name,
     description: form.description,
@@ -49,6 +61,8 @@ function buildUpdatePayload(
 
     thumbnail: form.thumbnail, // null이면 서버에서 유지
     deletes,
+    exists,
+    imageIndexes,
     newImages,
   };
 }
