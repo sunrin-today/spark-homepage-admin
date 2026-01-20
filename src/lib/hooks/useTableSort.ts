@@ -1,7 +1,7 @@
 // hooks/table/useTableSort.ts
 import { useState } from "react";
 
-export type SortOrder = "asc" | "desc";
+export type SortOrder = "ASC" | "DESC";
 
 export type SortState = {
   key: string;
@@ -16,12 +16,12 @@ export function useTableSort(initial: SortState) {
       if (prev.key === key) {
         return {
           key,
-          order: prev.order === "asc" ? "desc" : "asc",
+          order: prev.order === "ASC" ? "DESC" : "ASC",
         };
       }
       return {
         key,
-        order: "asc",
+        order: "ASC",
       };
     });
   };

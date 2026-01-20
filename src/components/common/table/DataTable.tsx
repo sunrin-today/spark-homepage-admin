@@ -1,14 +1,12 @@
 
+import { SortState } from "@/lib/hooks/useTableSort";
 import { Column } from "@/lib/types/table";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 
 type DataTableProps<T> = {
   columns: Column<T>[];
   data: T[];
-  sort?: {
-    key: string;
-    order: "asc" | "desc";
-  };
+  sort?: SortState;
   onSortChange?: (key: string) => void;
 };
 
@@ -43,7 +41,7 @@ export function DataTable<T>({ columns, data, sort, onSortChange }: DataTablePro
                   {col.header}
 
                   {col.isSortable && (
-                    sort?.key === col.sortKey && sort ? (sort.order === "asc" ? <ArrowUp className="w-5 h-5"/> : <ArrowDown className="w-5 h-5"/>) : <ArrowUpDown className="w-5 h-5"/>
+                    sort?.key === col.sortKey && sort ? (sort.order === "ASC" ? <ArrowUp className="w-4 h-4"/> : <ArrowDown className="w-4 h-4"/>) : <ArrowUpDown className="w-4 h-4"/>
                   )}
                 </div>
               </th>
@@ -57,7 +55,7 @@ export function DataTable<T>({ columns, data, sort, onSortChange }: DataTablePro
               {columns.map((col, cIdx) => (
                 <td
                   key={cIdx}
-                  className="px-4 py-3 text-base truncate text-[#010101]">
+                  className="px-4 py-3 text-base truncate text-[#010101] relative">
                   {col.render(row, rIdx)}
                 </td>
               ))}

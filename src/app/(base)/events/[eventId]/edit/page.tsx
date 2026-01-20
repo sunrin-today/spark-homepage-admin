@@ -12,7 +12,7 @@ export default function EventEdit() {
     const router = useRouter(); 
     const id = useParams().eventId!.toString();
     const { data: eventDetail, isLoading, error } = useEvent(id);
-    const { mutate: updateEvent, isPending } = useUpdateEvent(id);
+    const { mutate: updateEvent, isPending, error: updateError } = useUpdateEvent(id);
     console.log(eventDetail, " 이것은 날것")
     return (
     <div className="max-w-4xl px-8 py-12">
@@ -23,6 +23,11 @@ export default function EventEdit() {
         {error && (
             <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg">
                 이벤트를 불러오는 중 오류가 발생했습니다: {error.message}
+            </div>
+        )}
+        {updateError && (
+            <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg">
+                이벤트를 수정하는 중 오류가 발생했습니다: {updateError.message}
             </div>
         )}
         {eventDetail &&

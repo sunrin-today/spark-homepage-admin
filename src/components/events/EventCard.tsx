@@ -1,12 +1,11 @@
 import { GetRemainingDays } from "@/utils/date";
-import { EllipsisVertical, Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react";
 import Image from "next/image";
-import ActionBar from "../common/action/ActionBar";
 import { Event } from "@/lib/types/events";
-import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useDeleteEvent } from "@/lib/queries/events/mutations";
 import { ActionBarItem } from "../common/action/ActionBar";
+import ActionBarTrigger from "../common/action/ActionBarTrigger";
 
 
 export const EventCard = ({event}: {event: Event}) => {
@@ -31,23 +30,6 @@ export const EventCard = ({event}: {event: Event}) => {
     onClick: () => router.push(`/events/${event.id}/edit`),
   },
 ];
-  const [isActionBarOpen, setIsActionBarOpen] = useState(false);
-  const actionBarRef = useRef<HTMLDivElement>(null);
-  const handleEllipsisClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsActionBarOpen(!isActionBarOpen);
-  };
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (actionBarRef.current && !actionBarRef.current.contains(event.target as Node)) {
-        setIsActionBarOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
     return (
         <div className=" w-full h-full flex flex-col items-start">
             <div className="w-full relative">
@@ -67,21 +49,7 @@ export const EventCard = ({event}: {event: Event}) => {
                 <h2 className="text-lg text-black font-semibold truncate flex-1 min-w-0 pr-2">
                     {event.name}
                 </h2>
-                <div className="flex-shrink-0 relative" ref={actionBarRef}>
-                    <EllipsisVertical 
-                    onClick={handleEllipsisClick} 
-                    className="text-sm w-5 h-5 text-gray cursor-pointer" 
-                    />
-                    
-                    {isActionBarOpen && (
-                        <div className="absolute top-full w-[200px] right-0 z-50">
-                        <ActionBar
-                            title="액션"
-                            items={actionItems}
-                        />
-                        </div>
-                    )}
-                </div>
+                <ActionBarTrigger items={actionItems} vertical={true}/>
             </div>
             <div className="text-sm font-regular text-gray line-clamp-2">
                 {event.description}

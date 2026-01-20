@@ -5,9 +5,9 @@ import { ListResponse } from '../types/common';
 
 const meetingRoomApi = {
     
-    getRentalRecords: async (page: number = 1, limit: number = 10, sort: string = 'createdAt', order: string = 'desc') => {
+    getRentalRecords: async (page: number = 1, limit: number = 10, column: string = 'createdAt', orderDirection: string = 'ASC') => {
         const response = await api.get<ListResponse<RentalRecord>>('/api/meeting-room', {
-            params: { page, limit, sort, order },
+            params: { page, limit, column, orderDirection },
         });
         return response.data;
     },
@@ -24,6 +24,10 @@ const meetingRoomApi = {
         const response = await api.patch<RentalRecord>(`/api/meeting-room/${id}/reject`);
         return response.data;
     },
+    deleteRentalRecord: async (id: string) => {
+        const response = await api.delete(`/api/meeting-room/${id}`);
+        return response.data;
+    }
 }
 
 export default meetingRoomApi;

@@ -1,5 +1,4 @@
 "use client";
-import { SearchBar } from "@/components/common/search/SearchBar";
 import { DataTable } from "@/components/common/table/DataTable";
 import { useEffect, useState } from "react";
 import { Column } from "@/lib/types/table";
@@ -7,129 +6,105 @@ import { RentalRecord } from "@/lib/types/meeting-room";
 import PageHeader from "@/components/layout/page/PageHeader";
 import { formatKoreanDate } from "@/utils/date";
 import Link from "next/link";
-import { EllipsisVertical } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useTableSort } from "@/lib/hooks/useTableSort";
-
+import { usePaginationQuery } from "@/lib/hooks/usePaginationQuery";
+import Pagination from "@/components/common/pagination/Pagination";
+import { useMeetingRoomListQuery } from "@/lib/queries/meeting-room/queries";
+import Image from "next/image";
+import ActionBarTrigger from "@/components/common/action/ActionBarTrigger";
+import { useDeleteRentalMutation } from "@/lib/queries/meeting-room/mutations";
 export default function MeetingRoomPage() {
-  const [searchValue, setSearchValue] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
-  const { sort, onSortChange } = useTableSort({ key: "submitDate", order: "asc" });
+  const { page: paginationPage, setPage: setPaginationPage } = usePaginationQuery("page", 1);
+  const { sort, onSortChange } = useTableSort({ key: "borrower", order: "ASC" });
+  const {data: rentalRecords, isLoading: isloading, error: listError} = useMeetingRoomListQuery({page: paginationPage, limit, column: sort.key, orderDirection: sort.order});
+  const {mutate: deleteRental, isPending: isDeleting, error: deleteError} = useDeleteRentalMutation();
   const columns: Column<RentalRecord>[] = [
   {
     header: "#",
     width: "40px",
-    render: (_, index) => <span className="text-gray font-medium">{(page - 1) * limit + index + 1}</span>,
+    render: (_, index) => <span className="text-gray font-medium">{(paginationPage - 1) * limit + index + 1}</span>,
   },
   {
     header: "이름",
     width: "200px",
     render: (row) => (
-      <Link href={`/users/${row.id}`} className="text-t underline">
-        {row.userName}
+      <Link href={`/users/${row.id}`} className="underline flex gap-1 items-center">
+        <Image src={row.borrower.avatarUrl} alt="user" width={24} height={24} className="rounded-full" />
+        <span>{row.borrower.name}</span>
       </Link>
     ),
     isSortable: true,
-    sortKey: "userName",
+    sortKey: "borrower",
   },
   {
     header: "사용 목적",
     width: "380px",
-    render: (row) => row.purpose,
-    isSortable: true,
-    sortKey: "purpose",
+    render: (row) => (
+        <Link href={`/meeting-room/${row.id}`} >
+            {row.purpose}
+        </Link>
+    ),
   },
   {
     header: "대여 희망 날짜",
     width: "189px",
-    render: (row) => formatKoreanDate(row.date),
+    render: (row) => formatKoreanDate(row.wantedDate),
     isSortable: true,
     sortKey: "wantedDate",
   },
   {
     header: "신청서 제출 날짜",
     width: "154px",
-    render: (row) => formatKoreanDate(row.submitDate),
+    render: (row) => formatKoreanDate(row.createdAt),
     isSortable: true,
-    sortKey: "submitDate",
+    sortKey: "createdAt",
   },
   {
     header: "액션",
-    width: "100px",
+    width: "47px",
     render: (row) => (
-      <EllipsisVertical className="text-sm w-5 h-5 text-gray cursor-pointer" />
+      <ActionBarTrigger 
+        title="소회의실 대여"
+        items={[
+          {
+            icon: <Trash2 size={24} />,
+            label: '삭제',
+            backgroundColor: '#F9F9F9',
+            iconColor: '#FA5353',
+            textColor: '#FA5353',
+            onClick: () => deleteRental(row.id)
+          }
+        ]}
+      />
     ),
   },
 ];
-  useEffect(() => {
-    console.log(sort);
-  }, [sort]);
+
   return (
     <div className="px-8 py-12">
-      <PageHeader title="소회의실 대여"/>
-      <SearchBar 
-        value={searchValue}
-        placeholder="검색어를 입력하세요"
-        onChangeText={setSearchValue}
-        onSubmit={setSearchQuery}
-      />
-    <DataTable
-    columns={columns}
-    data={[
-        {
-            id: 1,
-            userName: "홍길동",
-            purpose: "회의",
-            date: "2025-10-20",
-            submitDate: "2025-10-20",
-        },
-        {
-            id: 1,
-            userName: "홍길동",
-            purpose: "회의",
-            date: "2025-10-20",
-            submitDate: "2025-10-20",
-        },
-        {
-            id: 1,
-            userName: "홍길동",
-            purpose: "회의",
-            date: "2025-10-20",
-            submitDate: "2025-10-20",
-        },
-        {
-            id: 2,
-            userName: "홍길동",
-            purpose: "회fffffdddddddsssssssssssss회의",
-            date: "2025-10-20",
-            submitDate: "2025-10-20",
-        },
-        {
-            id: 3,
-            userName: "홍길동",
-            purpose: "회의",
-            date: "2025-10-20",
-            submitDate: "2025-10-20",
-        },
-        {
-            id: 4,
-            userName: "홍길동",
-            purpose: "회의",
-            date: "2025-10-20",
-            submitDate: "2025-10-20",
-        },
-        {
-            id: 5,
-            userName: "홍길동",
-            purpose: "회의",
-            date: "2025-10-20",
-            submitDate: "2025-10-20",
-        }
-    ]}
-    sort={sort}
-    onSortChange={onSortChange}
-    />
+        <PageHeader title="소회의실 대여"/>
+        <div className="mt-[66px] flex flex-col gap-2">
+            
+            {isloading && <p>로딩 중...</p>}
+            {listError && <p className="text-[#FA5353]">불러오기에 실패했습니다: {listError.message}</p>}
+            {deleteError && <p className="text-[#FA5353]">삭제에 실패했습니다: {deleteError.message}</p>}
+            {!isloading && !listError && !deleteError && (<>
+            <DataTable
+                columns={columns}
+                data={rentalRecords?.items || []}
+                sort={sort}
+                onSortChange={onSortChange}
+            />
+            <Pagination
+                currentPage={paginationPage}
+                totalPages={rentalRecords?.totalPages || 0}
+                totalItems={rentalRecords?.total || 0}
+                onPageChange={setPaginationPage}
+            />
+            </>)}
+        </div>
     </div>
   );
 }
