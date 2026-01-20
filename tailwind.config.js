@@ -18,7 +18,9 @@ export default {
       gray: "#767676",
       "toggle-checked": "#6BDA72",
       darkgray: "#777777",
-      inputborder: "#D5D5D5"
+      inputborder: "#D5D5D5",
+      sunday: '#FA5353',
+      saturday: '#4D71FF',
     }
   },
   plugins: [],
