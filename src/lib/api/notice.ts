@@ -58,7 +58,29 @@ export const noticesApi = {
     try {
       console.log('Creating notice with data:', data);
       
-      const response = await api.post<NoticeDetailResponse>('/api/notice', data);
+      // FormData 생성
+      const formData = new FormData();
+      formData.append('title', data.title);
+      formData.append('content', data.content);
+      
+      // images 있으면 추가(base64 문자열 배열)
+      if (data.images && data.images.length > 0) {
+        data.images.forEach((image) => {
+          formData.append('images', image);
+        });
+      }
+      
+      console.log('Sending FormData to server');
+      
+      const response = await api.post<NoticeDetailResponse>(
+        '/api/notice', 
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
       
       console.log('Notice created successfully:', response.data);
       return transformNoticeFromApi(response.data);
@@ -71,7 +93,7 @@ export const noticesApi = {
       }
       throw error;
     }
-  },
+},
 
   updateNotice: async (id: string, data: UpdateNoticeData): Promise<Notice> => {
     try {
