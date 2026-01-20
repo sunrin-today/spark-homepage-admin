@@ -7,24 +7,17 @@ import { Event } from "@/lib/types/events";
 import eventsApi from "@/lib/api/events";
 import Link from "next/link";
 import PageHeader from "@/components/layout/page/PageHeader";
+import { useEvents } from "@/lib/queries/events/queries";
+import Pagination from "@/components/common/pagination/Pagination";
 
 export default function EventsPage() {
   const [searchValue, setSearchValue] = useState("");
-  const [events, setEvents] = useState<Event[]>([]);
-  useEffect(() => {
-    
-    eventsApi.getEvents().then((data) => {
-        setEvents(data.items);
-    });
-  }, []);
-  useEffect(() => {
-    console.log("events", events);
-  }, [events]);
-  const handleSearch = (value: string) => {
-    eventsApi.getEvents(1, 10, value).then((data) => {
-      setEvents(data.items);
-    });
-  };
+  const [searchQuery, setSearchQuery] = useState("");   // 실제 fetch용
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(6);
+  const { data: events, isLoading, error } = useEvents({ page, limit, search: searchQuery });
+
+  
   return (
     <div className="px-8 py-12 mx-auto max-w-[1440px]"> {/*TODO: Page Container 컴포넌트로 변환*/}
         <PageHeader title="이벤트 목록" /> 
@@ -32,7 +25,9 @@ export default function EventsPage() {
         value={searchValue}
         placeholder="검색어를 입력하세요"
         onChangeText={setSearchValue}
-        onSubmit={handleSearch}
+        onSubmit={() => {
+          setSearchQuery(searchValue);
+        }}
         />
         <div className="flex flex-col py-3">
             <div className="flex justify-end pb-4">
@@ -41,12 +36,31 @@ export default function EventsPage() {
             </Link>
             </div>
             {   
-                events.length > 0 ? (
+                error ? (
+                    <div className="text-center py-8">
+                        <p className="text-red">오류가 발생했습니다.</p>
+                        <p className="text-gray">{error.message}</p>
+                    </div>
+                ) : isLoading ? (
+                    <div className="text-center py-8">
+                        <p className="text-gray">로딩 중...</p>
+                    </div>
+                ) : events?.items && events.items.length > 0 ? (
+                    <>
                     <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {events.map((event) => (
+                        {events.items.map((event) => (
                             <EventCard key={event.id} event={event} />
                         ))}
                     </div>
+                    <div className="mt-8">
+            <Pagination
+              currentPage={page}
+              totalPages={events.totalPages}
+              totalItems={events.total}
+              onPageChange={(page) => setPage(page)}
+            />
+          </div>
+                    </>
                 ) : (
                     <div className="text-center py-8">
                         <p className="text-gray-500">이벤트가 없습니다.</p>
@@ -54,7 +68,6 @@ export default function EventsPage() {
                 )
             }
         </div>
-        {/*TODO: 페이지네이션 컴포넌트 추가*/}
     </div>
   );
 }

@@ -27,7 +27,8 @@ const BaseInput = forwardRef<HTMLInputElement | HTMLTextAreaElement, BaseInputPr
   ({ leftIcon, rightIcon, value, name, onChange, placeholder, className, onClick, readOnly, required }, ref) => {
     return (
       <div
-        className={`flex items-center px-[20px] py-[12px] border border-inputborder text-darkgray rounded-[12px] max-w-[400px] w-full min-w-0 focus-within:border-2 focus-within:border-inputborder focus-within:ring-0 ${className}`}
+        className={`flex items-center px-[20px] py-[12px] border border-inputborder text-[#010101] rounded-[12px] max-w-[400px] w-full min-w-0 
+          outline-none focus-within:border-2 focus-within:ring-0" ${className}`}
         onClick={onClick}
       >
         {leftIcon && <span className="flex-shrink-0 mr-2">{leftIcon}</span>}

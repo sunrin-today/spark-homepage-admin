@@ -15,7 +15,7 @@ import { DetailImageGrid } from "@/components/image/DetailImageGrid";
 import { FormImageListItem } from "@/lib/types/common";
 export default function EventForm(props: EventFormProps) {
 
-  const { mode, onSubmit, submitText = "저장" } = props;
+  const { mode, mutation, isPending, submitText = "저장" } = props;
 
   const [formData, setFormData] = useState<EventFormState>(() => {
     if (mode === "update") {
@@ -91,7 +91,7 @@ export default function EventForm(props: EventFormProps) {
     setFormData(prev => ({ ...prev, detailImages: images }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.thumbnail && mode=="create") {
@@ -104,14 +104,13 @@ export default function EventForm(props: EventFormProps) {
       return;
     }
     if (mode === "create") {
-        await onSubmit(buildCreatePayload(formData));
+        mutation(buildCreatePayload(formData));
         return;
     }
-    await onSubmit(
+    mutation(
         buildUpdatePayload(formData, props.initialData.detailImages ?? [])
     );
   };
-
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <InputWrapper label="썸네일 이미지" htmlFor="thumbnail">
@@ -122,7 +121,7 @@ export default function EventForm(props: EventFormProps) {
         />
       </InputWrapper>
 
-      <InputWrapper label="이벤트 제목" htmlFor="name">
+      <InputWrapper label="제목" htmlFor="name">
         <BaseInput
           name="name"
           value={formData.name}
@@ -150,7 +149,7 @@ export default function EventForm(props: EventFormProps) {
         </InputWrapper>
       </div>
 
-      <InputWrapper label="링크 공개 여부" htmlFor="isLinkOn">
+      <InputWrapper label="이벤트 참여 시작" htmlFor="isLinkOn">
         <Toggle
           checked={formData.isLinkOn}
           onChange={checked =>
@@ -178,7 +177,7 @@ export default function EventForm(props: EventFormProps) {
         />
       </InputWrapper>
 
-      <InputWrapper label="이벤트 설명" htmlFor="description">
+      <InputWrapper label="설명" htmlFor="description">
         <TextareaInput
           name="description"
           value={formData.description}
@@ -192,7 +191,7 @@ export default function EventForm(props: EventFormProps) {
         />
       </InputWrapper>
 
-      <div className="flex justify-end gap-3 pt-4">
+      <div className="flex justify-end gap-3 pt-4 text-sm">
         <button
           type="button"
           onClick={() => window.history.back()}
@@ -204,7 +203,10 @@ export default function EventForm(props: EventFormProps) {
 
         <button
           type="submit"
-          className="px-2 py-1.5 bg-black text-white rounded-lg flex items-center gap-2"
+          disabled={isPending}  
+          className={`px-2 py-1.5
+          ${isPending ? "bg-black/50 cursor-not-allowed" : "bg-black"}
+          text-white rounded-lg flex items-center gap-2`}
         >
           <File />
           {submitText}
