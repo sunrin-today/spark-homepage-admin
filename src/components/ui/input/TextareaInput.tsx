@@ -8,6 +8,7 @@ interface TextareaInputProps {
   maxLength?: number;
   name?: string;
   showCounter?: boolean;
+  required?: boolean;
 }
 
 export const TextareaInput = ({ 
@@ -16,7 +17,8 @@ export const TextareaInput = ({
   placeholder, 
   maxLength = 500,
   name,
-  showCounter = true 
+  showCounter = true,
+  required = false
 }: TextareaInputProps) => {
   const [charCount, setCharCount] = useState(value.length);
 
@@ -34,13 +36,14 @@ export const TextareaInput = ({
   return (
     <div className="relative max-w-[400px]">
       <textarea 
-        className="w-full h-40 bg-white border border-gray rounded-lg py-[16px] px-[20px] pr-[60px]
-        resize-none outline-none focus:border-2 focus:border-gray focus:ring-0"
+        className="w-full h-40 bg-white border border-inputborder rounded-lg py-[16px] px-[20px] pr-[60px]
+        resize-none outline-none focus:border-2 focus:ring-0"
         value={value} 
         onChange={handleChange} 
         placeholder={placeholder}
         maxLength={maxLength}
         name={name}
+        required={required}
       />
       { value.length > 0 && (
         <X size={20} className="absolute top-[20px] text-gray right-[20px] cursor-pointer" onClick={() => onChange("")}/>

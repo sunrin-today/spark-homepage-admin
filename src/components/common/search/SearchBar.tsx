@@ -13,7 +13,7 @@ interface SearchBarProps {
 }
 
 export const SearchBar = ({ 
-  buttonText = "검색", 
+  buttonText = "검색하기", 
   placeholder, 
   onChangeText, 
   onSubmit, 
@@ -29,7 +29,7 @@ export const SearchBar = ({
     <form onSubmit={handleSubmit} className={`flex items-center gap-2 w-full ${className}`}>
       
         <BaseInput
-          leftIcon={<Search size={20} className="text-gray-400" />}
+          leftIcon={<Search size={20} />}
           placeholder={placeholder}
           value={value}
           onChange={onChangeText}
@@ -38,7 +38,7 @@ export const SearchBar = ({
       {buttonText && (
         <button
           type="submit" 
-          className="whitespace-nowrap bg-[#2C2C2C] text-white rounded-[12px] px-[20px] py-[16px]"
+          className="whitespace-nowrap bg-[#1B1B1B] text-white rounded-[12px] px-[20px] py-[12px]"
         >
           {buttonText}
         </button>
