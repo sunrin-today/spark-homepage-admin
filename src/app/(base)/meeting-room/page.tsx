@@ -3,7 +3,7 @@ import { SearchBar } from "@/components/common/search/SearchBar";
 import { DataTable } from "@/components/common/table/DataTable";
 import { useEffect, useState } from "react";
 import { Column } from "@/lib/types/table";
-import { RoomRental } from "@/lib/types/meeting-room";
+import { RentalRecord } from "@/lib/types/meeting-room";
 import PageHeader from "@/components/layout/page/PageHeader";
 import { formatKoreanDate } from "@/utils/date";
 import Link from "next/link";
@@ -16,7 +16,7 @@ export default function MeetingRoomPage() {
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
   const { sort, onSortChange } = useTableSort({ key: "submitDate", order: "asc" });
-  const columns: Column<RoomRental>[] = [
+  const columns: Column<RentalRecord>[] = [
   {
     header: "#",
     width: "40px",

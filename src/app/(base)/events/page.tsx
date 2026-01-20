@@ -9,14 +9,14 @@ import Link from "next/link";
 import PageHeader from "@/components/layout/page/PageHeader";
 import { useEvents } from "@/lib/queries/events/queries";
 import Pagination from "@/components/common/pagination/Pagination";
+import { usePaginationQuery } from "@/lib/hooks/usePaginationQuery";
 
 export default function EventsPage() {
   const [searchValue, setSearchValue] = useState("");
   const [searchQuery, setSearchQuery] = useState("");   // 실제 fetch용
-  const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(6);
-  const { data: events, isLoading, error } = useEvents({ page, limit, search: searchQuery });
-
+  const { page: paginationPage, setPage: setPaginationPage } = usePaginationQuery("page", 1);
+  const { data: events, isLoading, error } = useEvents({ page: paginationPage, limit, search: searchQuery });
   
   return (
     <div className="px-8 py-12 mx-auto max-w-[1440px]"> {/*TODO: Page Container 컴포넌트로 변환*/}
@@ -54,10 +54,10 @@ export default function EventsPage() {
                     </div>
                     <div className="mt-8">
             <Pagination
-              currentPage={page}
+              currentPage={paginationPage}
               totalPages={events.totalPages}
               totalItems={events.total}
-              onPageChange={(page) => setPage(page)}
+              onPageChange={(page) => setPaginationPage(page)}
             />
           </div>
                     </>
