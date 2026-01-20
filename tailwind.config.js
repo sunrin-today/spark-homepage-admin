@@ -21,6 +21,7 @@ export default {
       inputborder: "#D5D5D5",
       sunday: '#FA5353',
       saturday: '#4D71FF',
+      lightgray: '#EEEEEE',
     }
   },
   plugins: [],
