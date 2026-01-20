@@ -115,13 +115,10 @@ export async function getCurrentUserInfo(): Promise<any> {
       throw new Error("토큰이 없습니다.");
     }
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/me`,
-      {
-        method: "GET",
-        headers: getAuthHeaders(),
-      }
-    );
+    const response = await fetch('/api/users/me', {
+      method: "GET",
+      headers: getAuthHeaders(),
+    });
 
     if (!response.ok) {
       throw new Error("사용자 정보를 가져올 수 없습니다.");
