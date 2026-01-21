@@ -51,11 +51,6 @@ const UsersPage = () => {
     }
   };
 
-  const handleEdit = (userId: string) => {
-    // TODO: 사용자 수정 페이지로 이동
-    console.log("Edit user:", userId);
-  };
-
   const columns: Column<User>[] = [
     {
       header: "#",
@@ -119,14 +114,6 @@ const UsersPage = () => {
             iconColor: "#FA5353",
             textColor: "#FA5353",
             onClick: () => handleDelete(user.id),
-          },
-          {
-            icon: <Edit size={24} />,
-            label: "수정",
-            backgroundColor: "transparent",
-            iconColor: "#FDC019",
-            textColor: "#000000",
-            onClick: () => handleEdit(user.id),
           },
         ];
 
