@@ -7,6 +7,7 @@ import {
   signOut,
   onAuthStateChange,
 } from "@/lib/auth/authService";
+import { useRouter } from "next/navigation";
 
 interface AuthContextType {
   user: User | null;
@@ -20,6 +21,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter(); 
 
   useEffect(() => {
     const unsubscribe = onAuthStateChange((user: User | null) => {
@@ -49,6 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(true);
       await signOut();
       setUser(null);
+      router.push("/login"); 
     } catch (error) {
       console.error("로그아웃 실패:", error);
       throw error;
