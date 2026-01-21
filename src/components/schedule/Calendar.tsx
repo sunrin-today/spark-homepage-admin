@@ -161,6 +161,7 @@ const Calendar: React.FC<CalendarProps> = ({
         </div>
         <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={handlePrevMonth}
             className="p-1 hover:bg-gray-100 rounded"
           >
@@ -179,6 +180,7 @@ const Calendar: React.FC<CalendarProps> = ({
             </svg>
           </button>
           <button
+            type="button"
             onClick={handleNextMonth}
             className="p-1 hover:bg-gray-100 rounded"
           >
@@ -227,6 +229,7 @@ const Calendar: React.FC<CalendarProps> = ({
 
             return (
               <button
+                type="button"
                 key={index}
                 onClick={() => handleDateClick(date)}
                 className={`
