@@ -8,12 +8,19 @@ export default {
   theme: {
     extend: {},
     colors: {
-      gray : "#C0C0C0",
-      main : "#FF805C",
-      white : "#F9F9F9",
-      lightgray : "#EEEEEE",
-      black : "#0D0D0D",
-      
+      white: "#F9F9F9",
+      black: "#1B1B1B",
+      council: "#6CA9FF",
+      software: "#F79447",
+      computersecurity: "#6CA9FF",
+      itmanagement: "#85C879",
+      contentsdesign: "#6CA9FF",
+      gray: "#767676",
+      "toggle-checked": "#6BDA72",
+      darkgray: "#777777",
+      inputborder: "#D5D5D5",
+      sunday: '#FA5353',
+      saturday: '#4D71FF',
     }
   },
   plugins: [],
