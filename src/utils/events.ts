@@ -8,7 +8,7 @@ function isValidURL(str: string): boolean {
     return false;
   }
 }
-function buildCreatePayload(form: EventFormState) {
+function buildEventCreatePayload(form: EventFormState) {
   return {
     name: form.name,
     description: form.description,
@@ -23,7 +23,7 @@ function buildCreatePayload(form: EventFormState) {
       .map((i) => i.file),
   };
 }
-function buildUpdatePayload(
+function buildEventUpdatePayload(
   form: EventFormState,
   initialDetailImages: ImageItem[]
 ) {
@@ -48,9 +48,6 @@ function buildUpdatePayload(
     (item) => !exists.some((existing) => existing.url === item.url)
   ).map((item) => item.url); // {url, index}에서 url만 추출
   
-  console.log("exists", exists)
-  console.log("deletes", deletes)
-  console.log("imageIndexes", imageIndexes);
   return {
     name: form.name,
     description: form.description,
@@ -79,4 +76,4 @@ function validateEventLink(link: string): boolean {
   return true;
 }
 
-export { isValidURL, validateEventLink, buildCreatePayload, buildUpdatePayload };
+export { isValidURL, validateEventLink, buildEventCreatePayload, buildEventUpdatePayload };

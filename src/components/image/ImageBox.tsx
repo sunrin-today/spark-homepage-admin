@@ -5,16 +5,18 @@ interface ImageBoxProps {
   preview?: string | null;
   onClick?: () => void;
   onRemove?: () => void;
+  height?: string;
 }
 
-export function ImageBox({ preview, onClick, onRemove }: ImageBoxProps) {
+export function ImageBox({ preview, onClick, onRemove, height = "224px" }: ImageBoxProps) {
   return (
     <div
       className="
-        relative w-full h-56 border border-inputborder rounded-lg overflow-hidden
+        relative w-full border border-inputborder rounded-lg overflow-hidden
         flex items-center justify-center cursor-pointer
         hover:bg-[#DDDDDD] hover:border-dashed hover:border-darkgray hover:border-[1.5px]
       "
+      style={{ height }}
       onClick={onClick}
     >
       {preview ? (

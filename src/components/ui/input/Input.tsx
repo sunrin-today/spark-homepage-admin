@@ -27,7 +27,7 @@ const BaseInput = forwardRef<HTMLInputElement | HTMLTextAreaElement, BaseInputPr
   ({ leftIcon, rightIcon, value, name, onChange, placeholder, className, onClick, readOnly, required }, ref) => {
     return (
       <div
-        className={`flex items-center px-[20px] py-[12px] border border-inputborder text-[#010101] rounded-[12px] max-w-[400px] w-full min-w-0 
+        className={`flex items-center px-[20px] py-[12px] border border-inputborder text-[#010101] rounded-[12px] w-full min-w-0 
           outline-none focus-within:border-2 focus-within:ring-0" ${className}`}
         onClick={onClick}
       >
@@ -35,6 +35,7 @@ const BaseInput = forwardRef<HTMLInputElement | HTMLTextAreaElement, BaseInputPr
 
         <div className="flex-1 min-w-0">
           <input
+            id={name}
             ref={ref as React.Ref<HTMLInputElement>}
             type="text"
             name={name}

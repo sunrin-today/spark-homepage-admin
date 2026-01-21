@@ -67,7 +67,7 @@ export function DetailImageGrid({
         items={value.map(v => v.id)}
         strategy={rectSortingStrategy}
       >
-        <div className="overflow-y-auto overflow-x-hidden max-h-[500px]  grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="overflow-y-auto overflow-x-hidden w-full justify-center max-h-[500px]  grid grid-cols-1 lg:grid-cols-2 gap-4">
           {value.map(image => (
             <SortableImageItem
               key={image.id}

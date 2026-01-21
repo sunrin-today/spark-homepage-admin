@@ -8,6 +8,7 @@ interface DateInputProps {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  name?: string;
 }
 
 export const DateInput = ({
@@ -15,6 +16,7 @@ export const DateInput = ({
   onChange,
   placeholder = "날짜를 선택해주세요",
   className = "",
+  name,
 }: DateInputProps) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -33,9 +35,9 @@ export const DateInput = ({
 //   };
 
   return (
-    <div className="relative">
-      <div onClick={handleInputClick} className="cursor-pointer">
+      <div onClick={handleInputClick} className="w-full relative cursor-pointer">
         <BaseInput
+          name={name}
           leftIcon={<CalendarDaysIcon size={20}/>}
           value={formatKoreanDate(value)}
           onChange={() => {}} // Read-only
@@ -45,18 +47,5 @@ export const DateInput = ({
           ref={inputRef}
         />
       </div>
-
-      {/* TODO: 달력 선택 추가하기 */}
-      {/* Example: */}
-      {/* {isCalendarOpen && (
-        <div className="absolute z-10 mt-1">
-          <CustomCalendar
-            selectedDate={value ? new Date(value) : null}
-            onSelect={handleDateSelect}
-            onClose={() => setIsCalendarOpen(false)}
-          />
-        </div>
-      )} */}
-    </div>
   );
 };

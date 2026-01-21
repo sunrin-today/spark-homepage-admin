@@ -6,18 +6,24 @@ export function SingleImageField({
   preview,
   onChange,
   onRemove,
+  name,
   maxW = "400px",
+  height,
 }: {
   preview: string | null;
   onChange: (file: File) => void;
   onRemove: () => void;
+  name?: string;
   maxW?: string;
+  height?: string;
 }) {
   const ref = useRef<HTMLInputElement>(null);
 
   return (
     <div style={{ maxWidth: maxW }}>
       <input
+        id={name || "image"}
+        name={name || "image"}
         ref={ref}
         type="file"
         accept="image/*"
@@ -31,6 +37,7 @@ export function SingleImageField({
         preview={preview}
         onClick={() => ref.current?.click()}
         onRemove={onRemove}
+        height={height}
       />  
     </div>
   );

@@ -6,9 +6,11 @@ import { useRouter } from "next/navigation";
 import { useDeleteEvent } from "@/lib/queries/events/mutations";
 import { ActionBarItem } from "../common/action/ActionBar";
 import ActionBarTrigger from "../common/action/ActionBarTrigger";
+import { Lost } from "@/lib/types/losts";
+import Link from "next/link";
 
 
-export const EventCard = ({event}: {event: Event}) => {
+export const LostCard = ({lost}: {lost: Lost}) => {
   const router = useRouter();
   const deleteEventMutation = useDeleteEvent();
   const actionItems: ActionBarItem[] = [
@@ -19,7 +21,7 @@ export const EventCard = ({event}: {event: Event}) => {
     backgroundColor: '#F9F9F9',
     iconColor: '#FA5353',
     textColor: '#FA5353',
-    onClick: () => deleteEventMutation.mutate(event.id),
+    onClick: () => deleteEventMutation.mutate(lost.id),
   },
   {
     icon: <Edit size={24} />,
@@ -27,32 +29,32 @@ export const EventCard = ({event}: {event: Event}) => {
     backgroundColor: '#F9F9F9',
     iconColor: '#FDC019',
     textColor: '#010101',
-    onClick: () => router.push(`/events/${event.id}/edit`),
+    onClick: () => router.push(`/losts/${lost.id}/edit`),
   },
 ];
     return (
         <div className=" w-full h-full flex flex-col items-start">
-            <div className="w-full relative">
+            
+            <div className="w-full">
+                <Link href={`/losts/${lost.id}`}>
                 <Image
-                    src={event.thumbnail.url}
-                    alt="이벤트 이미지"
-                    width={400} 
-                    height={250}
-                    className="w-full h-[250px] object-cover rounded-[20px]"
+                    src={lost.thumbnailUrl.url}
+                    alt="분실물 이미지"
+                    width={233} 
+                    height={233}
+                    className="w-full h-[233px] aspect-square object-cover rounded-[20px]"
                     unoptimized
                 />
-                <p className="absolute bottom-2 left-2 text-xs px-3 py-2 bg-white bg-opacity-80 text-black rounded-full">
-                    {GetRemainingDays(event.deadline)}일 남음
-                </p>
+                </Link>
             </div>
             <div className="flex items-center w-full pt-3 pb-1 min-w-0">
                 <h2 className="text-lg text-black font-semibold truncate flex-1 min-w-0 pr-2">
-                    {event.name}
+                    {lost.title}
                 </h2>
                 <ActionBarTrigger items={actionItems} vertical={true}/>
             </div>
             <div className="text-sm font-regular text-gray line-clamp-2">
-                {event.description}
+                {lost.description}
             </div>
         </div>
     );

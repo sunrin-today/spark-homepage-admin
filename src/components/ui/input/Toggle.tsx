@@ -6,6 +6,7 @@ interface ToggleProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'
   disabled?: boolean;
   size?: 'sm' | 'md' | 'lg';
   color?: 'primary' | 'success' | 'danger' | 'warning' | 'info';
+  name?: string;
 }
 
 const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
@@ -50,6 +51,8 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
           onChange={(e) => onChange(e.target.checked, e)}
           disabled={disabled}
           ref={ref}
+          name={props.name}
+          id={props.name}
           {...props}
         />
         <div
