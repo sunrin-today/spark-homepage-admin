@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Schedule {
   id: string;
@@ -11,14 +12,19 @@ interface Schedule {
 
 interface CalendarProps {
   selectedDate?: Date;
+  inputDate?: Date | string; 
   onDateSelect?: (date: Date) => void;
   highlightedDates?: Date[];
   schedules?: Schedule[];
-  onScheduleClick?: (schedules: Schedule[], position: { top: number; left: number }) => void;
+  onScheduleClick?: (
+    schedules: Schedule[],
+    position: { top: number; left: number }
+  ) => void;
 }
 
 const Calendar: React.FC<CalendarProps> = ({
   selectedDate,
+  inputDate,
   onDateSelect,
   highlightedDates = [],
   schedules = [],
@@ -37,6 +43,12 @@ const Calendar: React.FC<CalendarProps> = ({
   const daysInMonth = lastDayOfMonth.getDate();
 
   const prevMonthLastDay = new Date(year, month, 0).getDate();
+
+  const parsedInputDate = inputDate
+    ? inputDate instanceof Date
+      ? inputDate
+      : new Date(inputDate)
+    : null;
 
   const calendarDays: Date[] = [];
 
@@ -65,9 +77,7 @@ const Calendar: React.FC<CalendarProps> = ({
   };
 
   const handleDateClick = (date: Date) => {
-    if (onDateSelect) {
-      onDateSelect(date);
-    }
+    onDateSelect?.(date);
   };
 
   const isSameDay = (date1: Date, date2: Date) => {
@@ -78,40 +88,50 @@ const Calendar: React.FC<CalendarProps> = ({
     );
   };
 
+  const normalizeDate = (date: Date) =>
+    new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
   const isCurrentMonth = (date: Date) => {
     return date.getMonth() === month;
   };
 
   const getDateColor = (date: Date, dayOfWeek: number) => {
     const baseColor = dayOfWeek === 0 
-      ? 'text-sunday' 
-      : dayOfWeek === 6 
-      ? 'text-saturday' 
-      : 'text-black';
-    
+        ? 'text-sunday' 
+        : dayOfWeek === 6 
+        ? 'text-saturday' 
+        : 'text-black';
+
     if (!isCurrentMonth(date)) {
       return `${baseColor} opacity-40`;
     }
-    
+
     return baseColor;
   };
 
+  /** 일정 범위 계산 */
   const getScheduleRanges = () => {
-    const ranges: { schedule: Schedule; startCol: number; endCol: number; row: number }[] = [];
-    
-    schedules.forEach(schedule => {
-      const startDate = new Date(schedule.startDate);
-      const endDate = new Date(schedule.endDate);
-      
+    const ranges: {
+      schedule: Schedule;
+      startCol: number;
+      endCol: number;
+      row: number;
+    }[] = [];
+
+    schedules.forEach((schedule) => {
+      const startDate = normalizeDate(new Date(schedule.startDate));
+      const endDate = normalizeDate(new Date(schedule.endDate));
+
       calendarDays.forEach((day, index) => {
+        const currentDay = normalizeDate(day);
         const row = Math.floor(index / 7);
         const col = index % 7;
-        
-        if (day >= startDate && day <= endDate) {
+
+        if (currentDay >= startDate && currentDay <= endDate) {
           const existingRange = ranges.find(
-            r => r.schedule.id === schedule.id && r.row === row
+            (r) => r.schedule.id === schedule.id && r.row === row
           );
-          
+
           if (existingRange) {
             existingRange.endCol = col;
           } else {
@@ -119,39 +139,44 @@ const Calendar: React.FC<CalendarProps> = ({
               schedule,
               startCol: col,
               endCol: col,
-              row
+              row,
             });
           }
         }
       });
     });
-    
+
     return ranges;
   };
 
   const scheduleRanges = getScheduleRanges();
 
-  const handleScheduleClick = (e: React.MouseEvent, clickedSchedule: Schedule) => {
+  const handleScheduleClick = (
+    e: React.MouseEvent,
+    clickedSchedule: Schedule
+  ) => {
     e.stopPropagation();
+
     if (onScheduleClick) {
-      // 클릭한 일정과 겹치는 모든 일정을 찾음
       const clickedDate = new Date(clickedSchedule.startDate);
-      const overlappingSchedules = schedules.filter(s => {
+
+      const overlappingSchedules = schedules.filter((s) => {
         const start = new Date(s.startDate);
         const end = new Date(s.endDate);
         return clickedDate >= start && clickedDate <= end;
       });
-      
+
       const rect = e.currentTarget.getBoundingClientRect();
       onScheduleClick(overlappingSchedules, {
         top: rect.bottom + window.scrollY,
-        left: rect.left + window.scrollX
+        left: rect.left + window.scrollX,
       });
     }
   };
 
   return (
     <div className="w-full bg-white rounded-lg p-4">
+      {/* 헤더 */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-4">
           <span className="text-lg font-semibold">{year}년</span>
@@ -159,48 +184,27 @@ const Calendar: React.FC<CalendarProps> = ({
             {String(month + 1).padStart(2, '0')}월
           </span>
         </div>
+
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={handlePrevMonth}
             className="p-1 hover:bg-gray-100 rounded"
           >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
+            <ChevronLeft className="w-5 h-5" />
           </button>
+
           <button
             type="button"
             onClick={handleNextMonth}
             className="p-1 hover:bg-gray-100 rounded"
           >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
+            <ChevronRight className="w-5 h-5" />
           </button>
         </div>
       </div>
 
+      {/* 요일 */}
       <div className="grid grid-cols-7 mb-2">
         {weekDays.map((day, index) => (
           <div
@@ -218,78 +222,111 @@ const Calendar: React.FC<CalendarProps> = ({
         ))}
       </div>
 
-      <div className="border-t border-gray-200 mb-2"></div>
+      <div className="border-t border-gray-200 mb-2" />
 
+      {/* 날짜 */}
       <div className="relative">
         <div className="grid grid-cols-7">
           {calendarDays.map((date, index) => {
             const dayOfWeek = date.getDay();
-            const isSelected = selectedDate && isSameDay(date, selectedDate);
-            const isToday = isSameDay(date, new Date());
+            const isInputDate =
+              parsedInputDate && isSameDay(date, parsedInputDate);
 
             return (
               <button
-                type="button"
                 key={index}
+                type="button"
                 onClick={() => handleDateClick(date)}
                 className={`
-                  aspect-square flex items-center justify-center text-sm
+                  aspect-square flex items-center justify-center text-base
                   relative
                   ${getDateColor(date, dayOfWeek)}
-                  ${isToday ? 'font-bold' : ''}
                   hover:bg-gray-100 transition-colors
                 `}
               >
-                {date.getDate()}
+                {/* 인풋 검정 박스 */}
+                {isInputDate && (
+                  <span className="absolute inset-1 rounded-lg bg-black" />
+                )}
+
+                <span
+                  className={`relative z-10 ${
+                    isInputDate ? 'text-white font-medium' : ''
+                  }`}
+                >
+                  {date.getDate()}
+                </span>
               </button>
             );
           })}
         </div>
 
-        {/* 일정 띠 렌더링 */}
-        <div className="absolute top-0 left-0 right-0 pointer-events-none" style={{ height: '100%' }}>
+        {/* 일정 띠 */}
+        <div className="absolute inset-0 pointer-events-none">
           {scheduleRanges.map((range, idx) => {
+            const rows = Math.ceil(calendarDays.length / 7);
             const cellWidth = 100 / 7;
-            const cellHeight = 100 / Math.ceil(calendarDays.length / 7);
-            
-            const width = (range.endCol - range.startCol + 1) * cellWidth;
+            const cellHeight = 100 / rows;
+
             const left = range.startCol * cellWidth;
-            const top = range.row * cellHeight;
-            
-            const isStart = range.startCol === 0 || 
-              !scheduleRanges.some(r => 
-                r.schedule.id === range.schedule.id && 
-                r.row === range.row && 
-                r.endCol === range.startCol - 1
+            const width = (range.endCol - range.startCol + 1) * cellWidth;
+
+            // ✅ row 중앙
+            const top = range.row * cellHeight + cellHeight / 2;
+
+            const scheduleStart = new Date(range.schedule.startDate);
+            const scheduleEnd = new Date(range.schedule.endDate);
+
+            /** 이 row가 포함하는 실제 날짜들 */
+            const rowDates = calendarDays.slice(
+              range.row * 7,
+              range.row * 7 + 7
+            );
+
+            const isStart =
+              rowDates.some((d, i) =>
+                i === range.startCol &&
+                d.toDateString() === scheduleStart.toDateString()
               );
-            
-            const isEnd = range.endCol === 6 || 
-              !scheduleRanges.some(r => 
-                r.schedule.id === range.schedule.id && 
-                r.row === range.row && 
-                r.startCol === range.endCol + 1
+
+            const isEnd =
+              rowDates.some((d, i) =>
+                i === range.endCol &&
+                d.toDateString() === scheduleEnd.toDateString()
               );
 
             return (
               <div
                 key={`${range.schedule.id}-${idx}`}
                 onClick={(e) => handleScheduleClick(e, range.schedule)}
-                className="absolute pointer-events-auto cursor-pointer hover:opacity-80 transition-opacity"
+                className="absolute pointer-events-auto cursor-pointer"
                 style={{
                   left: `${left}%`,
-                  top: `calc(${top}% + 50%)`,
+                  top: `${top}%`,
+                  transform: 'translateY(-50%)',
                   width: `${width}%`,
-                  height: `${cellHeight * 0.4}%`,
+
+                  height: `${cellHeight}%`,
+
                   backgroundColor: range.schedule.color,
                   opacity: 0.7,
-                  borderRadius: isStart && isEnd ? '999px' : 
-                               isStart ? '999px 0 0 999px' : 
-                               isEnd ? '0 999px 999px 0' : '0',
+
+                  borderRadius:
+                    isStart && isEnd
+                      ? '999px'
+                      : isStart
+                      ? '999px 0 0 999px'
+                      : isEnd
+                      ? '0 999px 999px 0'
+                      : '0',
+
+                  zIndex: 0,
                 }}
               />
             );
           })}
         </div>
+
       </div>
     </div>
   );

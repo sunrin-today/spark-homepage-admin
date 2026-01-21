@@ -59,18 +59,18 @@ export const scheduleDummyData: Schedule[] = [
   {
     id: '7',
     title: '중간 일정',
-    startDate: '2026-01-05',
-    endDate: '2026-01-08',
+    startDate: '2026-01-11',
+    endDate: '2026-01-18',
     color: '#FCA5A5',
     description: '1월 5일부터 8일까지 진행되는 일정',
   },
   {
     id: '8',
     title: '다른 일정',
-    startDate: '2026-01-07',
-    endDate: '2026-01-09',
+    startDate: '2026-02-18',
+    endDate: '2026-02-28',
     color: '#86EFAC',
-    description: '1월 7일부터 9일까지 진행되는 일정',
+    description: '2월 18일부터 28일까지 진행되는 일정',
   },
 ];
 
