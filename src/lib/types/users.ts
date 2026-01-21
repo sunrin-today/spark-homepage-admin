@@ -1,10 +1,12 @@
+export type UserRole = "USER" | "ADMIN";
+
 export interface User {
   id: string;
   email: string;
   name: string;
   avatarUrl: string | null;
   studentNumber: number;
-  role: "USER" | "ADMIN";
+  role: UserRole;
   createdAt: string;
   updatedAt: string;
 }
@@ -15,7 +17,20 @@ export interface UserResponse {
   name: string;
   avatarUrl: string | null;
   studentNumber: number;
-  role: "USER" | "ADMIN";
+  role: UserRole;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface UserListResponse {
+  items: User[];
+  total: number;
+  currentPage: number;
+  totalPages: number;
+}
+
+export interface UpdateUserDto {
+  role?: UserRole;
+  name?: string;
+  studentNumber?: number;
 }
