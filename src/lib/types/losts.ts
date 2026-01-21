@@ -1,4 +1,5 @@
 import { FormImageListItem, ImageItem } from "./common";
+import { User } from "./users";
 
 export type Lost = {
   id: string;
@@ -7,6 +8,7 @@ export type Lost = {
   location: string;
   foundDate: string;
   status: "FOUND" | "LOST";
+  taker : User
   thumbnailUrl: {
     url: string;
     index: number;
@@ -23,14 +25,14 @@ export type Lost = {
 export type LostFormProps =
   | {
       mode: "create";
-      mutation: (data: LostCreateRequest) => void;
+      mutation: (data: LostFormState) => void;
       isPending?: boolean;
       submitText?: string;
     }
   | {
       mode: "update";
       initialData: Lost;
-      mutation: (data: LostUpdateRequest) => void;
+      mutation: (data: LostFormState) => void;
       isPending?: boolean;
       submitText?: string;
     };

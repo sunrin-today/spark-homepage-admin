@@ -41,8 +41,8 @@ export default function EventsPage() {
                 {   
                     error ? (
                         <div className="text-center py-8">
-                            <p className="text-red">오류가 발생했습니다.</p>
-                            <p className="text-gray">{error.message}</p>
+                            <p className="text-error">오류가 발생했습니다.</p>
+                            <p className="text-error">{error.message}</p>
                         </div>
                     ) : isLoading ? (
                         <div className="text-center py-8">

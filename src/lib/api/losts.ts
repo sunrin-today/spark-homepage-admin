@@ -3,10 +3,12 @@ import { ListResponse } from '../types/common';
 import { Lost, LostCreateRequest, LostUpdateRequest } from '../types/losts';
 
 const lostsApi = {
-    getLosts: async (page: number = 1, limit: number = 10, query?: string) => {
+    getLosts: async (page: number = 1, limit: number = 8, search?: string) => {
         const response = await api<ListResponse<Lost>>('/api/lost', {
-            params: { page, limit, query },
+            params: { page, limit, search },
         });
+        console.log("/lost?page=" + page + "&limit=" + limit + "&search=" + search);
+        console.log(response);
         return response.data;
     },
     getLost: async (id: string) => {
@@ -18,7 +20,7 @@ const lostsApi = {
         formData.append("title", lostData.title);
         formData.append("description", lostData.description);
         formData.append("location", lostData.location);
-        formData.append("foundDate", lostData.foundDate);
+        formData.append("foundDate", new Date(lostData.foundDate).toISOString());
 
         if (lostData.thumbnail) {
             formData.append("thumbnail", lostData.thumbnail);
@@ -28,7 +30,15 @@ const lostsApi = {
                 formData.append("detailImages", file);
             });
         }
-        const response = await api.post('/api/lost', formData);
+        for (const [key, value] of formData.entries()) {
+  console.log(key, value);
+}
+        const response = await api.post('/api/lost', 
+             formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
         return response.data;
     },
     updateLost: async (id: string, lostData: LostUpdateRequest) => {
@@ -56,7 +66,11 @@ const lostsApi = {
                 }
             });
         }
-        const response = await api.put(`/api/lost/${id}`, formData);
+        const response = await api.put(`/api/lost/${id}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
         return response.data;
     },
     deleteLost: async (id: string) => {

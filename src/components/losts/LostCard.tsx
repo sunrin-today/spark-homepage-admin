@@ -7,6 +7,7 @@ import { useDeleteEvent } from "@/lib/queries/events/mutations";
 import { ActionBarItem } from "../common/action/ActionBar";
 import ActionBarTrigger from "../common/action/ActionBarTrigger";
 import { Lost } from "@/lib/types/losts";
+import Link from "next/link";
 
 
 export const LostCard = ({lost}: {lost: Lost}) => {
@@ -33,15 +34,18 @@ export const LostCard = ({lost}: {lost: Lost}) => {
 ];
     return (
         <div className=" w-full h-full flex flex-col items-start">
+            
             <div className="w-full">
+                <Link href={`/losts/${lost.id}`}>
                 <Image
                     src={lost.thumbnailUrl.url}
-                    alt="이벤트 이미지"
+                    alt="분실물 이미지"
                     width={233} 
                     height={233}
                     className="w-full h-[233px] aspect-square object-cover rounded-[20px]"
                     unoptimized
                 />
+                </Link>
             </div>
             <div className="flex items-center w-full pt-3 pb-1 min-w-0">
                 <h2 className="text-lg text-black font-semibold truncate flex-1 min-w-0 pr-2">

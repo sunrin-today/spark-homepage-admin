@@ -7,11 +7,14 @@ export function useLostListQuery(params: {
   page?: number;
   limit?: number;
   search?: string;
-  status?: "FOUND" | "LOST";
+  status?: "FOUND" | "COLLECTED";
 }) {
   return useQuery({
     queryKey: lostKeys.list(params),
-    queryFn: () => lostApi.getLosts(params.page || 1, params.limit || 10, params.search),
+    queryFn: () => {
+      console.log(params);
+      return lostApi.getLosts(params.page || 1, params.limit || 10, params.search);
+    },
     placeholderData: (previousData) => previousData, // ✅ 페이지 전환 UX
   });
 }

@@ -123,7 +123,7 @@ export default function EventForm(props: EventFormProps) {
           name="name"
           value={formData.name}
           onChange={value =>
-            handleInputChange({ target: { name: "name", value } } as any)
+            handleInputChange({ target: { name: "name", value } } as React.ChangeEvent<HTMLInputElement>)
           }
           placeholder="이벤트 제목을 입력해주세요"
           required
@@ -163,7 +163,7 @@ export default function EventForm(props: EventFormProps) {
           name="link"
           value={formData.link}
           onChange={value =>
-            handleInputChange({ target: { name: "link", value } } as any)
+            handleInputChange({ target: { name: "link", value } } as React.ChangeEvent<HTMLInputElement>)
           }
           placeholder="참여 링크를 입력해주세요"
           required={formData.isLinkOn}
@@ -184,7 +184,7 @@ export default function EventForm(props: EventFormProps) {
           onChange={value =>
             handleInputChange({
               target: { name: "description", value },
-            } as any)
+            } as React.ChangeEvent<HTMLTextAreaElement>)
           }
           placeholder="이벤트 상세 설명을 입력해주세요"
           required

@@ -8,12 +8,14 @@ export function SingleImageField({
   onRemove,
   name,
   maxW = "400px",
+  height,
 }: {
   preview: string | null;
   onChange: (file: File) => void;
   onRemove: () => void;
   name?: string;
   maxW?: string;
+  height?: string;
 }) {
   const ref = useRef<HTMLInputElement>(null);
 
@@ -35,6 +37,7 @@ export function SingleImageField({
         preview={preview}
         onClick={() => ref.current?.click()}
         onRemove={onRemove}
+        height={height}
       />  
     </div>
   );

@@ -13,8 +13,10 @@ export function useCreateLostMutation() {
   const router = useRouter();
 
   return useMutation({
-    mutationFn: (form: LostFormState) =>
-      lostApi.createLost(buildLostCreatePayload(form)),
+    mutationFn: (form: LostFormState) =>{
+      console.log(buildLostCreatePayload(form));
+      return lostApi.createLost(buildLostCreatePayload(form));
+    },
 
     onSuccess: () => {
       alert("분실물이 생성되었습니다.");

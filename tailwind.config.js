@@ -22,6 +22,7 @@ export default {
       sunday: '#FA5353',
       saturday: '#4D71FF',
       lightgray: '#EEEEEE',
+      error: "#FA5353"
     }
   },
   plugins: [],

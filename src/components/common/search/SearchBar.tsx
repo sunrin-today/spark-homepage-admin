@@ -33,7 +33,7 @@ export const SearchBar = ({
           placeholder={placeholder}
           value={value}
           onChange={onChangeText}
-          className="w-full"
+          className="max-w-[400px]"
         />
       {buttonText && (
         <button

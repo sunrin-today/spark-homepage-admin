@@ -8,7 +8,7 @@ export default function EventsAdd() {
     <div className="px-8 py-12 gap-[10px] flex flex-col">
       <PageHeader title="이벤트 추가" isBackButton />
       
-      {error && <div className="text-[#FA5353]">이벤트 추가 중 오류가 발생했습니다: {error.message}</div>}
+      {error && <div className="text-error">이벤트 추가 중 오류가 발생했습니다: {error.message}</div>}
       {!error && <EventForm
         mode="create"
         isPending={isPending}

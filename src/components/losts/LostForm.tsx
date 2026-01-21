@@ -6,10 +6,8 @@ import { SingleImageField } from "@/components/ui/input/SingleImageInput";
 import { InputWrapper } from "@/components/ui/input/InputWrapper";
 import { TextareaInput } from "@/components/ui/input/TextareaInput";
 import BaseInput from "@/components/ui/input/Input";
-import Toggle from "@/components/ui/input/Toggle";
 import { X, File } from "lucide-react";
 import {LostFormState, LostFormProps} from "@/lib/types/losts";
-import { buildCreatePayload, buildUpdatePayload } from "@/utils/events";
 import { DetailImageGrid } from "@/components/image/DetailImageGrid";
 import { FormImageListItem } from "@/lib/types/common";
 export default function LostForm(props: LostFormProps) {
@@ -30,8 +28,8 @@ export default function LostForm(props: LostFormProps) {
         thumbnail: null,
         existingThumbnailUrl: initialData.thumbnailUrl?.url || "",
         detailImages: initialData.detailImageUrls?.map((img) => ({
+          type: "exists",
           url: img.url,
-          index: img.index,
           id: crypto.randomUUID(),
         })) || [],
       };
@@ -72,7 +70,7 @@ export default function LostForm(props: LostFormProps) {
 
   const handleDateChange = (
     date: string,
-    field: "startedAt" | "deadline"
+    field: "foundDate"
   ) => {
     setFormData(prev => ({ ...prev, [field]: date }));
   };
@@ -89,94 +87,73 @@ export default function LostForm(props: LostFormProps) {
       return;
     }
 
-    if (formData.isLinkOn && !validateEventLink(formData.link)) {
-      alert("유효하지 않은 링크입니다.");
-      return;
-    }
     if (mode === "create") {
-        mutation(buildCreatePayload(formData));
+        mutation(formData);
         return;
     }
-    mutation(
-        buildUpdatePayload(formData, props.initialData.detailImages ?? [])
-    );
+    mutation(formData);
   };
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <InputWrapper label="썸네일 이미지" htmlFor="thumbnail">
+    <form onSubmit={handleSubmit} className="space-y-6 px-2 py-3">
+      <InputWrapper label="썸네일 이미지" htmlFor="thumbnail" className="max-w-[351px]">
         <SingleImageField 
-            onChange={setThumbnail}
-            onRemove={() => setThumbnail(null)}
-            preview={formData.existingThumbnailUrl || null} 
+          height="351px"
+          name="thumbnail"
+          onChange={setThumbnail}
+          onRemove={() => setThumbnail(null)}
+          preview={formData.existingThumbnailUrl || null} 
         />
       </InputWrapper>
 
-      <InputWrapper label="제목" htmlFor="name">
+      <InputWrapper label="제목" htmlFor="title" className="max-w-[400px]">
         <BaseInput
-          name="name"
-          value={formData.name}
+          name="title"
+          value={formData.title}
           onChange={value =>
-            handleInputChange({ target: { name: "name", value } } as any)
+            handleInputChange({ target: { name: "title", value } } as React.ChangeEvent<HTMLInputElement>)
           }
-          placeholder="이벤트 제목을 입력해주세요"
+          placeholder="분실물 제목을 입력해주세요"
           required
         />
       </InputWrapper>
+      <InputWrapper label="습득 장소" htmlFor="location" className="max-w-[400px]">
+            <BaseInput
+            name="location"
+            value={formData.location}
+            onChange={value =>
+                handleInputChange({ target: { name: "location", value } } as React.ChangeEvent<HTMLInputElement>)
+            }
+            placeholder="습득 장소를 입력해주세요"
+            required
+            />
+      </InputWrapper>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <InputWrapper label="시작일" htmlFor="startedAt">
-          <DateInput
-            value={formData.startedAt}
-            onChange={date => handleDateChange(date, "startedAt")}
-          />
-        </InputWrapper>
-
-        <InputWrapper label="종료일" htmlFor="deadline">
-          <DateInput
-            value={formData.deadline}
-            onChange={date => handleDateChange(date, "deadline")}
-          />
-        </InputWrapper>
-      </div>
-
-      <InputWrapper label="이벤트 참여 시작" htmlFor="isLinkOn">
-        <Toggle
-          checked={formData.isLinkOn}
-          onChange={checked =>
-            setFormData(prev => ({ ...prev, isLinkOn: checked }))
-          }
+      <InputWrapper label="습득일" htmlFor="foundDate" className="max-w-[400px]">
+        <DateInput
+          name="foundDate"
+          value={formData.foundDate}
+          onChange={date => handleDateChange(date, "foundDate")}
         />
       </InputWrapper>
 
-      <InputWrapper label="이벤트 참여 링크" htmlFor="link">
-        <BaseInput
-          name="link"
-          value={formData.link}
-          onChange={value =>
-            handleInputChange({ target: { name: "link", value } } as any)
-          }
-          placeholder="참여 링크를 입력해주세요"
-          required={formData.isLinkOn}
-        />
-      </InputWrapper>
 
-      <InputWrapper label="상세 이미지" htmlFor="detailImages">
+      <InputWrapper label="상세 이미지" className="max-w-[810px]">
         <DetailImageGrid
           value={formData.detailImages}
           onChange={setDetailImages}
         />
       </InputWrapper>
 
-      <InputWrapper label="설명" htmlFor="description">
+      <InputWrapper label="설명" htmlFor="description" className="max-w-[400px]">
         <TextareaInput
           name="description"
           value={formData.description}
           onChange={value =>
             handleInputChange({
               target: { name: "description", value },
-            } as any)
+            } as React.ChangeEvent<HTMLTextAreaElement>)
           }
-          placeholder="이벤트 상세 설명을 입력해주세요"
+          placeholder="분실물 상세 설명을 입력해주세요"
           required
         />
       </InputWrapper>

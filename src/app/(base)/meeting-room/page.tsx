@@ -31,7 +31,7 @@ export default function MeetingRoomPage() {
     width: "200px",
     render: (row) => (
       <Link href={`/users/${row.id}`} className="underline flex gap-1 items-center">
-        <Image src={row.borrower.avatarUrl} alt="user" width={24} height={24} className="rounded-full" />
+        <Image src={row.borrower.avatarUrl!} alt="user" width={24} height={24} className="rounded-full" />
         <span>{row.borrower.name}</span>
       </Link>
     ),
