@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   PanelLeftClose, 
   PanelLeftOpen,
@@ -15,6 +15,10 @@ import {
   Proportions,
   LogOut
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContexts';
+import { getUserInfo } from '@/lib/api/users';
+import type { UserResponse } from '@/lib/types/users';
+import Image from 'next/image';
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -24,12 +28,45 @@ const Sidebar = () => {
     management: true,
     service: true
   });
+  const [userInfo, setUserInfo] = useState<UserResponse | null>(null);
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
+  
+  const { user, logout } = useAuth();
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      if (!user) {
+        setIsLoadingUser(false);
+        return;
+      }
+
+      try {
+        setIsLoadingUser(true);
+        const data = await getUserInfo();
+        setUserInfo(data);
+      } catch (error) {
+        console.error('사용자 정보 조회 실패:', error);
+      } finally {
+        setIsLoadingUser(false);
+      }
+    };
+
+    fetchUserInfo();
+  }, [user]);
 
   const toggleSection = (section: string) => {
     setExpandedSections(prev => ({
       ...prev,
       [section]: !prev[section]
     }));
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('로그아웃 실패:', error);
+    }
   };
 
   const managementItems = [
@@ -54,16 +91,16 @@ const Sidebar = () => {
       {/* Header */}
       <div className="h-16 border-b border-gray-200 flex items-center justify-between px-4">
         {!isCollapsed && (
-          <h1 className="text-lg font-semibold text-gray-800">관리 페이지</h1>
+          <h1 className="text-base font-semibold text-black">관리 페이지</h1>
         )}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
         >
           {isCollapsed ? (
-            <PanelLeftOpen className="w-5 h-5 text-gray-600" />
+            <PanelLeftOpen className="w-6 h-6 text-[#767676]" />
           ) : (
-            <PanelLeftClose className="w-5 h-5 text-gray-600" />
+            <PanelLeftClose className="w-6 h-6 text-[#767676]" />
           )}
         </button>
       </div>
@@ -77,11 +114,11 @@ const Sidebar = () => {
           >
             {!isCollapsed && (
               <>
-                <span className="text-sm text-gray-600 font-medium">관리</span>
+                <span className="text-sm text-[#767676] font-medium">관리</span>
                 {expandedSections.management ? (
-                  <ChevronDown className="w-4 h-4 text-gray-400" />
+                  <ChevronDown className="w-5 h-5 text-[#767676]" />
                 ) : (
-                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                  <ChevronRight className="w-5 h-5 text-[#767676]" />
                 )}
               </>
             )}
@@ -96,9 +133,9 @@ const Sidebar = () => {
                   href={item.href}
                   className="flex items-center px-4 py-2.5 hover:bg-gray-50 transition-colors group"
                 >
-                  <item.icon className="w-5 h-5 text-gray-600 flex-shrink-0" />
+                  <item.icon className="w-6 h-6 text-[#505050] flex-shrink-0" />
                   {!isCollapsed && (
-                    <span className="ml-3 text-sm text-gray-700">{item.label}</span>
+                    <span className="ml-3 text-base text-[#505050]">{item.label}</span>
                   )}
                 </a>
               ))}
@@ -113,11 +150,11 @@ const Sidebar = () => {
           >
             {!isCollapsed && (
               <>
-                <span className="text-sm text-gray-600 font-medium">서비스</span>
+                <span className="text-sm text-[#767676] font-medium">서비스</span>
                 {expandedSections.service ? (
-                  <ChevronDown className="w-4 h-4 text-gray-400" />
+                  <ChevronDown className="w-5 h-5 text-[#767676]" />
                 ) : (
-                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                  <ChevronRight className="w-5 h-5 text-[#767676]" />
                 )}
               </>
             )}
@@ -132,9 +169,9 @@ const Sidebar = () => {
                   href={item.href}
                   className="flex items-center px-4 py-2.5 hover:bg-gray-50 transition-colors group"
                 >
-                  <item.icon className="w-5 h-5 text-gray-600 flex-shrink-0" />
+                  <item.icon className="w-6 h-6 text-[#505050] flex-shrink-0" />
                   {!isCollapsed && (
-                    <span className="ml-3 text-sm text-gray-700">{item.label}</span>
+                    <span className="ml-3 text-base text-[#505050]">{item.label}</span>
                   )}
                 </a>
               ))}
@@ -145,27 +182,62 @@ const Sidebar = () => {
 
       {/* User Info */}
       <div className="border-t border-gray-200 p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center min-w-0">
-            <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0">
-              <User className="w-5 h-5 text-white" />
-            </div>
+        {isLoadingUser ? (
+          <div className="flex items-center">
+            <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse flex-shrink-0" />
             {!isCollapsed && (
-              <span className="ml-3 text-sm text-gray-700 font-medium truncate">
-                10418 정우진
-              </span>
+              <div className="ml-3 h-4 bg-gray-200 rounded w-24 animate-pulse" />
             )}
           </div>
-          {!isCollapsed && (
-            <button className="p-1 hover:bg-gray-100 rounded transition-colors flex-shrink-0">
-              <LogOut className="w-4 h-4 text-gray-600" />
-            </button>
-          )}
-        </div>
+        ) : userInfo ? (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center min-w-0">
+              {userInfo.avatarUrl ? (
+                <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 relative">
+                  <Image
+                    src={userInfo.avatarUrl}
+                    alt={userInfo.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0">
+                  <User className="w-5 h-5 text-white" />
+                </div>
+              )}
+              {!isCollapsed && (
+                <span className="ml-3 text-sm text-gray-700 font-medium truncate">
+                  {userInfo.name}
+                </span>
+              )}
+            </div>
+            {!isCollapsed && (
+              <button 
+                onClick={handleLogout}
+                className="p-1 hover:bg-gray-100 rounded transition-colors flex-shrink-0"
+              >
+                <LogOut className="w-6 h-6 text-gray-600" />
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center min-w-0">
+              <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0">
+                <User className="w-5 h-5 text-white" />
+              </div>
+              {!isCollapsed && (
+                <span className="ml-3 text-sm text-gray-700 font-medium truncate">
+                  로그인 필요
+                </span>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 };
-
 
 export default Sidebar;

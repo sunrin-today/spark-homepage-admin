@@ -2,8 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { ChevronLeft, Upload, X } from 'lucide-react';
+import { ChevronLeft, X, File } from 'lucide-react';
 import { noticesApi } from '@/lib/api/notice';
+import { InputWrapper } from '@/components/ui/input/InputWrapper';
+import BaseInput from '@/components/ui/input/Input';
+import { TextareaInput } from '@/components/ui/input/TextareaInput';
+import { DetailImageGrid } from '@/components/image/DetailImageGrid';
+import { FormImageListItem } from '@/lib/types/common';
 
 const MAX_IMAGES = 10;
 const MAX_CONTENT_LENGTH = 300;
@@ -18,7 +23,7 @@ export default function NoticeEditPage() {
   const [formData, setFormData] = useState({
     title: '',
     content: '',
-    images: [] as string[],
+    images: [] as FormImageListItem[],
   });
 
   useEffect(() => {
@@ -28,7 +33,12 @@ export default function NoticeEditPage() {
         setFormData({
           title: data.title || '',
           content: data.content || '',
-          images: getImages(data.images),
+          images:
+            data.imageUrls?.map((url) => ({
+              id: crypto.randomUUID(),
+              type: 'exists' as const,
+              url,
+            })) || [],
         });
       } catch (error) {
         console.error('Failed to fetch notice:', error);
@@ -43,52 +53,6 @@ export default function NoticeEditPage() {
       fetchNotice();
     }
   }, [noticeId, router]);
-
-  // 이미지 배열 파싱
-  const getImages = (images?: string | string[]): string[] => {
-    if (!images) return [];
-    if (Array.isArray(images)) return images;
-    if (typeof images === 'string') {
-      try {
-        const parsed = JSON.parse(images);
-        return Array.isArray(parsed) ? parsed : [images];
-      } catch {
-        return images.split(',').map((img) => img.trim()).filter(Boolean);
-      }
-    }
-    return [];
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-
-    const remainingSlots = MAX_IMAGES - formData.images.length;
-    if (remainingSlots <= 0) {
-      alert(`이미지는 최대 ${MAX_IMAGES}개까지 업로드할 수 있습니다.`);
-      return;
-    }
-
-    const filesToProcess = Array.from(files).slice(0, remainingSlots);
-
-    filesToProcess.forEach((file) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prev) => ({
-          ...prev,
-          images: [...prev.images, reader.result as string],
-        }));
-      };
-      reader.readAsDataURL(file);
-    });
-  };
-
-  const handleRemoveImage = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index),
-    }));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -111,11 +75,42 @@ export default function NoticeEditPage() {
     setSubmitting(true);
 
     try {
-      await noticesApi.updateNotice(noticeId, {
+      // 기존 이미지 url 배열
+      const existingImages = formData.images
+        .filter((img): img is Extract<FormImageListItem, { type: 'exists' }> => 
+          img.type === 'exists'
+        )
+        .map((img) => img.url);
+
+      // 새 이미지를 base64로 변환
+      const newImagePromises = formData.images
+        .filter((img): img is Extract<FormImageListItem, { type: 'new' }> => 
+          img.type === 'new'
+        )
+        .map((img) => {
+          return new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(img.file);
+          });
+        });
+
+      const newBase64Images = await Promise.all(newImagePromises);
+
+      // 기존 이미지 + 새 이미지 합치기
+      const allImages = [...existingImages, ...newBase64Images];
+
+      const requestData: any = {
         title: formData.title,
         content: formData.content,
-        images: formData.images,
-      });
+      };
+
+      if (allImages.length > 0) {
+        requestData.images = allImages;
+      }
+
+      await noticesApi.updateNotice(noticeId, requestData);
 
       alert('수정되었습니다.');
       router.push(`/notice/${noticeId}`);
@@ -150,102 +145,45 @@ export default function NoticeEditPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm text-gray-600 mb-2">제목</label>
-            <input
-              type="text"
+          <InputWrapper label="제목" htmlFor="title">
+            <BaseInput
+              name="title"
               value={formData.title}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, title: e.target.value }))
+              onChange={(value) =>
+                setFormData((prev) => ({ ...prev, title: value }))
               }
               placeholder="제목을 입력해주세요..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400 transition-colors"
+              required
             />
-          </div>
+          </InputWrapper>
 
-          <div>
-            <label className="block text-sm text-gray-600 mb-3">
-              이미지 추가하기
-            </label>
-            <div className="grid grid-cols-2 gap-4">
-              {formData.images.map((image, index) => (
-                <div
-                  key={index}
-                  className="relative aspect-[16/10] rounded-lg overflow-hidden bg-gray-900 group"
-                >
-                  <img
-                    src={image}
-                    alt={`업로드 이미지 ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col items-center justify-center text-white">
-                    <Upload className="w-6 h-6 mb-2" />
-                    <span className="text-sm">
-                      클릭하거나 드래그하여 파일을 업로드해주세요.
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveImage(index)}
-                    className="absolute top-2 right-2 p-1 bg-black bg-opacity-50 rounded-full hover:bg-opacity-70 transition-all opacity-0 group-hover:opacity-100"
-                  >
-                    <X className="w-4 h-4 text-white" />
-                  </button>
-                </div>
-              ))}
+          <InputWrapper label="이미지" htmlFor="images">
+            <DetailImageGrid
+              value={formData.images}
+              onChange={(images) =>
+                setFormData((prev) => ({ ...prev, images }))
+              }
+              max={MAX_IMAGES}
+            />
+          </InputWrapper>
 
-              {formData.images.length < MAX_IMAGES && (
-                <label className="relative aspect-[16/10] border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors cursor-pointer flex flex-col items-center justify-center bg-gray-50">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                  <Upload className="w-6 h-6 text-gray-400 mb-2" />
-                  <span className="text-sm text-gray-500">
-                    클릭하거나 드래그하여 파일을 업로드해주세요.
-                  </span>
-                </label>
-              )}
-            </div>
-            <p className="text-xs text-gray-500 mt-2">
-              * 최대 {MAX_IMAGES}개의 이미지를 업로드할 수 있습니다.
-            </p>
-          </div>
-
-          <div className="relative">
-            <label className="block text-sm text-gray-600 mb-2">설명</label>
-            <div className="relative">
-              <textarea
-                value={formData.content}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, content: e.target.value }))
-                }
-                placeholder="설명을 입력해주세요..."
-                rows={6}
-                maxLength={MAX_CONTENT_LENGTH}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400 transition-colors resize-none"
-              />
-              {formData.content && (
-                <button
-                  type="button"
-                  onClick={() =>
-                    setFormData((prev) => ({ ...prev, content: '' }))
-                  }
-                  className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              )}
-            </div>
+          <InputWrapper label="설명" htmlFor="content">
+            <TextareaInput
+              name="content"
+              value={formData.content}
+              onChange={(value) =>
+                setFormData((prev) => ({ ...prev, content: value }))
+              }
+              placeholder="설명을 입력해주세요..."
+              required
+              maxLength={MAX_CONTENT_LENGTH}
+            />
             <div className="text-center mt-2">
               <span className="text-sm text-gray-500">
                 {formData.content.length} / {MAX_CONTENT_LENGTH}
               </span>
             </div>
-          </div>
+          </InputWrapper>
 
           <div className="flex justify-end gap-3 pt-4">
             <button
@@ -259,10 +197,12 @@ export default function NoticeEditPage() {
             </button>
             <button
               type="submit"
-              className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
+              className={`px-6 py-3 ${
+                submitting ? 'bg-black/50 cursor-not-allowed' : 'bg-black'
+              } text-white rounded-lg flex items-center gap-2`}
               disabled={submitting}
             >
-              <span className="text-lg">💾</span>
+              <File className="w-5 h-5" />
               {submitting ? '저장 중...' : '저장'}
             </button>
           </div>

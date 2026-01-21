@@ -8,54 +8,45 @@ import { TextareaInput } from "@/components/ui/input/TextareaInput";
 import BaseInput from "@/components/ui/input/Input";
 import Toggle from "@/components/ui/input/Toggle";
 import { X, File } from "lucide-react";
-import { validateEventLink } from "@/utils/events";
-import {EventFormState, EventFormProps} from "@/lib/types/events";
+import {LostFormState, LostFormProps} from "@/lib/types/losts";
+import { buildCreatePayload, buildUpdatePayload } from "@/utils/events";
 import { DetailImageGrid } from "@/components/image/DetailImageGrid";
 import { FormImageListItem } from "@/lib/types/common";
-export default function EventForm(props: EventFormProps) {
+export default function LostForm(props: LostFormProps) {
 
   const { mode, mutation, isPending, submitText = "저장" } = props;
 
-  const [formData, setFormData] = useState<EventFormState>(() => {
+  const [formData, setFormData] = useState<LostFormState>(() => {
     if (mode === "update") {
       const { initialData } = props;
 
       console.log("initialData", initialData);
       return {
-        name: initialData.name,
+        title: initialData.title,
         description: initialData.description,
-        startedAt: initialData.startedAt,
-        deadline: initialData.deadline,
-        link: initialData.link,
-        isLinkOn: initialData.isLinkOn ?? true,
-
-        thumbnail: null, // 새로 선택 안 하면 null
-        existingThumbnailUrl: initialData.thumbnail.url,
-
-        detailImages: initialData.detailImages.map((image) => ({
-          type: "exists",
-          url: image.url,
+        location: initialData.location,
+        foundDate: initialData.foundDate,
+        status: initialData.status,
+        thumbnail: null,
+        existingThumbnailUrl: initialData.thumbnailUrl?.url || "",
+        detailImages: initialData.detailImageUrls?.map((img) => ({
+          url: img.url,
+          index: img.index,
           id: crypto.randomUUID(),
-        })),
+        })) || [],
       };
     }
 
     // create 모드
     return {
-      name: "",
+      title: "",
       description: "",
-      startedAt: new Date().toISOString().split("T")[0],
-      deadline: new Date(
-        Date.now() + 7 * 24 * 60 * 60 * 1000 // 일주일 뒤
-      )
-        .toISOString()
-        .split("T")[0],
-      link: "",
-      isLinkOn: false,
-
+      location: "",
+      foundDate: new Date().toISOString().split("T")[0],
+      status: "LOST",
       thumbnail: null,
       detailImages: [],
-    };
+      };
   });
   
   useEffect(() => {
@@ -103,22 +94,24 @@ export default function EventForm(props: EventFormProps) {
       return;
     }
     if (mode === "create") {
-        mutation(formData);
+        mutation(buildCreatePayload(formData));
         return;
     }
-    mutation(formData);
+    mutation(
+        buildUpdatePayload(formData, props.initialData.detailImages ?? [])
+    );
   };
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 px-2 py-3">
-      <InputWrapper label="썸네일 이미지" htmlFor="thumbnail" className="max-w-[400px]">
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <InputWrapper label="썸네일 이미지" htmlFor="thumbnail">
         <SingleImageField 
-            name="thumbnail"
             onChange={setThumbnail}
             onRemove={() => setThumbnail(null)}
             preview={formData.existingThumbnailUrl || null} 
         />
       </InputWrapper>
-      <InputWrapper label="제목" htmlFor="name" className="max-w-[400px]">
+
+      <InputWrapper label="제목" htmlFor="name">
         <BaseInput
           name="name"
           value={formData.name}
@@ -129,28 +122,25 @@ export default function EventForm(props: EventFormProps) {
           required
         />
       </InputWrapper>
-      
-      <div className="flex flex-col xl:flex-row gap-6">
-        <InputWrapper label="시작일" htmlFor="startedAt" className="max-w-[400px]">
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <InputWrapper label="시작일" htmlFor="startedAt">
           <DateInput
-            name="startedAt"
             value={formData.startedAt}
             onChange={date => handleDateChange(date, "startedAt")}
           />
         </InputWrapper>
 
-        <InputWrapper label="종료일" htmlFor="deadline" className="max-w-[400px]">
+        <InputWrapper label="종료일" htmlFor="deadline">
           <DateInput
-            name="deadline"
             value={formData.deadline}
             onChange={date => handleDateChange(date, "deadline")}
           />
         </InputWrapper>
       </div>
 
-      <InputWrapper label="이벤트 참여 시작" htmlFor="isLinkOn" className="max-w-[400px]">
+      <InputWrapper label="이벤트 참여 시작" htmlFor="isLinkOn">
         <Toggle
-          name="isLinkOn"
           checked={formData.isLinkOn}
           onChange={checked =>
             setFormData(prev => ({ ...prev, isLinkOn: checked }))
@@ -158,7 +148,7 @@ export default function EventForm(props: EventFormProps) {
         />
       </InputWrapper>
 
-      <InputWrapper label="이벤트 참여 링크" htmlFor="link" className="max-w-[400px]">
+      <InputWrapper label="이벤트 참여 링크" htmlFor="link">
         <BaseInput
           name="link"
           value={formData.link}
@@ -170,14 +160,14 @@ export default function EventForm(props: EventFormProps) {
         />
       </InputWrapper>
 
-      <InputWrapper label="상세 이미지" className="max-w-[810px]">
+      <InputWrapper label="상세 이미지" htmlFor="detailImages">
         <DetailImageGrid
           value={formData.detailImages}
           onChange={setDetailImages}
         />
       </InputWrapper>
 
-      <InputWrapper label="설명" htmlFor="description" className="max-w-[400px]">
+      <InputWrapper label="설명" htmlFor="description">
         <TextareaInput
           name="description"
           value={formData.description}

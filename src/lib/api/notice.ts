@@ -1,5 +1,6 @@
 import { Notice, NoticeListResponse, NoticeDetailResponse } from '@/lib/types/notice';
 import api from './api';
+import { AxiosError } from 'axios';
 
 // api 응답을 ui 타입으로 변환
 const transformNoticeFromApi = (apiNotice: NoticeDetailResponse): Notice => {
@@ -7,20 +8,21 @@ const transformNoticeFromApi = (apiNotice: NoticeDetailResponse): Notice => {
     id: apiNotice.id,
     title: apiNotice.title,
     content: apiNotice.content,
-    author: 'Admin', // api에 author 필드가 없어서 일단 기본값 설정
+    author: apiNotice.author?.name || 'Admin',
     createdAt: apiNotice.createdAt,
     updatedAt: apiNotice.updatedAt,
     viewCount: apiNotice.viewCount,
     views: apiNotice.viewCount,
     images: apiNotice.images,
-    imageUrl: apiNotice.images,
+    // api의 images 객체 배열을 url 문자열 배열로 변환
+    imageUrls: apiNotice.images?.map(img => img.url) || [],
   };
 };
 
 interface CreateNoticeData {
   title: string;
   content: string;
-  images?: string[];
+  images?: string[]; // 요청 시에는 string 배열 (base64 or url)
 }
 
 interface UpdateNoticeData {
@@ -35,7 +37,6 @@ export const noticesApi = {
       const response = await api.get<NoticeListResponse>('/api/notice');
       const data = response.data;
       
-      // items 배열을 ui 타입으로 변환
       return data.items.map(transformNoticeFromApi);
     } catch (error) {
       console.error('Failed to fetch notices:', error);
@@ -55,17 +56,48 @@ export const noticesApi = {
 
   createNotice: async (data: CreateNoticeData): Promise<Notice> => {
     try {
-      const response = await api.post<NoticeDetailResponse>('/api/notice', data);
+      console.log('Creating notice with data:', data);
+      
+      // FormData 생성
+      const formData = new FormData();
+      formData.append('title', data.title);
+      formData.append('content', data.content);
+      
+      // images 있으면 추가(base64 문자열 배열)
+      if (data.images && data.images.length > 0) {
+        data.images.forEach((image) => {
+          formData.append('images', image);
+        });
+      }
+      
+      console.log('Sending FormData to server');
+      
+      const response = await api.post<NoticeDetailResponse>(
+        '/api/notice', 
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      
+      console.log('Notice created successfully:', response.data);
       return transformNoticeFromApi(response.data);
     } catch (error) {
       console.error('Failed to create notice:', error);
+      
+      if (error instanceof AxiosError) {
+        console.error('Error response:', error.response?.data);
+        console.error('Error status:', error.response?.status);
+      }
       throw error;
     }
-  },
+},
 
   updateNotice: async (id: string, data: UpdateNoticeData): Promise<Notice> => {
     try {
-      const response = await api.patch<NoticeDetailResponse>(`/api/notice/${id}`, data);
+      const response = await api.patch<NoticeDetailResponse>(`/notice/${id}`, data);
       return transformNoticeFromApi(response.data);
     } catch (error) {
       console.error('Failed to update notice:', error);

@@ -17,10 +17,10 @@ interface ActionBarProps {
 
 const ActionBar: React.FC<ActionBarProps> = ({ title, items }) => {
   return (
-    <div className="w-full max-w-3xl mx-auto rounded-2xl border border-[#DEDEDE] overflow-hidden bg-white shadow-sm">
+    <div className="w-full max-w-3xl mx-auto rounded-2xl border border-[#DEDEDE] overflow-hidden bg-white">
       {/* 제목 */}
-      <div className="px-6 py-4 bg-white border-b border-[#DEDEDE]">
-        <h3 className="text-lg font-normal text-[#767676]">{title}</h3>
+      <div className="px-6 py-3 bg-white border-b border-[#DEDEDE]">
+        <h3 className="text-sm font-normal text-[#767676]">{title}</h3>
       </div>
 
       {/* 액션 아이템 */}
@@ -40,7 +40,7 @@ const ActionBar: React.FC<ActionBarProps> = ({ title, items }) => {
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = item.backgroundColor || '#FFFFFF';
             }}
-            className="w-full px-6 py-5 flex items-center gap-4 transition-colors"
+            className="w-full px-6 py-3 flex items-center gap-4 transition-colors"
           >
             <span
               style={{
@@ -50,7 +50,7 @@ const ActionBar: React.FC<ActionBarProps> = ({ title, items }) => {
               {item.icon}
             </span>
             <span
-              className="text-xl font-normal"
+              className="text-base font-normal"
               style={{
                 color: item.textColor || '#000000',
               }}

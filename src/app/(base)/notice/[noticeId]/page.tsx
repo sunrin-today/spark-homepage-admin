@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { ChevronLeft, MoreVertical, Trash2, Edit } from 'lucide-react';
 import { noticesApi } from '@/lib/api/notice';
-import { Notice } from '@/lib/types/notice';
+import { Notice, NoticeImage } from '@/lib/types/notice';
 
 export default function NoticeDetailPage() {
   const router = useRouter();
@@ -73,18 +73,19 @@ export default function NoticeDetailPage() {
     setIsMenuOpen(false);
   };
 
-  // 이미지 배열 파싱
-  const getImages = (images?: string | string[]): string[] => {
-    if (!images) return [];
-    if (Array.isArray(images)) return images;
-    if (typeof images === 'string') {
-      try {
-        const parsed = JSON.parse(images);
-        return Array.isArray(parsed) ? parsed : [images];
-      } catch {
-        return images.split(',').map(img => img.trim()).filter(Boolean);
+  // 이미지 배열 파싱 - NoticeImage[] 또는 string[] 또는 imageUrls 처리
+  const getImages = (notice: Notice): string[] => {
+    // imageUrls가 있으면 우선 사용
+    if (notice.imageUrls && Array.isArray(notice.imageUrls)) {
+      return notice.imageUrls;
+    }
+    
+    if (notice.images && Array.isArray(notice.images)) {
+      if (notice.images.length > 0 && typeof notice.images[0] === 'object' && 'url' in notice.images[0]) {
+        return notice.images.map(img => img.url);
       }
     }
+    
     return [];
   };
 
@@ -104,7 +105,7 @@ export default function NoticeDetailPage() {
     );
   }
 
-  const imageList = getImages(notice.images);
+  const imageList = getImages(notice);
 
   return (
     <div className="min-h-screen bg-white">

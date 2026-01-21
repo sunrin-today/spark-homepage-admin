@@ -41,14 +41,14 @@ export interface EventUpdateForm {
 export type EventFormProps =
   | {
       mode: "create";
-      mutation: (data: EventCreateForm) => void;
+      mutation: (data: EventFormState) => void;
       isPending?: boolean;
       submitText?: string;
     }
   | {
       mode: "update";
       initialData: Event; // 서버에서 받은 이벤트   
-      mutation: (data: EventUpdateForm) => void;
+      mutation: (data: EventFormState) => void;
       isPending?: boolean;
       submitText?: string;
     };

@@ -31,7 +31,7 @@ export default function MeetingRoomDetail() {
                   <span 
                     className={`inline-flex items-center p-2 rounded-full text-xs font-medium 
                     ${meetingRoomData?.status === 0 ? 'bg-toggle-checked' 
-                    : meetingRoomData?.status === 1 ? 'bg-black' 
+                    : meetingRoomData?.status === 1 ? 'bg-darkgray' 
                     : 'bg-[#FFE284]'}`}
                   />
                   <span>
