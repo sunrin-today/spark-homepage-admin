@@ -84,25 +84,29 @@ const Sidebar = () => {
 
   return (
     <div 
-      className={`h-full bg-white border-r border-gray-200 flex flex-col transition-all duration-300 ${
+      className={`h-full bg-white border-r-2 border-[#EEEEEE] flex flex-col transition-all duration-300 ${
         isCollapsed ? 'w-16' : 'w-72'
       }`}
     >
       {/* Header */}
-      <div className="h-16 border-b border-gray-200 flex items-center justify-between px-4">
-        {!isCollapsed && (
-          <h1 className="text-base font-semibold text-black">관리 페이지</h1>
-        )}
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          {isCollapsed ? (
-            <PanelLeftOpen className="w-6 h-6 text-[#767676]" />
-          ) : (
-            <PanelLeftClose className="w-6 h-6 text-[#767676]" />
+      <div className="h-16 flex flex-col justify-center px-4">
+        <div className="flex items-center justify-between">
+          {!isCollapsed && (
+            <h1 className="text-base font-semibold text-black">관리 페이지</h1>
           )}
-        </button>
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            {isCollapsed ? (
+              <PanelLeftOpen className="w-6 h-6 text-[#767676]" />
+            ) : (
+              <PanelLeftClose className="w-6 h-6 text-[#767676]" />
+            )}
+          </button>
+        </div>
+
+        <div className="mt-3 h-px w-[268px] bg-[#EBEBEB] self-center" />
       </div>
 
       {/* Navigation */}
@@ -181,7 +185,8 @@ const Sidebar = () => {
       </div>
 
       {/* User Info */}
-      <div className="border-t border-gray-200 p-4">
+      <div className="p-4 flex flex-col">
+        <div className="mb-3 h-px w-[268px] bg-[#EBEBEB] self-center" />
         {isLoadingUser ? (
           <div className="flex items-center">
             <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse flex-shrink-0" />
@@ -213,7 +218,7 @@ const Sidebar = () => {
               )}
             </div>
             {!isCollapsed && (
-              <button 
+              <button
                 onClick={handleLogout}
                 className="p-1 hover:bg-gray-100 rounded transition-colors flex-shrink-0"
               >
