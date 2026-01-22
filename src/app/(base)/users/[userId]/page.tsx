@@ -107,11 +107,6 @@ const UserDetailPage = () => {
         return <span>{date.getFullYear()}년 {date.getMonth() + 1}월 {date.getDate()}일</span>;
       },
     },
-    {
-      header: "액션",
-      width: "80px",
-      render: () => <span>...</span>,
-    },
   ];
 
   const lostColumns: Column<Lost>[] = [
@@ -136,11 +131,6 @@ const UserDetailPage = () => {
       isSortable: true,
       width: "250px",
       render: (lost) => <span>{lost.location}</span>,
-    },
-    {
-      header: "액션",
-      width: "80px",
-      render: () => <span>...</span>,
     },
   ];
 

@@ -153,7 +153,15 @@ const UsersPage = () => {
             data={data.items}
             sort={sort}
             onSortChange={onSortChange}
-            onRowClick={(user: User) => router.push(`/users/${user.id}`)}
+            onRowClick={(user: User) => {
+              const params = new URLSearchParams({
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                ...(user.avatarUrl && { avatarUrl: user.avatarUrl })
+              });
+              router.push(`/users/${user.id}?${params.toString()}`);
+            }}
           />
 
           <Pagination
