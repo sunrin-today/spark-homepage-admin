@@ -1,15 +1,14 @@
-
 import { User } from "./users";
 
 export type ChargerRentalRecord = {
     id: string;
     chargerId: number;
     isReturned: boolean;
-    isConfirmed: boolean;
     borrower: User;
-    reviewer: User;
+    reviewer: User | null;
     deadline: string;
     createdAt: string;
+    returnedAt?: string;
 };
 
 export type Charger = {
@@ -19,3 +18,10 @@ export type Charger = {
     status: string;
     currentRentalRecord: ChargerRentalRecord | null;
 };
+
+export interface ChargerRecordListResponse {
+    items: ChargerRentalRecord[];
+    total: number;
+    currentPage: number;
+    totalPages: number;
+}

@@ -1,31 +1,34 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { SearchBar } from "@/components/common/search/SearchBar";
 import { DataTable } from "@/components/common/table/DataTable";
 import Pagination from "@/components/common/pagination/Pagination";
 import ActionBarTrigger from "@/components/common/action/ActionBarTrigger";
 import PageHeader from "@/components/layout/page/PageHeader";
-import { useUsersQuery } from "@/lib/queries/users/quaries";
-import { useDeleteUserMutation, useUpdateUserMutation } from "@/lib/queries/users/mutations";
+import { useUsersQuery } from "@/lib/queries/users/queries";
+import { useDeleteUserMutation } from "@/lib/queries/users/mutations";
 import { useTableSort } from "@/lib/hooks/useTableSort";
 import { usePaginationQuery } from "@/lib/hooks/usePaginationQuery";
 import { Column } from "@/lib/types/table";
 import { User } from "@/lib/types/users";
-import { Edit, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { ActionBarItem } from "@/components/common/action/ActionBar";
 
 const ITEMS_PER_PAGE = 5;
 
 const UsersPage = () => {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [query, setQuery] = useState("");
   
   const { page, setPage } = usePaginationQuery("page", 1);
-  const { sort, onSortChange } = useTableSort({ key: "name", order: "ASC" });
+  const { sort, onSortChange } = useTableSort({ key: "email", order: "DESC" });
   
   const deleteUserMutation = useDeleteUserMutation();
 
+  // 사용자 목록 조회
   const { data, isLoading } = useUsersQuery({
     page,
     limit: ITEMS_PER_PAGE,
@@ -40,6 +43,7 @@ const UsersPage = () => {
     setPage(1); // 검색 시 첫 페이지로
   };
 
+  // 사용자 삭제
   const handleDelete = async (userId: string) => {
     if (confirm("정말 삭제하시겠습니까?")) {
       try {
@@ -117,7 +121,11 @@ const UsersPage = () => {
           },
         ];
 
-        return <ActionBarTrigger title="액션" items={actionItems} vertical />;
+        return (
+          <div onClick={(e) => e.stopPropagation()}>
+            <ActionBarTrigger title="액션" items={actionItems} vertical />
+          </div>
+        );
       },
     },
   ];
@@ -145,6 +153,7 @@ const UsersPage = () => {
             data={data.items}
             sort={sort}
             onSortChange={onSortChange}
+            onRowClick={(user: User) => router.push(`/users/${user.id}`)}
           />
 
           <Pagination

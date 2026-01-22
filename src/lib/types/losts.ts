@@ -62,3 +62,10 @@ export type LostFormState = {
   
   detailImages: FormImageListItem[];
 };
+
+export interface LostListResponse {
+  items: Lost[];
+  total: number;
+  currentPage: number;
+  totalPages: number;
+}

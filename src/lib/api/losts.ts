@@ -77,5 +77,18 @@ const lostsApi = {
         const response = await api.delete(`/api/lost/${id}`);
         return response.data;
     },
+
+    getUserCollectedLosts: async (
+        userId: string,
+        params: {
+            page?: number;
+            limit?: number;
+            column?: string;
+            orderDirection?: "ASC" | "DESC";
+        }
+    ) => {
+        const response = await api.get(`/api/lost/user/${userId}/collected`, { params });
+        return response.data;
+    },
 }
 export default lostsApi;
