@@ -1,10 +1,14 @@
+"use client";
+
 import { useState, useRef, useEffect } from "react";
+import { useFloating, offset, shift, useClick, useDismiss, useInteractions } from "@floating-ui/react";
 import { CalendarDaysIcon } from "lucide-react";
 import BaseInput from "./Input";
-import { formatKoreanDate } from "@/utils/date";
+import { formatKoreanDate, formatKoreanDateFromDate } from "@/utils/date";
+import { DatePicker } from "./DatePicker";
 
 interface DateInputProps {
-  value: string;
+  value: string | undefined;
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
@@ -18,34 +22,62 @@ export const DateInput = ({
   className = "",
   name,
 }: DateInputProps) => {
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const { refs, floatingStyles, context } = useFloating({
+    open: isOpen,
+    onOpenChange: setIsOpen,
+    placement: "bottom-start",
+    middleware: [offset(8), shift()],
+  });
 
-  const handleInputClick = () => {
-    setIsCalendarOpen(true);
-    // TODO: 캘린더 열기
+  const click = useClick(context);
+  const dismiss = useDismiss(context);
+
+  const { getReferenceProps, getFloatingProps } = useInteractions([
+    click,
+    dismiss,
+  ]);
+
+  const handleDateSelect = (date: Date) => {
+    const formattedDate = formatKoreanDateFromDate(date);
+    onChange(formattedDate);
+    setIsOpen(false);
   };
-
-//   const handleDateSelect = (selectedDate: Date) => {
-//     const formattedDate = selectedDate.toISOString().split("T")[0]; 
-//     // YYYY-MM-DD format
-//     onChange(formattedDate);
-//     setIsCalendarOpen(false);
-//   };
+ useEffect(() => {
+  console.log(value);
+ }, [value])
 
   return (
-      <div onClick={handleInputClick} className="w-full relative cursor-pointer">
+    <div className="relative w-full">
+      <div ref={refs.setReference} {...getReferenceProps()}>
         <BaseInput
           name={name}
-          leftIcon={<CalendarDaysIcon size={20}/>}
-          value={formatKoreanDate(value)}
-          onChange={() => {}} // Read-only
+          leftIcon={<CalendarDaysIcon size={20} />}
+          value={value ? formatKoreanDate(value) : ""}
+          onChange={onChange} // Read-only
           placeholder={placeholder}
-          readOnly
+          required={true}
           className={className}
           ref={inputRef}
+          noChange={true}
         />
       </div>
+      {isOpen && (
+        <div
+          ref={refs.setFloating}
+          style={floatingStyles}
+          {...getFloatingProps()}
+          className="z-50 bg-white rounded-lg border border-[#C3C3C3]"
+        >
+          <DatePicker 
+            selectedDate={value ? new Date(value) : new Date()}
+            onDateSelect={handleDateSelect}
+            onCancel={() => setIsOpen(false)}
+          />
+        </div>
+      )}
+    </div>
   );
 };

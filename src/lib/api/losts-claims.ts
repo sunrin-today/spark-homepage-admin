@@ -4,8 +4,15 @@ import { ListResponse } from "../types/common";
 import { LostClaim } from "../types/lostClaims";
 
 const lostClaimApi = {
-    getLostClaimsByLostId: async (lostId: string) => {
-        const response = await api.get<ListResponse<LostClaim>>(`/api/lost-claims/lost/${lostId}`);
+    getLostClaimsByLostId: async (lostId: string, page: number = 1, limit: number = 10, column?: string, orderDirection?: string) => {
+        const response = await api.get<ListResponse<LostClaim>>(`/api/lost-claims/lost/${lostId}`, {
+            params: {
+                page,
+                limit,
+                column,
+                orderDirection,
+            },
+        });
         return response.data;
     },
     getMyLostClaims: async () => {

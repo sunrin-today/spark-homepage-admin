@@ -18,12 +18,14 @@ type Props = {
   title?: string;
   items: ActionBarItem[];
   vertical?: boolean;
+  actionButton?: React.ReactNode;
 };
 
 export default function ActionBarTrigger({
   title = "액션",
   items,
   vertical = false,
+  actionButton,
 }: Props) {
   const [open, setOpen] = useState(false);
 
@@ -41,7 +43,14 @@ export default function ActionBarTrigger({
   return (
     <>
       <div ref={refs.setReference} {...getReferenceProps()}>
-        {vertical ? (
+        {actionButton ? (
+          <div onClick={(e) => {
+            e.stopPropagation();
+            setOpen((v) => !v);
+          }}>
+            {actionButton}
+          </div>
+        ) : vertical ? (
           <EllipsisVertical
             className="w-5 h-5 cursor-pointer text-gray"
             onClick={(e) => {

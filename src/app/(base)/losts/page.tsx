@@ -21,7 +21,7 @@ export default function LostsPage() {
                 <SearchBar
                 value={searchValue}
                 onChangeText={setSearchValue}
-                onSubmit={setSearchValue}
+                onSubmit={setSearchQuery}
                 placeholder="검색어를 입력해주세요..."
                 />
                  <div className="flex flex-col gap-3">

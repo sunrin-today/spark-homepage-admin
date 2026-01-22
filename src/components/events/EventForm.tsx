@@ -12,15 +12,15 @@ import { validateEventLink } from "@/utils/events";
 import {EventFormState, EventFormProps} from "@/lib/types/events";
 import { DetailImageGrid } from "@/components/image/DetailImageGrid";
 import { FormImageListItem } from "@/lib/types/common";
+
 export default function EventForm(props: EventFormProps) {
 
-  const { mode, mutation, isPending, submitText = "저장" } = props;
+  const { mode, mutation, isPending, submitText = "저장", error } = props;
 
   const [formData, setFormData] = useState<EventFormState>(() => {
     if (mode === "update") {
       const { initialData } = props;
 
-      console.log("initialData", initialData);
       return {
         name: initialData.name,
         description: initialData.description,
@@ -192,6 +192,7 @@ export default function EventForm(props: EventFormProps) {
       </InputWrapper>
 
       <div className="flex justify-end gap-3 pt-4 text-sm">
+        {error ? <div className="text-error">{error}</div> : null}
         <button
           type="button"
           onClick={() => window.history.back()}

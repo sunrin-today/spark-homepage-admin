@@ -36,8 +36,8 @@ export const TextareaInput = ({
   return (
     <div className="relative w-full">
       <textarea 
-        className="w-full h-40 bg-white border border-inputborder rounded-lg py-[16px] px-[20px] pr-[60px]
-        resize-none outline-none focus:border-2 focus:ring-0"
+        className="w-full h-40 bg-white border border-inputborder rounded-lg py-4 px-5 pr-[60px]
+        resize-none outline-none focus:border-2 focus:ring-0 text-base font-medium"
         value={value} 
         onChange={handleChange} 
         placeholder={placeholder}

@@ -26,7 +26,7 @@ export function Modal({
         onClick={(e) => e.stopPropagation()}
       >
         {title && (
-          <div className="px-6 py-4 border-b border-gray-200">
+          <div className="px-6 py-4">
             <h3 className="text-lg font-medium text-gray-900">{title}</h3>
           </div>
         )}

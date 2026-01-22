@@ -12,13 +12,12 @@ import { DetailImageGrid } from "@/components/image/DetailImageGrid";
 import { FormImageListItem } from "@/lib/types/common";
 export default function LostForm(props: LostFormProps) {
 
-  const { mode, mutation, isPending, submitText = "저장" } = props;
+  const { mode, mutation, isPending, submitText = "저장", error } = props;
 
   const [formData, setFormData] = useState<LostFormState>(() => {
     if (mode === "update") {
       const { initialData } = props;
 
-      console.log("initialData", initialData);
       return {
         title: initialData.title,
         description: initialData.description,
@@ -159,6 +158,8 @@ export default function LostForm(props: LostFormProps) {
       </InputWrapper>
 
       <div className="flex justify-end gap-3 pt-4 text-sm">
+          
+        {error ? <div className="text-error">{error}</div> : null}
         <button
           type="button"
           onClick={() => window.history.back()}

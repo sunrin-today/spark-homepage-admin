@@ -42,12 +42,14 @@ export type EventFormProps =
   | {
       mode: "create";
       mutation: (data: EventFormState) => void;
+      error?: string;
       isPending?: boolean;
       submitText?: string;
     }
   | {
       mode: "update";
       initialData: Event; // 서버에서 받은 이벤트   
+      error?: string;
       mutation: (data: EventFormState) => void;
       isPending?: boolean;
       submitText?: string;

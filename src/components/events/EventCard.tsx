@@ -1,12 +1,11 @@
 import { GetRemainingDays } from "@/utils/date";
-import { Edit, Trash2 } from "lucide-react";
+import { Trash2, Pencil } from "lucide-react";
 import Image from "next/image";
 import { Event } from "@/lib/types/events";
 import { useRouter } from "next/navigation";
 import { useDeleteEvent } from "@/lib/queries/events/mutations";
 import { ActionBarItem } from "../common/action/ActionBar";
 import ActionBarTrigger from "../common/action/ActionBarTrigger";
-
 
 export const EventCard = ({event}: {event: Event}) => {
   const router = useRouter();
@@ -16,13 +15,13 @@ export const EventCard = ({event}: {event: Event}) => {
   {
     icon: <Trash2 size={24} />,
     label: '삭제',
-    backgroundColor: '#F9F9F9',
+    backgroundColor: 'rgba(250, 83, 83, 0.2)',
     iconColor: '#FA5353',
     textColor: '#FA5353',
     onClick: () => deleteEventMutation.mutate(event.id),
   },
   {
-    icon: <Edit size={24} />,
+    icon: <Pencil size={24} />,
     label: '수정',
     backgroundColor: '#F9F9F9',
     iconColor: '#FDC019',

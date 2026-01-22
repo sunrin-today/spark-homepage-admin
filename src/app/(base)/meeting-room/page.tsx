@@ -1,6 +1,6 @@
 "use client";
 import { DataTable } from "@/components/common/table/DataTable";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Column } from "@/lib/types/table";
 import { RentalRecord } from "@/lib/types/meeting-room";
 import PageHeader from "@/components/layout/page/PageHeader";
@@ -18,69 +18,69 @@ export default function MeetingRoomPage() {
   const [limit, setLimit] = useState<number>(10);
   const { page: paginationPage, setPage: setPaginationPage } = usePaginationQuery("page", 1);
   const { sort, onSortChange } = useTableSort({ key: "borrower", order: "ASC" });
-  const {data: rentalRecords, isLoading: isloading, error: listError} = useMeetingRoomListQuery({page: paginationPage, limit, column: sort.key, orderDirection: sort.order});
+  const {data: rentalRecords, isLoading: isloading, error: listError, refetch: refetchList} = useMeetingRoomListQuery({page: paginationPage, limit, column: sort.key, orderDirection: sort.order});
   const {mutate: deleteRental, isPending: isDeleting, error: deleteError} = useDeleteRentalMutation();
   const columns: Column<RentalRecord>[] = [
-  {
-    header: "#",
-    width: "40px",
-    render: (_, index) => <span className="text-gray font-medium">{(paginationPage - 1) * limit + index + 1}</span>,
-  },
-  {
-    header: "이름",
-    width: "200px",
-    render: (row) => (
-      <Link href={`/users/${row.id}`} className="underline flex gap-1 items-center">
-        <Image src={row.borrower.avatarUrl!} alt="user" width={24} height={24} className="rounded-full" />
-        <span>{row.borrower.name}</span>
-      </Link>
-    ),
-    isSortable: true,
-    sortKey: "borrower",
-  },
-  {
-    header: "사용 목적",
-    width: "380px",
-    render: (row) => (
-        <Link href={`/meeting-room/${row.id}`} >
-            {row.purpose}
+    {
+        header: "#",
+        width: "40px",
+        render: (_, index) => <span className="text-gray font-medium">{(paginationPage - 1) * limit + index + 1}</span>,
+    },
+    {
+        header: "이름",
+        width: "200px",
+        render: (row) => (
+        <Link href={`/users/${row.id}`} className="underline flex gap-1 items-center">
+            <Image src={row.borrower.avatarUrl!} alt="user" width={24} height={24} className="rounded-full" />
+            <span>{row.borrower.name}</span>
         </Link>
-    ),
-  },
-  {
-    header: "대여 희망 날짜",
-    width: "189px",
-    render: (row) => formatKoreanDate(row.wantedDate),
-    isSortable: true,
-    sortKey: "wantedDate",
-  },
-  {
-    header: "신청서 제출 날짜",
-    width: "154px",
-    render: (row) => formatKoreanDate(row.createdAt),
-    isSortable: true,
-    sortKey: "createdAt",
-  },
-  {
-    header: "액션",
-    width: "47px",
-    render: (row) => (
-      <ActionBarTrigger 
-        title="소회의실 대여"
-        items={[
-          {
-            icon: <Trash2 size={24} />,
-            label: '삭제',
-            backgroundColor: '#F9F9F9',
-            iconColor: '#FA5353',
-            textColor: '#FA5353',
-            onClick: () => deleteRental(row.id)
-          }
-        ]}
-      />
-    ),
-  },
-];
+        ),
+        isSortable: true,
+        sortKey: "borrower",
+    },
+    {
+        header: "사용 목적",
+        width: "380px",
+        render: (row) => (
+            <Link href={`/meeting-room/${row.id}`} >
+                {row.purpose}
+            </Link>
+        ),
+    },
+    {
+        header: "대여 희망 날짜",
+        width: "189px",
+        render: (row) => formatKoreanDate(row.wantedDate),
+        isSortable: true,
+        sortKey: "wantedDate",
+    },
+    {
+        header: "신청서 제출 날짜",
+        width: "154px",
+        render: (row) => formatKoreanDate(row.createdAt),
+        isSortable: true,
+        sortKey: "createdAt",
+    },
+    {
+        header: "액션",
+        width: "47px",
+        render: (row) => (
+        <ActionBarTrigger 
+            title="액션"
+            items={[
+            {
+                icon: <Trash2 size={24} />,
+                label: '삭제',
+                backgroundColor: 'rgba(250, 83, 83, 0.2)',
+                iconColor: '#FA5353',
+                textColor: '#FA5353',
+                onClick: () => deleteRental(row.id)
+            }
+            ]}
+        />
+        ),
+    },
+    ];
 
   return (
     <div className="px-8 py-12">
@@ -92,6 +92,7 @@ export default function MeetingRoomPage() {
             {deleteError && <p className="text-[#FA5353]">삭제에 실패했습니다: {deleteError.message}</p>}
             {!isloading && !listError && !deleteError && (<>
             <DataTable
+                onRefresh={refetchList}
                 columns={columns}
                 data={rentalRecords?.items || []}
                 sort={sort}

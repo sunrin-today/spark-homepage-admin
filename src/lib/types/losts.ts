@@ -9,14 +9,8 @@ export type Lost = {
   foundDate: string;
   status: "FOUND" | "LOST";
   taker : User
-  thumbnailUrl: {
-    url: string;
-    index: number;
-  };
-  detailImageUrls: {
-    url: string;
-    index: number;
-  }[];
+  thumbnailUrl: ImageItem;
+  detailImageUrls: ImageItem[];
   externalUrl: string;
   createdAt: string;
   updatedAt: string;
@@ -26,12 +20,14 @@ export type LostFormProps =
   | {
       mode: "create";
       mutation: (data: LostFormState) => void;
+      error?: string;
       isPending?: boolean;
       submitText?: string;
     }
   | {
       mode: "update";
       initialData: Lost;
+      error?: string;
       mutation: (data: LostFormState) => void;
       isPending?: boolean;
       submitText?: string;

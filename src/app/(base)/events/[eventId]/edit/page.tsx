@@ -16,21 +16,13 @@ export default function EventEdit() {
         
             
         {isLoading && <div>로딩 중...</div>}
-        {error && (
-            <div className="mb-6 p-4 text-error rounded-lg">
-                이벤트를 불러오는 중 오류가 발생했습니다: {error.message}
-            </div>
-        )}
-        {updateError && (
-            <div className="mb-6 p-4 text-error rounded-lg">
-                이벤트를 수정하는 중 오류가 발생했습니다: {updateError.message}
-            </div>
-        )}
+        
         {eventDetail &&
             <EventForm
                 mode="update"
                 initialData={eventDetail}
                 mutation={updateEvent}
+                error={updateError ? "이벤트를 수정하는 중 오류가 발생했습니다: " + updateError.message : ""}
                 isPending={isPending}
             />
         }

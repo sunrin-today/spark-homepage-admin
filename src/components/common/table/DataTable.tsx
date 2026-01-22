@@ -1,19 +1,38 @@
 
 import { SortState } from "@/lib/hooks/useTableSort";
 import { Column } from "@/lib/types/table";
-import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, RefreshCw } from "lucide-react";
 
 type DataTableProps<T> = {
   columns: Column<T>[];
   data: T[];
   sort?: SortState;
   onSortChange?: (key: string) => void;
+  onRefresh?: () => void;
+  isRefreshing?: boolean;
+  tableHeader?: React.ReactNode;
 };
 
 
-export function DataTable<T>({ columns, data, sort, onSortChange }: DataTableProps<T>) {
+export function DataTable<T>({ columns, data, sort, onSortChange, onRefresh, isRefreshing, tableHeader }: DataTableProps<T>) {
   return (
+    <div className="flex flex-col gap-3">
+      <div className={`w-full flex items-center ${tableHeader ? "justify-between" : "justify-end"}`}>
+        {tableHeader}
+        
+        <RefreshCw 
+          className="w-6 h-6 p-1 text-gray cursor-pointer" 
+          onClick={() => {
+            onRefresh?.();
+          }}
+          style={{
+            opacity: isRefreshing ? 0.5 : 1,
+            cursor: isRefreshing ? 'not-allowed' : 'pointer'
+          }}
+        />
+      </div>
     <div className="w-full overflow-x-auto border border-[#D5D5D5] rounded-2xl">
+      
       <table className="w-full border-collapse table-fixed">
         <colgroup>
           {columns.map((col, i) => (
@@ -63,6 +82,7 @@ export function DataTable<T>({ columns, data, sort, onSortChange }: DataTablePro
           ))}
         </tbody>
       </table>
+    </div>
     </div>
   );
 }

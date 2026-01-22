@@ -35,11 +35,13 @@ export function useUpdateLostMutation(
   const router = useRouter();
 
   return useMutation({
-    mutationFn: (form: LostFormState) =>
-      lostApi.updateLost(
+    mutationFn: (form: LostFormState) => {
+      console.log(buildLostUpdatePayload(form, initialDetailImages));
+      return lostApi.updateLost(
         id,
         buildLostUpdatePayload(form, initialDetailImages)
-      ),
+      );
+    },
 
     onSuccess: () => {
       alert("분실물이 수정되었습니다.");
