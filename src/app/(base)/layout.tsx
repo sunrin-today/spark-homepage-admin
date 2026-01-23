@@ -30,10 +30,12 @@ export default function BaseLayout({
         const userData = await usersApi.getMe();
         setUserInfo(userData);
 
+        /*
         if (userData.role !== "ADMIN") {
           alert("관리자만 로그인이 가능합니다.");
           router.push("/login");
         }
+        */
       } catch (error) {
         console.error("사용자 정보 로드 실패:", error);
         router.push("/login");
@@ -55,9 +57,11 @@ export default function BaseLayout({
   }
 
   // 인증되지 않은 경우 또는 ADMIN이 아닐 때
+  /*
   if (!firebaseUser || !userInfo || userInfo.role !== "ADMIN") {
     return null;
   }
+  */
 
   // ADMIN 권한이 있으면 정상 렌더링
   return (

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { SearchBar } from "@/components/common/search/SearchBar";
 import { DataTable } from "@/components/common/table/DataTable";
@@ -72,11 +73,15 @@ const UsersPage = () => {
       render: (user) => (
         <div className="flex items-center gap-2">
           {user.avatarUrl ? (
-            <img
-              src={user.avatarUrl}
-              alt={user.name}
-              className="w-6 h-6 rounded-full object-cover"
-            />
+            <div className="relative w-6 h-6 rounded-full overflow-hidden">
+              <Image
+                src={user.avatarUrl}
+                alt={user.name}
+                fill
+                sizes="24px"
+                className="object-cover"
+              />
+            </div>
           ) : (
             <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center">
               <span className="text-base text-white">
