@@ -119,7 +119,7 @@ const UsersPage = () => {
           {
             icon: <Trash2 size={24} />,
             label: "삭제",
-            backgroundColor: "rgb(250, 83, 83, 0.2)",
+            backgroundColor: "rgba(250, 83, 83, 0.2)",
             iconColor: "#FA5353",
             textColor: "#FA5353",
             onClick: () => handleDelete(user.id),

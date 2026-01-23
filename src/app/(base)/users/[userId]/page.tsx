@@ -166,12 +166,12 @@ const UserDetailPage = () => {
         )}
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-xl font-bold">{userName}</h2>
+            <h2 className="text-xl font-semibold">{userName}</h2>
             <span
-              className={`px-3 py-1 rounded-full text-sm ${
+              className={`px-3 py-1 rounded-lg text-sm ${
                 userRole === "ADMIN"
-                  ? "bg-blue-100 text-blue-700"
-                  : "bg-green-100 text-green-700"
+                  ? "bg-[rgba(255, 178, 45, 0.2)] text-[#ffb22d]"
+                  : "bg-[rgba(52, 184, 61, 0.2)] text-[#34B83D]"
               }`}
             >
               {userRole === "ADMIN" ? "관리자" : "학생"}
