@@ -18,7 +18,7 @@ export default function ChargerPage() {
     const {page: page, setPage} = usePaginationQuery("page", 1);
     const {data: chargers, isLoading, error, refetch: chargerRefresh} = useGetChargers(page, activeTab === "충전기 관리");
     console.log(chargers)
-    const { sort} = useTableSort({ key: "createdAt", order: "DESC" })
+    const { sort, onSortChange } = useTableSort({ key: "createdAt", order: "DESC" })
     const columnCharger: Column<Charger>[] = [
          {
         header: "#",
@@ -91,6 +91,8 @@ export default function ChargerPage() {
                         columns={activeTab === "충전기 관리" ? columnCharger : columnRentalRequest }
                         data={ activeTab === "충전기 관리" ? chargers?.items || [] : []} 
                         onRefresh={activeTab === "충전기 관리" ? () => chargerRefresh() : () => {}}
+                        onSortChange={activeTab === "충전기 관리" ? onSortChange : () => {}}
+                        sort={activeTab === "충전기 관리" ? sort : { key: "createdAt", order: "DESC" }}
                         tableHeader={
                             <div className="flex gap-[10px]">
                                 <button
@@ -101,6 +103,7 @@ export default function ChargerPage() {
                                     className="px-[10px] py-[5px] text-[10px] bg-lightgray text-[#0D0D0D] rounded-[5px]">신청서 관리</button>
                             </div>
                         }
+                        
                     />
                 )}
                 {

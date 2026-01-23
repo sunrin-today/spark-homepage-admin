@@ -11,7 +11,7 @@ import ActionBarTrigger from "@/components/common/action/ActionBarTrigger";
 
 export default function ChargerDetailPage() {
     const { chargerId } = useParams<{ chargerId: string }>();
-    const { data : chargerData, refetch } = useGetCharger(chargerId);
+    const { data : chargerData, isLoading, error, refetch } = useGetCharger(chargerId);
     const {sort, onSortChange} = useTableSort({key: "borrower", order: "ASC"})
     const column : Column<ChargerRentalRecord>[] = [
         {
@@ -60,7 +60,7 @@ export default function ChargerDetailPage() {
     ]
     return (
         <div className="px-8 py-12 flex flex-col gap-[10px]">
-            <PageHeader title={chargerData?.chargerId + "번 충전지"} isBackButton/>
+            <PageHeader title={chargerData?.chargerId + "번 충전기"} isBackButton/>
             <InfoColumn
                 label="상태"
                 value={
@@ -68,13 +68,18 @@ export default function ChargerDetailPage() {
                         {chargerData?.status || "미대여"}
                         {chargerData?.status === "대여중" && (
                             <ActionBarTrigger
-                                trigger={<button className="px-[10px] py-[5px] text-[10px] bg-lightgray text-[#0D0D0D] rounded-[5px]">상태 변경</button>}
-                                actions={[
+                                title="상태 변경"
+                                actionButton={<button className="px-[10px] py-[5px] text-[10px] bg-lightgray text-[#0D0D0D] rounded-[5px]">상태 변경</button>}
+                                items={[
                                     {
                                         label: "반납",
                                         onClick: () => {},
+                                        icon: <></>,
+                                        hoverBackgroundColor: "#EEEEEE",
+                                        backgroundColor: "#F9F9F9",
                                     },
                                 ]}
+                                
                             />
                         )}
                     </span>

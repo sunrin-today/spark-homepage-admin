@@ -1,9 +1,9 @@
 import api from "./api";
 
-const chargerApi = {
+const chargerApi =  {
     // 충전기 목록 가져오기
-    getChargers: async ({page, limit, column, orderDirection}: {page: number, limit: number, column: string, orderDirection: string}) => {
-        const response = await api.get(`/api/charger/charger`, {
+    getChargers: async (page: number, limit: number, column: string, orderDirection: string) => {
+        const response = await api.get(`/api/charger`, {
             params: {
                 page, limit, column, orderDirection
             }
@@ -29,21 +29,6 @@ const chargerApi = {
     createCharger: async (charger: any) => {
         const response = await api.post(`/api/charger`, charger);
         return response.data;
-    },
-
-    // 특정 유저의 전체 대여 기록 조회
-    getUserRentalRecords: async (
-        userId: string,
-        params: {
-            page?: number;
-            limit?: number;
-            column?: string;
-            orderDirection?: "ASC" | "DESC";
-        }
-    ) => {
-        const response = await api.get(`/api/rental-record/user/${userId}`, { params });
-        return response.data;
-    },
-};
-
+    }
+}
 export default chargerApi;
