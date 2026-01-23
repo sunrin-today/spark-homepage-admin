@@ -7,12 +7,12 @@ export const useGetChargers = (page: number, enabled: boolean) => {
   return useQuery({
     queryKey: chargerKeys.all(),
     queryFn: () =>
-      chargerAPI.getChargers({
+      chargerAPI.getChargers(
         page,
-        limit: 10,
-        column: "chargerId",
-        orderDirection: "ASC",
-      }),
+        10,
+        "chargerId",
+        "ASC",
+      ),
     enabled,
   });
 };
