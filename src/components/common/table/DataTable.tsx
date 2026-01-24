@@ -50,7 +50,7 @@ export function DataTable<T>({ columns, data, sort, onSortChange, onRefresh, isR
               <th
                 key={i}
                 className={`
-                  px-4 py-3 text-left text-base font-semibold whitespace-nowrap
+                  px-4 py-3 text-left text-base font-medium whitespace-nowrap
                   ${col.isSortable ? "cursor-pointer select-none" : ""}
                 `}
                 onClick={() => {

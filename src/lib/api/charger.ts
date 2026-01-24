@@ -12,17 +12,20 @@ const chargerApi =  {
     },
 
     // 아이디로 충전기 정보 가져오기
-    getChargerDetailById: async (chargerId: string) => {
-        const response = await api.get(`/api/charger/${chargerId}`);
+    getChargerDetailById: async (id: string) => {
+        const response = await api.get(`/api/charger/${id}`);
         return response.data;
     },
-    // 충전기의 대여기록
-    getChargerRecordsById: async (chargerId: string) => {
-        const response = await api.get(`/api/charger/${chargerId}/records`);
+    getChargerDetailbychargerId: async (chargerId: string) => {
+        const response = await api.get(`/api/charger/chargerId/${chargerId}`);
         return response.data;
     },
-    getMyActiveChargerRecord: async () => {
-        const response = await api.get(`/api/charger/my/active`);
+    changeChargerDescription: async (id: string, description: string) => {
+        const response = await api.put(`/api/charger/${id}`, { description });
+        return response.data;
+    },
+    changeChargerStatus: async (id: string, status: string, rentalRequesId?: string) => {
+        const response = await api.put(`/api/charger/${id}`, { status, rentalRequesId });
         return response.data;
     },
     // 충전기 생성

@@ -28,11 +28,12 @@ const BaseInput = forwardRef<HTMLInputElement | HTMLTextAreaElement, BaseInputPr
   ({ leftIcon, rightIcon, value, name, onChange, placeholder, className, onClick, readOnly, required, noChange = false }, ref) => {
     return (
       <div
-        className={`flex items-center px-[20px] py-[12px] border border-inputborder text-[#010101] text-base font-medium rounded-[12px] w-full min-w-0 
-          outline-none focus-within:border-2 focus-within:ring-0" ${className}`}
+        className={`flex items-center px-[20px] py-[12px] border bg-white border-inputborder text-[#767676] text-base font-medium rounded-[12px] w-full min-w-0 
+          outline-none focus-within:border focus-within:text-black
+          hover:border-[#565656] ${className}`}
         onClick={onClick}
       >
-        {leftIcon && <span className="flex-shrink-0 mr-2">{leftIcon}</span>}
+        {leftIcon && <span className="flex-shrink-0 mr-2 focus-within:text-[#010101]">{leftIcon}</span>}
 
         <div className="flex-1 min-w-0">
           <input
@@ -43,7 +44,7 @@ const BaseInput = forwardRef<HTMLInputElement | HTMLTextAreaElement, BaseInputPr
             value={value}
             onChange={(e) => noChange ? () => {} : onChange(e.target.value)}
             placeholder={placeholder}
-            className="w-full outline-none focus:outline-none placeholder:font-medium placeholder:text-darkgray placeholder:text-base bg-white"
+            className="w-full outline-none focus:outline-none placeholder:text-[#767676] placeholder:text-base bg-white"
             readOnly={readOnly}
             required={required}
           />

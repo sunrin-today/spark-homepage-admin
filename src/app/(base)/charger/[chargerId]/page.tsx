@@ -13,7 +13,24 @@ export default function ChargerDetailPage() {
     const { chargerId } = useParams<{ chargerId: string }>();
     const { data : chargerData, isLoading, error, refetch } = useGetCharger(chargerId);
     const {sort, onSortChange} = useTableSort({key: "borrower", order: "ASC"})
-    const column : Column<ChargerRentalRecord>[] = [
+    const rentalRequestColumn : Column<ChargerRentalRecord>[] = [
+        {
+            header: '#',
+            render: (_, index) => index + 1,
+            width: '40px'
+        },
+        {
+            header: "이름",
+            render: (row) => {
+                return (
+                    <div>
+                        {row.borrower.name}
+                    </div>
+                )
+            }
+        }
+    ]
+    const chargerColumn : Column<ChargerRentalRecord>[] = [
         {
             header: "#",
             render: (_, index) => index + 1,
@@ -22,16 +39,16 @@ export default function ChargerDetailPage() {
         {
             sortKey: "borrower",
             isSortable: true,
-            header: "대여자",
+            header: "이름",
             width: '270px',
             render: (row) => row.borrower.name,
         },
         {
             sortKey: "reviwer",
             isSortable: true,
-            header: "확인자",
+            header: "관리자",
             width: '280px',
-            render: (row) => row.reviewer.name,
+            render: (row) => row.reviewer?.name ?? "",
         },
         {
             sortKey: "createdAt",
@@ -65,23 +82,22 @@ export default function ChargerDetailPage() {
                 label="상태"
                 value={
                     <span>
-                        {chargerData?.status || "미대여"}
-                        {chargerData?.status === "대여중" && (
-                            <ActionBarTrigger
-                                title="상태 변경"
-                                actionButton={<button className="px-[10px] py-[5px] text-[10px] bg-lightgray text-[#0D0D0D] rounded-[5px]">상태 변경</button>}
-                                items={[
-                                    {
+                        {chargerData?.status === "not_rented" ? "미대여" 
+                        : chargerData?.status === "renting" ? "대여중" 
+                        : "전달예정"}
+                        <ActionBarTrigger
+                            title="상태 변경"
+                            actionButton={<button className="px-[10px] py-[5px] text-[10px] bg-lightgray text-[#0D0D0D] rounded-[5px]">상태 변경</button>}
+                            items={[
+                                {
                                         label: "반납",
                                         onClick: () => {},
                                         icon: <></>,
                                         hoverBackgroundColor: "#EEEEEE",
                                         backgroundColor: "#F9F9F9",
                                     },
-                                ]}
-                                
-                            />
-                        )}
+                                ]}      
+                        />
                     </span>
                 }
             />
@@ -91,7 +107,7 @@ export default function ChargerDetailPage() {
                     tableHeader = {
                         <span className="text-sm text-darkgray">대여기록</span>
                     }
-                    columns={column}
+                    columns={chargerColumn}
                     data={chargerData?.rentalRecords || []}
                     sort={sort}
                     onSortChange={onSortChange}

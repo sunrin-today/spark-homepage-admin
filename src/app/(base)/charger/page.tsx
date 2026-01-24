@@ -1,6 +1,6 @@
 "use client"
 import PageHeader from "@/components/layout/page/PageHeader";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePaginationQuery } from "@/lib/hooks/usePaginationQuery";
 import { Column } from "@/lib/types/table";
 import { DataTable } from "@/components/common/table/DataTable";
@@ -13,12 +13,16 @@ import { getChargerStatusText } from "@/utils/charger";
 import Pagination from "@/components/common/pagination/Pagination";
 import { useGetChargers } from "@/lib/queries/charger/queries";
 import { useTableSort } from "@/lib/hooks/useTableSort";
+import { UserLink } from "@/components/user/UserLink";
 export default function ChargerPage() {
     const [activeTab, setActiveTab] = useState<"충전기 관리" | "신청서 관리">("충전기 관리");
     const {page: page, setPage} = usePaginationQuery("page", 1);
-    const {data: chargers, isLoading, error, refetch: chargerRefresh} = useGetChargers(page, activeTab === "충전기 관리");
-    console.log(chargers)
-    const { sort, onSortChange } = useTableSort({ key: "createdAt", order: "DESC" })
+    
+    const { sort, onSortChange } = useTableSort({ key: "chargerId", order: "ASC" })    
+    const {data: chargers, isLoading, error, refetch: chargerRefresh} = useGetChargers({page, column: sort.key, orderDirection: sort.order}, activeTab === "충전기 관리");
+    useEffect(() => {
+        console.log(sort);
+    }, [sort]);
     const columnCharger: Column<Charger>[] = [
          {
         header: "#",
@@ -29,7 +33,7 @@ export default function ChargerPage() {
         header: "이름",
         width: "167px",
         render: (row) => {
-            return <Link href={`/charger/${row.id}`} className="underline">{row.chargerId}번 충전기</Link>;
+            return <Link href={`/charger/${row.chargerId}`} className="underline">{row.chargerId}번 충전기</Link>;
         },
         isSortable: true,
         sortKey: "chargerId",
@@ -45,8 +49,8 @@ export default function ChargerPage() {
         header: "대여자",
         width: "167px",
         render: (row) => {
-            if (!row.currentRentalRecord) return "";
-            return row.currentRentalRecord.borrower.name;
+            if (!row.currentRentalRecord?.borrower) return "";
+            else return <UserLink user={row.currentRentalRecord.borrower}/>;
         },
         isSortable: true,
         sortKey: "borrower",
@@ -56,7 +60,7 @@ export default function ChargerPage() {
         width: "154px",
         render: (row) => getChargerStatusText(row.status),
         isSortable: true,
-        sortKey: "borrower",
+        sortKey: "status",
     },
     {
         header: "액션",
