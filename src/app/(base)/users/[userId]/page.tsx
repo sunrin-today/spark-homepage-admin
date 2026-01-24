@@ -169,10 +169,13 @@ const UserDetailPage = () => {
             <h2 className="text-xl font-semibold">{userName}</h2>
             <span
               className={`px-3 py-1 rounded-lg text-sm ${
-                userRole === "ADMIN"
-                  ? "bg-[rgba(255, 178, 45, 0.2)] text-[#ffb22d]"
-                  : "bg-[rgba(52, 184, 61, 0.2)] text-[#34B83D]"
+                userRole === "ADMIN" ? "text-[#ffb22d]" : "text-[#34B83D]"
               }`}
+              style={{
+                backgroundColor: userRole === "ADMIN" 
+                  ? "rgba(255, 178, 45, 0.2)" 
+                  : "rgba(52, 184, 61, 0.2)"
+              }}
             >
               {userRole === "ADMIN" ? "관리자" : "학생"}
             </span>
