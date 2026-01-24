@@ -240,7 +240,7 @@ const UserDetailPage = () => {
               onRefresh={() => refetchLost()}
               isRefreshing={isLostLoading}
               tableHeader={
-                <h3 className="text-lg font-semibold">분실물 기록</h3>
+                <h3 className="text-xlfont-semibold">분실물 기록</h3>
               }
             />
             <Pagination
@@ -253,7 +253,7 @@ const UserDetailPage = () => {
         ) : (
           <div className="flex flex-col gap-4">
             <div className="w-full flex items-center justify-between">
-              <h3 className="text-lg font-semibold">분실물 기록</h3>
+              <h3 className="text-xl font-semibold">분실물 기록</h3>
               <RefreshCw 
                 className="w-6 h-6 p-1 text-gray cursor-pointer" 
                 onClick={() => refetchLost()}
