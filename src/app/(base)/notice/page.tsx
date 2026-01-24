@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight } from 'lucide-react';
+import { ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, Plus } from 'lucide-react';
 import { noticesApi } from '@/lib/api/notice';
 import { Notice } from '@/lib/types/notice';
 import NoticeList from '@/components/notice/NoticeList';
-import BaseInput from '@/components/ui/input/Input';
+import { SearchBar } from '@/components/common/search/SearchBar';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -53,8 +53,8 @@ export default function NoticesPage() {
     setCurrentPage(1);
   }, [searchQuery, notices]);
 
-  const handleSearch = () => {
-    // 검색은 실시간으로 이루어지므로 별도 동작 필요x
+  const handleSearch = (searchTerm: string) => {
+
   };
 
   // 페이지네이션 연산
@@ -84,27 +84,20 @@ export default function NoticesPage() {
           <h1 className="text-2xl font-bold mb-6">공지사항</h1>
 
           <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3 flex-1 max-w-xl">
-              <BaseInput
-                leftIcon={<Search size={20} className="text-gray-400" />}
-                value={searchQuery}
-                onChange={setSearchQuery}
-                placeholder="검색어를 입력해주세요..."
-                className="flex-1"
-              />
-              <button
-                onClick={handleSearch}
-                className="px-6 py-4 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors whitespace-nowrap font-medium"
-              >
-                검색하기
-              </button>
-            </div>
+            <SearchBar
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              onSubmit={handleSearch}
+              placeholder="검색어를 입력해주세요..."
+              buttonText="검색하기"
+              className="flex-1 max-w-xl"
+            />
 
             <button
-              onClick={() => router.push('/notice/add')}
-              className="px-6 py-4 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors whitespace-nowrap font-medium flex items-center gap-2"
+              onClick={() => router.push("/notice/add")}
+              className="px-3 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors whitespace-nowrap font-medium flex items-center gap-2"
             >
-              <span>+</span>
+              <Plus size={24} />
               <span>등록하기</span>
             </button>
           </div>

@@ -22,13 +22,16 @@ const transformNoticeFromApi = (apiNotice: NoticeDetailResponse): Notice => {
 interface CreateNoticeData {
   title: string;
   content: string;
-  images?: string[]; // 요청 시에는 string 배열 (base64 or url)
+  imageFiles?: File[]; // File 객체 배열로 변경
 }
 
 interface UpdateNoticeData {
-  title?: string;
-  content?: string;
-  images?: string[];
+  title: string;
+  content: string;
+  deletes?: string[]; // 삭제할 이미지 URL
+  newImages?: string[]; // 새 이미지 (base64)
+  exists: Array<{ url: string; index: number }>; // 기존 이미지들의 위치 정보
+  imageIndexes?: number[]; // 새 이미지 index
 }
 
 export const noticesApi = {
@@ -63,10 +66,11 @@ export const noticesApi = {
       formData.append('title', data.title);
       formData.append('content', data.content);
       
-      // images 있으면 추가(base64 문자열 배열)
-      if (data.images && data.images.length > 0) {
-        data.images.forEach((image) => {
-          formData.append('images', image);
+      // imageFiles가 있으면 File 객체를 직접 추가
+      if (data.imageFiles && data.imageFiles.length > 0) {
+        data.imageFiles.forEach((file, index) => {
+          formData.append('images', file, file.name);
+          console.log(`Added image ${index}:`, file.name, file.size, 'bytes');
         });
       }
       
@@ -93,14 +97,71 @@ export const noticesApi = {
       }
       throw error;
     }
-},
+  },
 
   updateNotice: async (id: string, data: UpdateNoticeData): Promise<Notice> => {
     try {
-      const response = await api.patch<NoticeDetailResponse>(`/notice/${id}`, data);
+      console.log('Updating notice with data:', data);
+      
+      // FormData 생성
+      const formData = new FormData();
+      
+      formData.append('title', data.title);
+      formData.append('content', data.content);
+      
+      // exists는 JSON 문자열로 변환
+      formData.append('exists', JSON.stringify(data.exists));
+      
+      // deletes 배열을 JSON 문자열로 변환
+      if (data.deletes && data.deletes.length > 0) {
+        formData.append('deletes', JSON.stringify(data.deletes));
+        console.log('Added deletes:', data.deletes);
+      } else {
+        formData.append('deletes', JSON.stringify([]));
+      }
+      
+      // newImages는 base64 문자열 배열로 전송
+      if (data.newImages && data.newImages.length > 0) {
+        formData.append('newImages', JSON.stringify(data.newImages));
+        console.log('Added newImages count:', data.newImages.length);
+      } else {
+        formData.append('newImages', JSON.stringify([]));
+      }
+      
+      // imageIndexes도 JSON 문자열로 변환
+      if (data.imageIndexes && data.imageIndexes.length > 0) {
+        formData.append('imageIndexes', JSON.stringify(data.imageIndexes));
+      } else {
+        formData.append('imageIndexes', JSON.stringify([]));
+      }
+      
+      // FormData 내용 확인
+      console.log('=== FormData Contents ===');
+      for (const pair of formData.entries()) {
+        console.log(pair[0] + ':', typeof pair[1] === 'string' ? pair[1] : '[File]');
+      }
+      
+      console.log('Sending update FormData to server');
+      
+      const response = await api.put<NoticeDetailResponse>(
+        `/api/notice/${id}`, 
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      
+      console.log('Notice updated successfully:', response.data);
       return transformNoticeFromApi(response.data);
     } catch (error) {
       console.error('Failed to update notice:', error);
+      
+      if (error instanceof AxiosError) {
+        console.error('Error response:', error.response?.data);
+        console.error('Error status:', error.response?.status);
+      }
       throw error;
     }
   },
