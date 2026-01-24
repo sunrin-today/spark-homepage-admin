@@ -18,18 +18,18 @@ export interface Notice {
   id: string;
   title: string;
   content: string;
-  author?: string;
+  author?: NoticeAuthor; 
   createdAt: string;
   updatedAt: string;
   viewCount: number;
   images?: NoticeImage[];
   views?: number;
   isPinned?: boolean;
-  imageUrls?: string[]; // 이미지 url 배열
+  imageUrls?: string[];
 }
 
 export interface NoticeListResponse {
-  items: NoticeDetailResponse[];
+  items: Notice[]; 
   total: number;
   currentPage: number;
   totalPages: number;
@@ -40,7 +40,7 @@ export interface NoticeDetailResponse {
   title: string;
   content: string;
   viewCount: number;
-  images?: NoticeImage[]; // 객체 배열
+  images?: NoticeImage[];
   createdAt: string;
   updatedAt: string;
   author?: NoticeAuthor;

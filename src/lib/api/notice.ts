@@ -8,7 +8,7 @@ const transformNoticeFromApi = (apiNotice: NoticeDetailResponse): Notice => {
     id: apiNotice.id,
     title: apiNotice.title,
     content: apiNotice.content,
-    author: apiNotice.author?.name || 'Admin',
+    author: apiNotice.author,
     createdAt: apiNotice.createdAt,
     updatedAt: apiNotice.updatedAt,
     viewCount: apiNotice.viewCount,
