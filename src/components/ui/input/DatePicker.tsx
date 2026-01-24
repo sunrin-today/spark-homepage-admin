@@ -1,4 +1,4 @@
-import Calendar from "@/components/schedule/Calendar";
+import InputCalendar from "@/components/schedule/InputCalendar";
 import { X, Save } from "lucide-react";
 import { useState } from "react";
 
@@ -16,7 +16,7 @@ export const DatePicker = ({
     const [selectedDate, setSelectedDate] = useState<Date>(initialDate);
   return (
     <div className="w-[324px] p-3">
-      <Calendar
+      <InputCalendar
         onDateSelect={(date) => {
           setSelectedDate(date);
         }}
