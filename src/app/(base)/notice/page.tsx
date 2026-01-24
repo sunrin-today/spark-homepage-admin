@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { noticesApi } from '@/lib/api/notice';
 import { Notice } from '@/lib/types/notice';
 import NoticeList from '@/components/notice/NoticeList';
 import { SearchBar } from '@/components/common/search/SearchBar';
+import Pagination from '@/components/common/pagination/Pagination';
+import { usePaginationQuery } from '@/lib/hooks/usePaginationQuery';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -16,7 +18,7 @@ export default function NoticesPage() {
   const [filteredNotices, setFilteredNotices] = useState<Notice[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
+  const { page: currentPage, setPage: setCurrentPage } = usePaginationQuery('page', 1);
 
   useEffect(() => {
     const fetchNotices = async () => {
@@ -38,11 +40,11 @@ export default function NoticesPage() {
     fetchNotices();
   }, []);
 
-  // 검색 필터링
+  // 검색 필터링 - setCurrentPage 의존성 제거
   useEffect(() => {
     if (!searchQuery.trim()) {
       setFilteredNotices(notices);
-      setCurrentPage(1);
+      setCurrentPage(1); // 검색어가 비었을 때만 1페이지로
       return;
     }
 
@@ -54,7 +56,7 @@ export default function NoticesPage() {
   }, [searchQuery, notices]);
 
   const handleSearch = (searchTerm: string) => {
-
+    
   };
 
   // 페이지네이션 연산
@@ -62,12 +64,6 @@ export default function NoticesPage() {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentNotices = filteredNotices.slice(startIndex, endIndex);
-
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
-  };
 
   if (loading) {
     return (
@@ -108,46 +104,13 @@ export default function NoticesPage() {
         </div>
 
         {filteredNotices.length > 0 && (
-          <div className="mt-8 flex items-center justify-center gap-2">
-            <span className="text-sm text-gray-600 mr-4">
-              {currentPage} / {totalPages} (총 {filteredNotices.length}개)
-            </span>
-
-            <button
-              onClick={() => handlePageChange(1)}
-              disabled={currentPage === 1}
-              className="p-2 hover:bg-gray-100 rounded disabled:opacity-30 disabled:cursor-not-allowed"
-              aria-label="첫 페이지"
-            >
-              <ChevronsLeft size={16} className="text-gray-600" />
-            </button>
-
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="p-2 hover:bg-gray-100 rounded disabled:opacity-30 disabled:cursor-not-allowed"
-              aria-label="이전 페이지"
-            >
-              <ChevronLeft size={16} className="text-gray-600" />
-            </button>
-
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="p-2 hover:bg-gray-100 rounded disabled:opacity-30 disabled:cursor-not-allowed"
-              aria-label="다음 페이지"
-            >
-              <ChevronRight size={16} className="text-gray-600" />
-            </button>
-
-            <button
-              onClick={() => handlePageChange(totalPages)}
-              disabled={currentPage === totalPages}
-              className="p-2 hover:bg-gray-100 rounded disabled:opacity-30 disabled:cursor-not-allowed"
-              aria-label="마지막 페이지"
-            >
-              <ChevronsRight size={16} className="text-gray-600" />
-            </button>
+          <div className="mt-8">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={filteredNotices.length}
+              onPageChange={setCurrentPage}
+            />
           </div>
         )}
 
