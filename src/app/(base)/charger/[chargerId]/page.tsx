@@ -13,23 +13,7 @@ export default function ChargerDetailPage() {
     const { chargerId } = useParams<{ chargerId: string }>();
     const { data : chargerData, isLoading, error, refetch } = useGetCharger(chargerId);
     const {sort, onSortChange} = useTableSort({key: "borrower", order: "ASC"})
-    const rentalRequestColumn : Column<ChargerRentalRecord>[] = [
-        {
-            header: '#',
-            render: (_, index) => index + 1,
-            width: '40px'
-        },
-        {
-            header: "이름",
-            render: (row) => {
-                return (
-                    <div>
-                        {row.borrower.name}
-                    </div>
-                )
-            }
-        }
-    ]
+
     const chargerColumn : Column<ChargerRentalRecord>[] = [
         {
             header: "#",
