@@ -16,7 +16,7 @@ export function ModalPortal({ children, onClose }: ModalPortalProps) {
 
   return createPortal(
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#010101] bg-opacity-60"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#010101] bg-opacity-60"
       onClick={onClose}
     >
       {children}

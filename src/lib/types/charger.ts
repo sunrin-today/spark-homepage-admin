@@ -19,7 +19,7 @@ export type Charger = {
     currentRentalRecord: ChargerRentalRecord | null;
 };
 
-export type RentalRequest = {
+export type ChargerRentalRequest = {
     id: number;
     user: User;
     createdAt: string;

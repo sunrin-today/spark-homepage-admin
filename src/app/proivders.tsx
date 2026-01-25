@@ -2,6 +2,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactNode, useState } from 'react'
 import { AuthProvider } from '@/contexts/AuthContexts'
+import { ModalProvider } from '@/contexts/ModalContexts'
 export function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
@@ -15,7 +16,9 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        {children}
+        <ModalProvider>
+          {children}
+        </ModalProvider>
       </AuthProvider>
     </QueryClientProvider>
   )

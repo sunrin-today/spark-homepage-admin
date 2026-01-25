@@ -22,7 +22,7 @@ export function Modal({
   return createPortal(
     <ModalPortal onClose={onClose}>
       <div 
-        className={`bg-white rounded-lg w-full mx-4 ${className}`}
+        className={`bg-white w-full ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
         {children}

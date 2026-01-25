@@ -14,12 +14,15 @@ import { useMeetingRoomListQuery } from "@/lib/queries/meeting-room/queries";
 import Image from "next/image";
 import ActionBarTrigger from "@/components/common/action/ActionBarTrigger";
 import { useDeleteRentalMutation } from "@/lib/queries/meeting-room/mutations";
+import { UserLink } from "@/components/user/UserLink";
+import { useModal } from "@/contexts/ModalContexts";
 export default function MeetingRoomPage() {
   const [limit, setLimit] = useState<number>(10);
   const { page: paginationPage, setPage: setPaginationPage } = usePaginationQuery("page", 1);
   const { sort, onSortChange } = useTableSort({ key: "borrower", order: "ASC" });
   const {data: rentalRecords, isLoading: isloading, error: listError, refetch: refetchList} = useMeetingRoomListQuery({page: paginationPage, limit, column: sort.key, orderDirection: sort.order});
   const {mutate: deleteRental, isPending: isDeleting, error: deleteError} = useDeleteRentalMutation();
+  const { open, close} = useModal()
   const columns: Column<RentalRecord>[] = [
     {
         header: "#",
@@ -30,10 +33,7 @@ export default function MeetingRoomPage() {
         header: "이름",
         width: "200px",
         render: (row) => (
-        <Link href={`/users/${row.id}`} className="underline flex gap-1 items-center">
-            <Image src={row.borrower.avatarUrl!} alt="user" width={24} height={24} className="rounded-full" />
-            <span>{row.borrower.name}</span>
-        </Link>
+            <UserLink user={row.borrower} />
         ),
         isSortable: true,
         sortKey: "borrower",
@@ -74,7 +74,7 @@ export default function MeetingRoomPage() {
                 backgroundColor: 'rgba(250, 83, 83, 0.2)',
                 iconColor: '#FA5353',
                 textColor: '#FA5353',
-                onClick: () => deleteRental(row.id)
+                onClick: () => (row.id)
             }
             ]}
         />
