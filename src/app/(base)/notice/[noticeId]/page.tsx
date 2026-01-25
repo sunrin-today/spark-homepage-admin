@@ -15,6 +15,7 @@ export default function NoticeDetailPage() {
   const [loading, setLoading] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchNotice = async () => {
@@ -50,6 +51,30 @@ export default function NoticeDetailPage() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isMenuOpen]);
+
+  // 이미지 스크롤 영역 휠 이벤트 처리
+  useEffect(() => {
+    const scrollContainer = scrollRef.current;
+    if (!scrollContainer) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      // 수평 스크롤이 있는 경우에만 
+      if (scrollContainer.scrollWidth > scrollContainer.clientWidth) {
+        e.preventDefault();
+        
+        // deltaY(상하 스크롤)를 수평 스크롤로 변환
+        // deltaX(좌우 스크롤)는 그대로 사용
+        const delta = e.deltaY !== 0 ? e.deltaY : e.deltaX;
+        scrollContainer.scrollLeft += delta;
+      }
+    };
+
+    scrollContainer.addEventListener('wheel', handleWheel, { passive: false });
+
+    return () => {
+      scrollContainer.removeEventListener('wheel', handleWheel);
+    };
+  }, [notice]);
 
   const handleDelete = async () => {
     if (!notice) return;
@@ -168,6 +193,7 @@ export default function NoticeDetailPage() {
           <div className="mb-6">
             <label className="block text-sm text-gray-600 mb-2">이미지</label>
             <div 
+              ref={scrollRef}
               className="flex gap-4 overflow-x-auto pb-2"
               style={{
                 scrollbarWidth: 'none',
