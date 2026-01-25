@@ -140,7 +140,7 @@ export default function NoticeDetailPage() {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => router.back()}
+              onClick={() => router.push('/notice')}
               className="text-gray-700 hover:text-gray-900"
               aria-label="뒤로가기"
             >
