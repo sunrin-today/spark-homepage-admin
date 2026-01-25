@@ -29,7 +29,7 @@ interface UpdateNoticeData {
   title: string;
   content: string;
   deletes?: string[]; // 삭제할 이미지 URL
-  newImages?: string[]; // 새 이미지 (base64)
+  newImages?: File[]; // 새 이미지
   exists: Array<{ url: string; index: number }>; // 기존 이미지들의 위치 정보
   imageIndexes?: number[]; // 새 이미지 index
 }
@@ -103,23 +103,49 @@ export const noticesApi = {
     try {
       const formData = new FormData();
 
-      // 1. 기본 필드 추가
+      // 1. 기본 필드
       formData.append('title', data.title);
       formData.append('content', data.content);
 
-      // 2. 메타데이터 배열 처리 
+      // 2. exists - JSON으로 전송
       formData.append('exists', JSON.stringify(data.exists));
-      formData.append('deletes', JSON.stringify(data.deletes || []));
-      formData.append('imageIndexes', JSON.stringify(data.imageIndexes || []));
 
-      // 3. 새 이미지 파일 처리 (File 객체 그대로 전송)
+      // 3. deletes - JSON으로 전송
+      if (data.deletes && data.deletes.length > 0) {
+        formData.append('deletes', JSON.stringify(data.deletes));
+      } else {
+        formData.append('deletes', JSON.stringify([]));
+      }
+
+      // 4. imageIndexes - JSON으로 전송
+      if (data.imageIndexes && data.imageIndexes.length > 0) {
+        formData.append('imageIndexes', JSON.stringify(data.imageIndexes));
+      } else {
+        formData.append('imageIndexes', JSON.stringify([]));
+      }
+
+      // 5. newImages - File 객체들
       if (data.newImages && data.newImages.length > 0) {
-        data.newImages.forEach((file: any) => {
-          if (file instanceof File) {
-            formData.append('newImages', file);
-          }
+        data.newImages.forEach((file) => {
+          formData.append('newImages', file, file.name);
+          console.log('Added new image:', file.name, file.size, 'bytes');
         });
       }
+
+      console.log('=== FormData Contents ===');
+      for (const [key, value] of formData.entries()) {
+        if (value instanceof File) {
+          console.log(`${key}:`, value.name, value.size, 'bytes');
+        } else {
+          console.log(`${key}:`, value);
+        }
+      }
+
+      console.log('=== Sending Update Request ===');
+      console.log('exists:', data.exists);
+      console.log('deletes:', data.deletes);
+      console.log('newImages count:', data.newImages?.length || 0);
+      console.log('imageIndexes:', data.imageIndexes);
 
       const response = await api.put<NoticeDetailResponse>(
         `/api/notice/${id}`,
@@ -131,9 +157,35 @@ export const noticesApi = {
         }
       );
 
+      console.log('=== Server Response ===');
+      console.log('Full response:', response.data);
+      console.log('Response images:', response.data.images);
+      console.log('Returned images count:', response.data.images?.length || 0);
+      
+      if (response.data.images) {
+        console.log('Image URLs:');
+        response.data.images.forEach((img, idx) => {
+          console.log(`  [${idx}] ${img.url}`);
+        });
+      }
+      
+      console.log('=== Verification ===');
+      console.log('Requested to delete:', data.deletes);
+      console.log('Actually deleted:', data.deletes?.filter(deleteUrl => 
+        !response.data.images?.some(img => img.url === deleteUrl)
+      ));
+      console.log('Still exists (should be deleted):', data.deletes?.filter(deleteUrl => 
+        response.data.images?.some(img => img.url === deleteUrl)
+      ));
+      
       return transformNoticeFromApi(response.data);
     } catch (error) {
-      console.error('=== API Error ===', error);
+      console.error('=== API Update Error ===', error);
+      if (error instanceof AxiosError) {
+        console.error('Error response:', error.response?.data);
+        console.error('Error status:', error.response?.status);
+        console.error('Error headers:', error.response?.headers);
+      }
       throw error;
     }
   },

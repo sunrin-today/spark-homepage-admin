@@ -5,7 +5,7 @@ interface UpdateNoticeParams {
   title: string;
   content: string;
   deletes?: string[];
-  newImages?: string[];
+  newImages?: File[]; 
   exists: Array<{ url: string; index: number }>;
   imageIndexes?: number[];
 }

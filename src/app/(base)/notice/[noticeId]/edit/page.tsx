@@ -35,8 +35,8 @@ export default function NoticeEditPage() {
     if (noticeDetail) {
       const mappedImages: FormImageListItem[] = (noticeDetail.images || [])
         .sort((a, b) => a.index - b.index)
-        .map((img) => ({
-          id: img.url, // 고유 ID로 url 사용
+        .map((img, idx) => ({
+          id: `${img.url}-${idx}`,
           type: 'exists' as const,
           url: img.url,
         }));
@@ -69,36 +69,42 @@ export default function NoticeEditPage() {
     }
 
     try {
+      // formData.images 사용
       const currentImages = formData.images;
       
+      // exists: 현재 남아있는 기존 이미지들의 위치 정보
       const exists = currentImages
-        .filter(img => img.type === 'exists')
-        .map((img, index) => ({
-          url: (img as any).url,
-          index: index
-        }));
+        .map((img: FormImageListItem, index: number) => 
+          img.type === 'exists' 
+            ? { url: img.url, index } 
+            : null
+        )
+        .filter((item): item is { url: string; index: number } => item !== null);
 
+      // deletes: 원본에는 있었지만 현재 없는 이미지들
       const deletes = originalImages.filter(
-        url => !currentImages.some(img => img.type === 'exists' && img.url === url)
+        url => !exists.some((item: { url: string; index: number }) => item.url === url)
       );
 
-      // File 객체들 직접 추출
+      // newImages: 새로 추가된 File 객체들
       const newImages = currentImages
-        .filter((img): img is Extract<FormImageListItem, { type: 'new' }> => img.type === 'new')
-        .map(img => img.file);
+        .filter((img: FormImageListItem): img is Extract<FormImageListItem, { type: 'new' }> => 
+          img.type === 'new'
+        )
+        .map((img: Extract<FormImageListItem, { type: 'new' }>) => img.file);
 
-      // 새 이미지들 들어갈 index만 숫자 배열로 추출
+      // imageIndexes: 새 이미지들이 들어갈 위치
       const imageIndexes = currentImages
-        .map((img, index) => (img.type === 'new' ? index : -1))
-        .filter(index => index !== -1);
+        .map((img: FormImageListItem, index: number) => img.type === 'new' ? index : null)
+        .filter((index): index is number => index !== null);
 
       const requestData = {
         title: formData.title,
         content: formData.content,
         exists,
         deletes,
-        newImages, // File[] 타입
-        imageIndexes,// 숫자 배열
+        newImages,
+        imageIndexes,
       };
 
       updateNotice(requestData as any, {
