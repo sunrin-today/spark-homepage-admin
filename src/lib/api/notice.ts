@@ -101,50 +101,28 @@ export const noticesApi = {
 
   updateNotice: async (id: string, data: UpdateNoticeData): Promise<Notice> => {
     try {
-      console.log('Updating notice with data:', data);
-      
-      // FormData 생성
       const formData = new FormData();
-      
+
+      // 1. 기본 필드 추가
       formData.append('title', data.title);
       formData.append('content', data.content);
-      
-      // exists는 JSON 문자열로 변환
+
+      // 2. 메타데이터 배열 처리 
       formData.append('exists', JSON.stringify(data.exists));
-      
-      // deletes 배열을 JSON 문자열로 변환
-      if (data.deletes && data.deletes.length > 0) {
-        formData.append('deletes', JSON.stringify(data.deletes));
-        console.log('Added deletes:', data.deletes);
-      } else {
-        formData.append('deletes', JSON.stringify([]));
-      }
-      
-      // newImages는 base64 문자열 배열로 전송
+      formData.append('deletes', JSON.stringify(data.deletes || []));
+      formData.append('imageIndexes', JSON.stringify(data.imageIndexes || []));
+
+      // 3. 새 이미지 파일 처리 (File 객체 그대로 전송)
       if (data.newImages && data.newImages.length > 0) {
-        formData.append('newImages', JSON.stringify(data.newImages));
-        console.log('Added newImages count:', data.newImages.length);
-      } else {
-        formData.append('newImages', JSON.stringify([]));
+        data.newImages.forEach((file: any) => {
+          if (file instanceof File) {
+            formData.append('newImages', file);
+          }
+        });
       }
-      
-      // imageIndexes도 JSON 문자열로 변환
-      if (data.imageIndexes && data.imageIndexes.length > 0) {
-        formData.append('imageIndexes', JSON.stringify(data.imageIndexes));
-      } else {
-        formData.append('imageIndexes', JSON.stringify([]));
-      }
-      
-      // FormData 내용 확인
-      console.log('=== FormData Contents ===');
-      for (const pair of formData.entries()) {
-        console.log(pair[0] + ':', typeof pair[1] === 'string' ? pair[1] : '[File]');
-      }
-      
-      console.log('Sending update FormData to server');
-      
+
       const response = await api.put<NoticeDetailResponse>(
-        `/api/notice/${id}`, 
+        `/api/notice/${id}`,
         formData,
         {
           headers: {
@@ -152,16 +130,10 @@ export const noticesApi = {
           },
         }
       );
-      
-      console.log('Notice updated successfully:', response.data);
+
       return transformNoticeFromApi(response.data);
     } catch (error) {
-      console.error('Failed to update notice:', error);
-      
-      if (error instanceof AxiosError) {
-        console.error('Error response:', error.response?.data);
-        console.error('Error status:', error.response?.status);
-      }
+      console.error('=== API Error ===', error);
       throw error;
     }
   },
