@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface Schedule {
   id: string;
@@ -29,6 +30,7 @@ export default function ScheduleDetailPopup({
   position, 
   onClose 
 }: ScheduleDetailPopupProps) {
+  const router = useRouter();
   const popupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -45,6 +47,11 @@ export default function ScheduleDetailPopup({
     };
   }, [onClose]);
 
+  const handleScheduleClick = (scheduleId: string) => {
+    onClose(); // 팝업 닫기
+    router.push(`/schedule/${scheduleId}`); 
+  };
+
   if (schedules.length === 0) return null;
 
   return (
@@ -60,7 +67,8 @@ export default function ScheduleDetailPopup({
       {schedules.map((schedule, index) => (
         <div 
           key={schedule.id}
-          className={`p-4 flex items-start gap-3 ${
+          onClick={() => handleScheduleClick(schedule.id)}
+          className={`p-4 flex items-start gap-3 cursor-pointer hover:bg-gray-50 transition-colors ${
             index !== schedules.length - 1 ? 'border-b border-gray-100' : ''
           }`}
         >

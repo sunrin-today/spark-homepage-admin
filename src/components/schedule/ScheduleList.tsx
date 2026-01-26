@@ -1,6 +1,7 @@
 'use client';
 import { ChevronRight } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { scheduleDummyData } from '@/lib/scheduleDummy';
 
 interface Schedule {
@@ -29,6 +30,7 @@ export default function ScheduleList({
   schedules = scheduleDummyData,
   onScheduleClick 
 }: ScheduleListProps) {
+  const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollState, setScrollState] = useState<'top' | 'middle' | 'bottom'>('top');
 
@@ -52,6 +54,10 @@ export default function ScheduleList({
     container.addEventListener('scroll', handleScroll);
     return () => container.removeEventListener('scroll', handleScroll);
   }, [schedules]);
+
+  const handleClick = (schedule: Schedule) => {
+    router.push(`/schedule/${schedule.id}`);
+  };
 
   return (
     <div className="w-full">
@@ -85,7 +91,7 @@ export default function ScheduleList({
             {schedules.map((schedule) => (
               <div
                 key={schedule.id}
-                onClick={() => onScheduleClick?.(schedule)}
+                onClick={() => handleClick(schedule)}
                 className="flex items-center gap-3 py-2 cursor-pointer hover:bg-gray-50 rounded-lg transition-colors px-2"
               >
                 <div
