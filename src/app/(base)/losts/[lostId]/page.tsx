@@ -26,34 +26,18 @@ import { useEffect } from "react";
 export default function LostDetailPage() {
     const params = useParams();
     const lostId = params.lostId!.toString();
-<<<<<<< Updated upstream
-=======
-    const { open, closeModal} = useModal();
->>>>>>> Stashed changes
     const { data: lostData, isLoading , error, refetch } = useLostDetailQuery(lostId);
     const { sort, onSortChange } = useTableSort({ key: "createdAt", order: "DESC" });
     const { open, close } = useModal();
     const { data: lostClaims , isLoading: isClaimsLoading , error: claimsError, refetch: refetchClaims } = useLostClaimsQuery({ lostId, column: sort.key, orderDirection: sort.order });
     const { mutate: updateClaimStatus , isPending: isUpdatingStatus , error: updateStatusError } = useChangeLostClaimStatusMutation();
     const router = useRouter();
-<<<<<<< Updated upstream
+
     useEffect(() => {
         console.log(lostClaims)
         console.log(lostData)
     }, [lostClaims, lostData]);
-=======
-    const handleStatusUpdateClick = (id: string, status: string) => {
-        setProcessingClaim({ id, status });
-        open();
-    };
 
-    const confirmStatusUpdate = () => {
-        if (processingClaim) {
-            updateClaimStatus(processingClaim);
-            closeModal();
-        }
-        };
->>>>>>> Stashed changes
     const actionItems: ActionBarItem[] = [
         {
             icon: <Trash2 size={24} />,
