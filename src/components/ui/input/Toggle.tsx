@@ -24,7 +24,7 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
   ) => {
     const sizeClasses = {
       sm: 'w-9 h-5',
-      md: 'w-11 h-6',
+      md: 'w-[45px] h-6',
       lg: 'w-14 h-8',
     };
 
@@ -36,14 +36,14 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
 
     const translateX = {
       sm: 'translate-x-3',
-      md: 'translate-x-4',
-      lg: 'translate-x-6',
+      md: 'translate-x-[21px]',
+      lg: 'translate-x-[28px]',
     };
 
 
 
     return (
-      <label className={`relative inline-flex items-center cursor-pointer ${className}`}>
+      <label className={`relative flex items-center cursor-pointer ${className}`}>
         <input
           type="checkbox"
           className="sr-only peer"
@@ -71,11 +71,10 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
               ${handleSize[size]}
               absolute
               top-1/2
-              left-1
+              left-[2px]
               -translate-y-1/2
               rounded-full
               bg-white
-              shadow-md
               transition-transform
               ${checked ? translateX[size] : 'translate-x-0'}
             `}

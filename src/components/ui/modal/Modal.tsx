@@ -22,17 +22,10 @@ export function Modal({
   return createPortal(
     <ModalPortal onClose={onClose}>
       <div 
-        className={`bg-white rounded-lg w-full max-w-md mx-4 ${className}`}
+        className={`bg-white w-full ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
-        {title && (
-          <div className="px-6 py-4">
-            <h3 className="text-lg font-medium text-gray-900">{title}</h3>
-          </div>
-        )}
-        <div className="p-6">
-          {children}
-        </div>
+        {children}
       </div>
     </ModalPortal>,
     document.body

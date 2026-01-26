@@ -189,17 +189,17 @@ const Calendar: React.FC<CalendarProps> = ({
           <button
             type="button"
             onClick={handlePrevMonth}
-            className="p-1 hover:bg-gray-100 rounded"
+            className="p-1 rounded-xl"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-6 h-6" />
           </button>
 
           <button
             type="button"
             onClick={handleNextMonth}
-            className="p-1 hover:bg-gray-100 rounded"
+            className="p-1 rounded-xl"
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-6 h-6" />
           </button>
         </div>
       </div>
@@ -271,13 +271,12 @@ const Calendar: React.FC<CalendarProps> = ({
             const left = range.startCol * cellWidth;
             const width = (range.endCol - range.startCol + 1) * cellWidth;
 
-            // ✅ row 중앙
             const top = range.row * cellHeight + cellHeight / 2;
 
             const scheduleStart = new Date(range.schedule.startDate);
             const scheduleEnd = new Date(range.schedule.endDate);
 
-            /** 이 row가 포함하는 실제 날짜들 */
+            // 이 row가 포함하는 실제 날짜들
             const rowDates = calendarDays.slice(
               range.row * 7,
               range.row * 7 + 7
@@ -309,7 +308,7 @@ const Calendar: React.FC<CalendarProps> = ({
                   height: `${cellHeight}%`,
 
                   backgroundColor: range.schedule.color,
-                  opacity: 0.7,
+                  opacity: 0.15,
 
                   borderRadius:
                     isStart && isEnd

@@ -73,7 +73,7 @@ export default function ActionBarTrigger({
         createPortal(
           <div
             ref={refs.setFloating}
-            style={{ ...floatingStyles, zIndex: 9999, width: 200 }}
+            style={{ ...floatingStyles, zIndex: 99, width: 200 }}
             {...getFloatingProps()}
           >
             <ActionBar title={title} items={items} />

@@ -1,7 +1,6 @@
 // components/image/SingleImageField.tsx
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { ImageBox } from "../../image/ImageBox";
-
 export function SingleImageField({
   preview,
   onChange,
@@ -18,9 +17,38 @@ export function SingleImageField({
   height?: string;
 }) {
   const ref = useRef<HTMLInputElement>(null);
-
+  const [isDragging, setIsDragging] = useState(false); 
+  const handleDragOver = (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!isDragging) setIsDragging(true);
+    };
+    const handleDragLeave = (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+    };
+    const handleDrop = (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+      const file = e.dataTransfer.files?.[0];
+      if (file && file.type.startsWith('image/')) {
+        onChange(file);
+      }
+    };
+    const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        onChange(file);
+      }
+    };
   return (
-    <div style={{ maxWidth: maxW }}>
+    <div 
+      style={{ maxWidth: maxW }} 
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}>
       <input
         id={name || "image"}
         name={name || "image"}
@@ -28,10 +56,7 @@ export function SingleImageField({
         type="file"
         accept="image/*"
         hidden
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) onChange(file);
-        }}
+        onChange={handleFileInput}
       />
       <ImageBox
         preview={preview}
@@ -39,6 +64,7 @@ export function SingleImageField({
         onRemove={onRemove}
         height={height}
       />  
+      
     </div>
   );
 }

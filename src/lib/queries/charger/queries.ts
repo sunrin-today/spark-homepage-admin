@@ -3,16 +3,16 @@ import { chargerKeys } from "./keys";
 import chargerAPI from "@/lib/api/charger";
 
 
-export const useGetChargers = (page: number, enabled: boolean) => {
+export const useGetChargers = (params: {page: number, limit: number, column: string, orderDirection: string}, enabled?: boolean) => {
   return useQuery({
-    queryKey: chargerKeys.all(),
+    queryKey: chargerKeys.statusList(params),
     queryFn: () =>
-      chargerAPI.getChargers({
-        page,
-        limit: 10,
-        column: "chargerId",
-        orderDirection: "ASC",
-      }),
+      chargerAPI.getChargers(
+        params.page,
+        params.limit,
+        params.column,
+        params.orderDirection || "ASC",
+      ),
     enabled,
   });
 };

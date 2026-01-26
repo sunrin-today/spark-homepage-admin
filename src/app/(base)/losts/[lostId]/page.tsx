@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import ActionBarTrigger from "@/components/common/action/ActionBarTrigger";
 import PageHeader from "@/components/layout/page/PageHeader";
 import { ActionBarItem } from "@/components/common/action/ActionBar";
@@ -9,7 +10,7 @@ import { useParams } from "next/navigation";
 import { useLostDetailQuery } from "@/lib/queries/losts/queries";
 import { useRouter } from "next/navigation";
 import { useDeleteLostMutation } from "@/lib/queries/losts/mutations";
-import { useModal } from "@/components/ui/modal";
+import { Modal, useModal } from "@/components/ui/modal";
 import { DataTable } from "@/components/common/table/DataTable";
 import { Column } from "@/lib/types/table";
 import { LostClaim } from "@/lib/types/lostClaims";
@@ -22,13 +23,25 @@ import { useChangeLostClaimStatusMutation } from "@/lib/queries/lostsClaims/muta
 export default function LostDetailPage() {
     const params = useParams();
     const lostId = params.lostId!.toString();
-    const { openModal } = useModal();
+    const { openModal, isOpen , closeModal} = useModal();
     const { data: lostData, isLoading , error, refetch } = useLostDetailQuery(lostId);
     const { sort, onSortChange } = useTableSort({ key: "createdAt", order: "DESC" });
     const { mutate: deleteLost } = useDeleteLostMutation();
+    const [processingClaim, setProcessingClaim] = useState<{id: string, status: string} | null>(null);
     const { data: lostClaims , isLoading: isClaimsLoading , error: claimsError } = useLostClaimsQuery({ lostId, column: sort.key, orderDirection: sort.order });
     const { mutate: updateClaimStatus , isPending: isUpdatingStatus , error: updateStatusError } = useChangeLostClaimStatusMutation();
     const router = useRouter();
+    const handleStatusUpdateClick = (id: string, status: string) => {
+        setProcessingClaim({ id, status });
+        openModal();
+    };
+
+    const confirmStatusUpdate = () => {
+        if (processingClaim) {
+            updateClaimStatus(processingClaim);
+            closeModal();
+        }
+        };
     const actionItems: ActionBarItem[] = [
         {
             icon: <Trash2 size={24} />,
@@ -37,7 +50,7 @@ export default function LostDetailPage() {
             iconColor: '#FA5353',
             textColor: '#FA5353',
             onClick: () => {
-                openModal()
+                deleteLost(lostId);
             },
         },
         {
@@ -86,13 +99,19 @@ export default function LostDetailPage() {
         render: (row) => (
             <div className="flex gap-[15px]" >
             <button
-                onClick={() => updateClaimStatus({ id: row.id, status: "REJECTED" })}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    handleStatusUpdateClick(row.id, "REJECTED");
+                }}
                 className="rounded-lg text-gray items-center  no-underline hover:bg-[#C0C0C0] text-sm flex gap-1 px-[11px] py-1.5">
                 <X/>
                 <span>거절</span>
             </button>
             <button 
-                onClick={() => updateClaimStatus({ id: row.id, status: "COMPLETED" })}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    handleStatusUpdateClick(row.id, "COMPLETED");
+                }}
                 className="rounded-lg text-[#E9E9E9] items-center bg-black hover:bg-darkgray text-sm flex gap-1 px-[11px] py-1.5">
                 전달하기
             </button>
@@ -125,6 +144,23 @@ export default function LostDetailPage() {
                     label="습득 날짜"
                     value={lostData?.foundDate || '-'}
                 />
+                <div className="flex gap-4 overflow-x-auto pb-2 ">
+                {lostData?.detailImageUrls.map((image, index) => (
+                    <div
+                        key={index}
+                        className="flex-shrink-0 w-[400px] h-[280px] rounded-lg overflow-x-auto bg-gray-100"
+                    >
+                        <Image
+                            width={400}
+                            height={280}
+                            unoptimized
+                            src={image.url}
+                            alt={`분실물 이미지 ${index + 1}`}
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
+                ))}
+                </div>
                 <InfoColumn
                     label="설명"
                     value={lostData?.description || '-'}

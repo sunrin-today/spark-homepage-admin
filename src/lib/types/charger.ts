@@ -19,9 +19,8 @@ export type Charger = {
     currentRentalRecord: ChargerRentalRecord | null;
 };
 
-export interface ChargerRecordListResponse {
-    items: ChargerRentalRecord[];
-    total: number;
-    currentPage: number;
-    totalPages: number;
-}
+export type ChargerRentalRequest = {
+    id: number;
+    user: User;
+    createdAt: string;
+};
