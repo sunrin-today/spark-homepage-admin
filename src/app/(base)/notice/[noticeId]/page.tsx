@@ -87,7 +87,8 @@ export default function NoticeDetailPage() {
     {
       icon: <Trash2 size={24} />,
       label: '삭제',
-      backgroundColor: 'rgba(250, 83, 83, 0.2)',
+      hoverBackgroundColor: 'rgba(250, 83, 83, 0.2)',
+      backgroundColor: '#F9F9F9',
       iconColor: '#FA5353',
       textColor: '#FA5353',
       onClick: () => {
