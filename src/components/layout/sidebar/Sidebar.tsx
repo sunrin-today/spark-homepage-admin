@@ -19,8 +19,10 @@ import { useAuth } from '@/contexts/AuthContexts';
 import { getUserInfo } from '@/lib/api/users';
 import type { UserResponse } from '@/lib/types/users';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation'; 
 
 const Sidebar = () => {
+  const pathname = usePathname(); // 현재 경로
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState<{
     [key: string]: boolean;
@@ -114,35 +116,45 @@ const Sidebar = () => {
         <div className="mb-4">
           <button
             onClick={() => toggleSection('management')}
-            className="w-full px-4 py-2 flex items-center justify-between hover:bg-gray-50 transition-colors"
+            className="w-full px-4 py-2 flex items-center hover:bg-gray-50 transition-colors"
           >
             {!isCollapsed && (
-              <>
+              <div className="flex items-center gap-1">
                 <span className="text-sm text-[#767676] font-medium">관리</span>
                 {expandedSections.management ? (
                   <ChevronDown className="w-5 h-5 text-[#767676]" />
                 ) : (
                   <ChevronRight className="w-5 h-5 text-[#767676]" />
                 )}
-              </>
+              </div>
             )}
             {isCollapsed && <div className="w-full h-px bg-gray-200" />}
           </button>
           
           {expandedSections.management && (
-            <div className="mt-1">
-              {managementItems.map((item, index) => (
-                <a
-                  key={index}
-                  href={item.href}
-                  className="flex items-center px-4 py-2.5 hover:bg-gray-50 transition-colors group"
-                >
-                  <item.icon className="w-6 h-6 text-[#505050] flex-shrink-0" />
-                  {!isCollapsed && (
-                    <span className="ml-3 text-base text-[#505050]">{item.label}</span>
-                  )}
-                </a>
-              ))}
+            <div className="mt-1 px-2 flex flex-col gap-1">
+              {managementItems.map((item, index) => {
+                const isActive = pathname === item.href;
+                return (
+                  <a
+                    key={index}
+                    href={item.href}
+                    // isCollapsed 상태에 따라 padding과 정렬(justify)을 다르게 적용함
+                    className={`flex items-center transition-colors group rounded-[12px] ${
+                      isCollapsed 
+                        ? 'justify-center p-[10px]' // 접혔을 때 - 중앙 정렬 및 적절한 패딩
+                        : 'p-[15px]'
+                    } ${
+                      isActive ? 'bg-[#EDEDED]' : 'hover:bg-[#EDEDED]'
+                    }`}
+                  >
+                    <item.icon className="w-6 h-6 text-[#505050] flex-shrink-0" />
+                    {!isCollapsed && (
+                      <span className="ml-3 text-base text-[#505050]">{item.label}</span>
+                    )}
+                  </a>
+                );
+              })}
             </div>
           )}
         </div>
@@ -150,35 +162,40 @@ const Sidebar = () => {
         <div>
           <button
             onClick={() => toggleSection('service')}
-            className="w-full px-4 py-2 flex items-center justify-between hover:bg-gray-50 transition-colors"
+            className="w-full px-4 py-2 flex items-center hover:bg-gray-50 transition-colors"
           >
             {!isCollapsed && (
-              <>
+              <div className="flex items-center gap-1">
                 <span className="text-sm text-[#767676] font-medium">서비스</span>
                 {expandedSections.service ? (
                   <ChevronDown className="w-5 h-5 text-[#767676]" />
                 ) : (
                   <ChevronRight className="w-5 h-5 text-[#767676]" />
                 )}
-              </>
+              </div>
             )}
             {isCollapsed && <div className="w-full h-px bg-gray-200" />}
           </button>
           
           {expandedSections.service && (
-            <div className="mt-1">
-              {serviceItems.map((item, index) => (
-                <a
-                  key={index}
-                  href={item.href}
-                  className="flex items-center px-4 py-2.5 hover:bg-gray-50 transition-colors group"
-                >
-                  <item.icon className="w-6 h-6 text-[#505050] flex-shrink-0" />
-                  {!isCollapsed && (
-                    <span className="ml-3 text-base text-[#505050]">{item.label}</span>
-                  )}
-                </a>
-              ))}
+            <div className="mt-1 px-2 flex flex-col gap-1">
+              {serviceItems.map((item, index) => {
+                const isActive = pathname === item.href;
+                return (
+                  <a
+                    key={index}
+                    href={item.href}
+                    className={`flex items-center px-[15px] py-[15px] transition-colors group rounded-[12px] ${
+                      isActive ? 'bg-[#EDEDED]' : 'hover:bg-[#EDEDED]'
+                    }`}
+                  >
+                    <item.icon className="w-6 h-6 text-[#505050] flex-shrink-0" />
+                    {!isCollapsed && (
+                      <span className="ml-3 text-base text-[#505050]">{item.label}</span>
+                    )}
+                  </a>
+                );
+              })}
             </div>
           )}
         </div>
@@ -186,7 +203,7 @@ const Sidebar = () => {
 
       {/* User Info */}
       <div className="p-4 flex flex-col">
-        <div className="mb-3 h-px w-[268px] bg-[#EBEBEB] self-center" />
+        <div className="mb-3 h-px w-full bg-[#EBEBEB] self-center" />
         {isLoadingUser ? (
           <div className="flex items-center">
             <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse flex-shrink-0" />
