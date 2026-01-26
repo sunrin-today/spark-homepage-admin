@@ -17,7 +17,7 @@ type DataTableProps<T> = {
 
 export function DataTable<T>({ columns, data, sort, onSortChange, onRefresh, isRefreshing, tableHeader, onRowClick, selectedRow }: DataTableProps<T>) {
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 leading-normal">
       <div className={`w-full flex items-center ${tableHeader ? "justify-between" : "justify-end"}`}>
         {tableHeader}
         
@@ -75,7 +75,7 @@ export function DataTable<T>({ columns, data, sort, onSortChange, onRefresh, isR
           {data.map((row, rIdx) => (
             <tr 
               key={rIdx} 
-              className={`border-b border-[#D0D0D0] hover:bg-lightgray hover:underline ${selectedRow === row ? 'bg-[#C0C0C0]' : ''}`}
+              className={`border-b border-[#D0D0D0] hover:underline ${selectedRow === row ? 'bg-[#C0C0C0]' : 'hover:bg-lightgray'}`}
               onClick={() => onRowClick?.(row)}
             >
               {columns.map((col, cIdx) => (

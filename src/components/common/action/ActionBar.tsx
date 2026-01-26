@@ -19,7 +19,7 @@ const ActionBar: React.FC<ActionBarProps> = ({ title, items }) => {
   return (
     <div className="w-full max-w-3xl mx-auto rounded-2xl border border-[#DEDEDE] overflow-hidden bg-white">
       {/* 제목 */}
-      <div className="px-6 py-3 bg-white border-b border-[#DEDEDE]">
+      <div className="px-4 py-3 bg-white border-b border-[#DEDEDE]">
         <h3 className="text-sm font-normal text-[#767676]">{title}</h3>
       </div>
 
@@ -40,7 +40,7 @@ const ActionBar: React.FC<ActionBarProps> = ({ title, items }) => {
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = item.backgroundColor || '#FFFFFF';
             }}
-            className="w-full px-6 py-3 flex items-center gap-4 transition-colors"
+            className="w-full px-4 py-[10px] flex items-center gap-4 transition-colors"
           >
             <span
               style={{

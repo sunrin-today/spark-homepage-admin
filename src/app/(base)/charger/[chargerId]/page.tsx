@@ -10,8 +10,9 @@ import { useTableSort } from "@/lib/hooks/useTableSort";
 import ActionBarTrigger from "@/components/common/action/ActionBarTrigger";
 import { useModal } from "@/contexts/ModalContexts";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
-import { useRentCharger, useReturnCharger, useTransferCharger } from "@/lib/queries/charger/mutations";
+import { useRentCharger, useReturnCharger } from "@/lib/queries/charger/mutations";
 import { UserLink } from "@/components/user/UserLink";
+import { ChargerRequestModal } from "@/components/charger/ChargerRequestModal";
 
 export default function ChargerDetailPage() {
     const { chargerId } = useParams<{ chargerId: string }>();
@@ -19,8 +20,8 @@ export default function ChargerDetailPage() {
     const {sort, onSortChange} = useTableSort({key: "borrower", order: "ASC"})
     const {open, close} = useModal();
     const {mutate: returnCharger} = useReturnCharger();
-    const {mutate: transferCharger} = useTransferCharger();
     const {mutate: rentCharger} = useRentCharger();
+    console.log(chargerData)
     const chargerColumn : Column<ChargerRentalRecord>[] = [
         {
             header: "#",
@@ -79,18 +80,22 @@ export default function ChargerDetailPage() {
             <InfoColumn
                 label="상태"
                 value={
-                    <span className="flex gap-2">
+                    <div className="flex items-center gap-[10px]">
                         {chargerData?.status === "not_rented" ? "미대여" 
                         : chargerData?.status === "renting" ? "대여중" 
                         : "전달예정"}
-                        {chargerData?.status !== "not_rented" && (
+                        {chargerData?.status === "renting" || chargerData?.status === "waiting" ? (
+                            <p>
                             <UserLink
-                                user={chargerData?.borrower || {}}
+                                user={chargerData?.currentRentalRecord?.borrower}
                             />
-                        )}
+                            </p>
+                        ) : null}
                         <ActionBarTrigger
                             title="상태 변경"
-                            actionButton={<button className="px-[10px] py-[5px] text-[10px] bg-[#0D0D0D] text-white rounded-[5px]">상태 변경</button>}
+                            actionButton={
+                                        <button
+                                            className="px-[10px] leading-normal py-[5px] text-[10px] bg-[#010101] text-[#FAFAFA] rounded-[5px]">상태 변경</button>}
                             items={[
                                 ...(chargerData?.status !== "not_rented" ? [{
                                     label: "미대여",
@@ -134,14 +139,10 @@ export default function ChargerDetailPage() {
                                     label: "전달예정",
                                     onClick: () => {
                                         open(
-                                            <ConfirmModal
+                                            <ChargerRequestModal
+                                                id={chargerData?.id || ""}
+                                                chargerId={chargerData?.chargerId || ""}
                                                 onClose={() => close()}
-                                                onConfirm={() => {
-                                                    transferCharger(
-                                                        chargerData?.id || 0
-                                                    );
-                                                    close();
-                                                }}
                                             />
                                         )
                                     },
@@ -152,17 +153,17 @@ export default function ChargerDetailPage() {
                             ]}   
                             
                         />
-                    </span>
+                    </div>
                 }
             />
                 
-            <div className="flex flex-col px-3 gap-3">  
+            <div className="flex flex-col px-3 gap-3">
                 <DataTable
                     tableHeader = {
                         <span className="text-sm text-darkgray">대여기록</span>
                     }
                     columns={chargerColumn}
-                    data={chargerData?.rentalRecords || []}
+                    data={chargerData? || []}
                     sort={sort}
                     onSortChange={onSortChange}
                     onRefresh={refetch}

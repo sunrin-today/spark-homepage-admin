@@ -6,7 +6,7 @@ export function useTabHook(key: string, defaultTab = "") {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const tab = searchParams.get(key);
+  const tab = searchParams.get(key) ?? defaultTab;
 
   const setTab = (next: string) => {
     const params = new URLSearchParams(searchParams.toString());

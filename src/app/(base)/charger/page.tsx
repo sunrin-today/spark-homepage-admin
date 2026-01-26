@@ -18,6 +18,7 @@ import { useModal } from "@/contexts/ModalContexts";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 import { useChargerRequests } from "@/lib/queries/charger-request/queries";
 export default function ChargerPage() {
+    
     const [activeTab, setActiveTab] = useState<"충전기 관리" | "신청서 관리">("충전기 관리");
     const {page: requestPage, setPage: setRequestPage} = usePaginationQuery("page", 1);
     const { sort: requestSort, onSortChange: onRequestSortChange } = useTableSort({ key: "createdAt", order: "DESC" })    
