@@ -8,13 +8,13 @@ import { Notice } from '@/lib/types/notice';
 import PageHeader from '@/components/layout/page/PageHeader';
 import ActionBarTrigger from '@/components/common/action/ActionBarTrigger';
 import { ActionBarItem } from '@/components/common/action/ActionBar';
-import { useModal } from '@/components/ui/modal';
+import { useModal } from '@/contexts/ModalContexts';
 
 export default function NoticeDetailPage() {
   const router = useRouter();
   const params = useParams();
   const noticeId = params.noticeId as string;
-  const { openModal } = useModal();
+  const { open } = useModal();
   
   const [notice, setNotice] = useState<Notice | null>(null);
   const [loading, setLoading] = useState(true);
@@ -91,7 +91,7 @@ export default function NoticeDetailPage() {
       iconColor: '#FA5353',
       textColor: '#FA5353',
       onClick: () => {
-        openModal();
+        open();
       },
     },
     {
@@ -122,13 +122,6 @@ export default function NoticeDetailPage() {
     return [];
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-gray-500">로딩 중...</div>
-      </div>
-    );
-  }
 
   if (!notice) {
     return (

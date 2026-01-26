@@ -38,9 +38,7 @@ export default function ScheduleDetailPage({ params }: PageProps) {
   }
 
   const handleEdit = () => {
-    // TODO: 편집 기능 구현
-    console.log("편집", scheduleId);
-    // router.push(`/schedule/${scheduleId}/edit`);
+    router.push(`/schedule/${scheduleId}/edit`);
   };
 
   const handleDelete = () => {

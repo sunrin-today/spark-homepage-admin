@@ -41,10 +41,6 @@ export default function LostsPage() {
                             <p className="text-red">오류가 발생했습니다.</p>
                             <p className="text-gray">{error.message}</p>
                         </div>
-                    ) : isLoading ? (
-                        <div className="text-center py-8">
-                            <p className="text-gray">로딩 중...</p>
-                        </div>
                     ) : losts?.items && losts.items.length > 0 ? (
                         <>
                         <div className=" grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

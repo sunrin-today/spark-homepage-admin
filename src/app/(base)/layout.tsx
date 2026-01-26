@@ -47,15 +47,6 @@ export default function BaseLayout({
     checkAuth();
   }, [firebaseUser, authLoading, router]);
 
-  // 로딩 중
-  if (authLoading || loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">로딩 중...</div>
-      </div>
-    );
-  }
-
   // 인증되지 않은 경우 또는 ADMIN이 아닐 때
   /*
   if (!firebaseUser || !userInfo || userInfo.role !== "ADMIN") {

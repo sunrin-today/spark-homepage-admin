@@ -151,7 +151,6 @@ export default function ChargerPage() {
         <div className="px-8 py-12 flex flex-col gap-[10px]">
             <PageHeader title={"충전기 대여 - " + activeTab}/>
             <div className="px-2">
-                {isLoading && <div>로딩중...</div>}
                 {!error && !isLoading && (
                     <> 
                         {activeTab === "충전기 관리" && (

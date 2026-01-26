@@ -14,9 +14,6 @@ export default function EventEdit() {
     <div className="px-8 py-12 gap-[10px] flex flex-col">
         <PageHeader title="이벤트 수정" isBackButton />
         
-            
-        {isLoading && <div>로딩 중...</div>}
-        
         {eventDetail &&
             <EventForm
                 mode="update"

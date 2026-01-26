@@ -91,7 +91,6 @@ export default function MeetingRoomPage() {
         <PageHeader title="소회의실 대여"/>
         <div className="mt-[22px] flex flex-col gap-2">
             
-            {isloading && <p>로딩 중...</p>}
             {listError && <p className="text-[#FA5353]">불러오기에 실패했습니다: {listError.message}</p>}
             {deleteError && <p className="text-[#FA5353]">삭제에 실패했습니다: {deleteError.message}</p>}
             {!isloading && !listError && !deleteError && (<>

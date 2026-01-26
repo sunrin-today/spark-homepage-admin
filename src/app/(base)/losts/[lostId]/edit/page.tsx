@@ -43,8 +43,6 @@ export default function EditLostPage() {
             <PageHeader title="분실물 수정" isBackButton >
                 <ActionBarTrigger items={actionItems} />
             </PageHeader>
-            {isLostLoading && <div>로딩 중...</div>}
-            {lostError && <div>로딩 중 오류가 발생했습니다: {lostError.message}</div>}
             {lost &&
                 <LostForm 
                     mode="update"

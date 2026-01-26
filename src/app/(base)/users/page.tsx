@@ -147,11 +147,7 @@ const UsersPage = () => {
         onSubmit={handleSearch}
       />
 
-      {isLoading ? (
-        <div className="flex items-center justify-center py-20">
-          <div className="text-gray-500">로딩 중...</div>
-        </div>
-      ) : data?.items && data.items.length > 0 ? (
+      {data?.items && data.items.length > 0 ? (
         <>
           <DataTable
             columns={columns}

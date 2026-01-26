@@ -122,13 +122,6 @@ export default function NoticeEditPage() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-gray-500">로딩 중...</div>
-      </div>
-    );
-  }
 
   console.log('=== Current Render State ===');
   console.log('formData.images:', formData.images);

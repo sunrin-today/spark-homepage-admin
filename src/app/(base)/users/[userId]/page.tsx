@@ -185,11 +185,7 @@ const UserDetailPage = () => {
       </div>
 
       <div className="flex flex-col gap-4">
-        {isChargerLoading ? (
-          <div className="flex items-center justify-center py-20 border border-[#D5D5D5] rounded-2xl">
-            <div className="text-gray-500">로딩 중...</div>
-          </div>
-        ) : chargerData?.items && chargerData.items.length > 0 ? (
+        {chargerData?.items && chargerData.items.length > 0 ? (
           <>
             <DataTable
               columns={chargerColumns}
@@ -226,11 +222,7 @@ const UserDetailPage = () => {
       </div>
 
       <div className="flex flex-col gap-4">
-        {isLostLoading ? (
-          <div className="flex items-center justify-center py-20 border border-[#D5D5D5] rounded-2xl">
-            <div className="text-gray-500">로딩 중...</div>
-          </div>
-        ) : lostData?.items && lostData.items.length > 0 ? (
+        {lostData?.items && lostData.items.length > 0 ? (
           <>
             <DataTable
               columns={lostColumns}
