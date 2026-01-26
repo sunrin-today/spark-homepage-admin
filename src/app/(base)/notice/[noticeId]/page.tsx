@@ -2,19 +2,22 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { ChevronLeft, MoreVertical, Trash2, Edit } from 'lucide-react';
+import { Trash2, Pencil } from 'lucide-react';
 import { noticesApi } from '@/lib/api/notice';
 import { Notice } from '@/lib/types/notice';
+import PageHeader from '@/components/layout/page/PageHeader';
+import ActionBarTrigger from '@/components/common/action/ActionBarTrigger';
+import { ActionBarItem } from '@/components/common/action/ActionBar';
+import { useModal } from '@/components/ui/modal';
 
 export default function NoticeDetailPage() {
   const router = useRouter();
   const params = useParams();
   const noticeId = params.noticeId as string;
+  const { openModal } = useModal();
   
   const [notice, setNotice] = useState<Notice | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -35,22 +38,6 @@ export default function NoticeDetailPage() {
       fetchNotice();
     }
   }, [noticeId, router]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false);
-      }
-    };
-
-    if (isMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isMenuOpen]);
 
   // 이미지 스크롤 영역 휠 이벤트 처리
   useEffect(() => {
@@ -89,14 +76,33 @@ export default function NoticeDetailPage() {
         alert('삭제에 실패했습니다.');
       }
     }
-    setIsMenuOpen(false);
   };
 
   const handleEdit = () => {
     if (!notice) return;
     router.push(`/notice/${notice.id}/edit`);
-    setIsMenuOpen(false);
   };
+
+  const actionItems: ActionBarItem[] = [
+    {
+      icon: <Trash2 size={24} />,
+      label: '삭제',
+      backgroundColor: 'rgba(250, 83, 83, 0.2)',
+      iconColor: '#FA5353',
+      textColor: '#FA5353',
+      onClick: () => {
+        openModal();
+      },
+    },
+    {
+      icon: <Pencil size={24} />,
+      label: '수정',
+      backgroundColor: '#F9F9F9',
+      iconColor: '#FDC019',
+      textColor: '#010101',
+      onClick: handleEdit,
+    }
+  ];
 
   // 이미지 배열 파싱 - imageUrls 우선, 없으면 images에서 추출
   const getImages = (notice: Notice): string[] => {
@@ -135,53 +141,12 @@ export default function NoticeDetailPage() {
   const imageList = getImages(notice);
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-7xl mx-auto px-8 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => router.back()}
-              className="text-gray-700 hover:text-gray-900"
-              aria-label="뒤로가기"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-            <h1 className="text-2xl font-bold">공지사항 상세보기</h1>
-          </div>
+    <div className="px-8 py-12 gap-[10px] flex flex-col">
+      <PageHeader title="공지사항 상세보기" isBackButton>
+        <ActionBarTrigger items={actionItems} />
+      </PageHeader>
 
-          <div className="relative" ref={menuRef}>
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              aria-label="메뉴"
-            >
-              <MoreVertical className="w-6 h-6 text-gray-700" />
-            </button>
-
-            {isMenuOpen && (
-              <div className="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10">
-                <div className="px-4 py-2 text-sm text-gray-500 border-b border-gray-100">
-                  액션
-                </div>
-                <button
-                  onClick={handleDelete}
-                  className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  삭제
-                </button>
-                <button
-                  onClick={handleEdit}
-                  className="w-full px-4 py-2 text-left text-sm text-yellow-600 hover:bg-yellow-50 flex items-center gap-2 transition-colors"
-                >
-                  <Edit className="w-4 h-4" />
-                  수정
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-
+      <div className="flex flex-col px-2 gap-[10px]">
         <div className="mb-6">
           <label className="block text-sm text-gray-600 mb-2">제목</label>
           <div className="text-lg font-medium text-gray-900">
