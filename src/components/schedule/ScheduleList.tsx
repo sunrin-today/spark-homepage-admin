@@ -55,7 +55,7 @@ export default function ScheduleList({
 
   return (
     <div className="w-full">
-      <h2 className="text-lg font-semibold mb-3">총 {schedules.length}개</h2>
+      <h2 className="text-base font-medium mb-3">총 {schedules.length}개</h2>
       
       <div 
         className="relative bg-white overflow-hidden"
