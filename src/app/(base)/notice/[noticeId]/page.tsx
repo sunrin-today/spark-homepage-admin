@@ -124,7 +124,7 @@ export default function NoticeDetailPage() {
       label: '수정',
       backgroundColor: '#F9F9F9',
       iconColor: '#FDC019',
-      textColor: '#010101',
+      textColor: 'black',
       onClick: handleEdit,
     }
   ];
@@ -165,16 +165,15 @@ export default function NoticeDetailPage() {
       </PageHeader>
 
       <div className="flex flex-col px-2 gap-[10px]">
-        <div className="mb-6">
-          <label className="block text-sm text-gray-600 mb-2">제목</label>
-          <div className="text-lg font-medium text-gray-900">
+        <div className="mb-[10px]">
+          <label className="block text-sm text-[#767676] mb-2">제목</label>
+          <div className="text-base font-regular text-black">
             {notice.title}
           </div>
         </div>
 
         {imageList.length > 0 && (
-          <div className="mb-6">
-            <label className="block text-sm text-gray-600 mb-2">이미지</label>
+          <div className="mb-[10px]">
             <div 
               ref={scrollRef}
               className="flex gap-4 overflow-x-auto pb-2"
@@ -217,9 +216,9 @@ export default function NoticeDetailPage() {
           </div>
         )}
 
-        <div className="mb-6">
-          <label className="block text-sm text-gray-600 mb-2">설명</label>
-          <div className="text-base text-gray-900 whitespace-pre-wrap leading-relaxed">
+        <div className="mb-[10px]">
+          <label className="block text-sm text-[#767676] mb-2">설명</label>
+          <div className="text-base text-black whitespace-pre-wrap leading-relaxed">
             {notice.content}
           </div>
         </div>
