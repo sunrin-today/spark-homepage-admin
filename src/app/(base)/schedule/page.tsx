@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import Calendar from '@/components/schedule/Calendar';
+import PageCalendar from '@/components/schedule/PageCalendar';
 import ScheduleList from '@/components/schedule/ScheduleList';
 import ScheduleDetailPopup from '@/components/schedule/ScheduleDetailPopup';
 import { scheduleDummyData } from '@/lib/scheduleDummy';
@@ -54,7 +54,7 @@ export default function SchedulePage() {
       
       <div className="flex gap-8">
         <div className="flex-1">
-          <Calendar
+          <PageCalendar
             selectedDate={selectedDate}
             onDateSelect={handleDateSelect}
             schedules={scheduleDummyData}
@@ -62,7 +62,7 @@ export default function SchedulePage() {
           />
         </div>
 
-        <div className="w-96">
+        <div className="w-[427px]">
           <ScheduleList
             schedules={scheduleDummyData}
             onScheduleClick={(schedule) => handleScheduleClick([schedule])}
