@@ -6,20 +6,40 @@ import { ActionBarItem } from "../common/action/ActionBar";
 import ActionBarTrigger from "../common/action/ActionBarTrigger";
 import { Lost } from "@/lib/types/losts";
 import Link from "next/link";
+import ConfirmModal from "../ui/modal/ConfirmModal";
+import { useModal } from "@/contexts/ModalContexts";
 
 
 export const LostCard = ({lost}: {lost: Lost}) => {
   const router = useRouter();
+  const {open, close } = useModal();
   const deleteLostMutation = useDeleteLostMutation();
-  const actionItems: ActionBarItem[] = [
-    
+  const actionItems: ActionBarItem[] = [    
   {
     icon: <Trash2 size={24} />,
     label: '삭제',
-    backgroundColor: 'rgba(250, 83, 83, 0.2)',
+    backgroundColor: '#F9F9F9',
+    hoverBackgroundColor: 'rgba(250, 83, 83, 0.2)',
     iconColor: '#FA5353',
     textColor: '#FA5353',
-    onClick: () => deleteLostMutation.mutate(lost.id),
+    onClick: () => {
+        open(<ConfirmModal
+            onClose={() => close()}
+            onConfirm={() => {
+                deleteLostMutation.mutate(lost.id, {
+                    onSuccess: () => {
+                        close();
+                    },
+                    onError: (e) => {
+                        alert("삭제하는데 오류가 발생하였습니다: " + e.message)
+                        close();
+                    }
+                });
+            }}
+            title="분실물 삭제"
+            message="정말로 이 분실물을 삭제하시겠습니까?"
+        />)
+    },
   },
   {
     icon: <Pencil size={24} />,
@@ -51,9 +71,9 @@ export const LostCard = ({lost}: {lost: Lost}) => {
                 </h2>
                 <ActionBarTrigger items={actionItems} vertical={true}/>
             </div>
-            <div className="text-sm font-regular text-gray line-clamp-2">
+            <div className="text-sm w-full font-regular text-gray line-clamp-2">
                 {lost.description}
-            </div>
+                </div>
         </div>
     );
 };

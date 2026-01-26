@@ -7,11 +7,13 @@ import { InputWrapper } from "@/components/ui/input/InputWrapper";
 import { TextareaInput } from "@/components/ui/input/TextareaInput";
 import BaseInput from "@/components/ui/input/Input";
 import Toggle from "@/components/ui/input/Toggle";
-import { X, File } from "lucide-react";
+import { X, Save } from "lucide-react";
 import { validateEventLink } from "@/utils/events";
 import {EventFormState, EventFormProps} from "@/lib/types/events";
 import { DetailImageGrid } from "@/components/image/DetailImageGrid";
 import { FormImageListItem } from "@/lib/types/common";
+import { useModal } from "@/contexts/ModalContexts";
+import ConfirmModal from "../ui/modal/ConfirmModal";
 
 export default function EventForm(props: EventFormProps) {
 
@@ -58,9 +60,7 @@ export default function EventForm(props: EventFormProps) {
     };
   });
   
-  useEffect(() => {
-    console.log("formData", formData);
-  }, [formData]);
+  const { open, close } = useModal();
   
   const setThumbnail = (file: File | null) => {
     setFormData(prev => ({ ...prev, thumbnail: file }));
@@ -103,10 +103,19 @@ export default function EventForm(props: EventFormProps) {
       return;
     }
     if (mode === "create") {
-        mutation(formData);
+      open(<ConfirmModal 
+        title="업로드 하실건가요?"
+        message="예를 누르실 경우 바로 등록됨을 명심하세요."
+        onClose={close}
+        onConfirm={() => {mutation(formData); close();}} />)
         return;
     }
-    mutation(formData);
+    open(<ConfirmModal 
+      title="수정 저장 하실건가요?"
+      message="예를 누르실 경우 바로 수정된 내용이 적용됨을 명심하세요."
+      onClose={close}
+      onConfirm={() => {mutation(formData); close();}} />)
+    return;
   };
   return (
     <form onSubmit={handleSubmit} className="space-y-6 px-2 py-3">
@@ -209,7 +218,7 @@ export default function EventForm(props: EventFormProps) {
           ${isPending ? "bg-black/50 cursor-not-allowed" : "bg-black"}
           text-white rounded-lg flex items-center gap-2`}
         >
-          <File />
+          <Save />
           {submitText}
         </button>
       </div>

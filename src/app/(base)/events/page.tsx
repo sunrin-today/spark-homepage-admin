@@ -29,6 +29,7 @@ export default function EventsPage() {
                 onChangeText={setSearchValue}
                 onSubmit={() => {
                     setSearchQuery(searchValue);
+                    setPaginationPage(1);
                 }}
             />
             <div className="flex flex-col gap-3">
@@ -64,7 +65,7 @@ export default function EventsPage() {
                         </>
                     ) : (
                         <div className="text-center py-8">
-                            <p className="text-gray-500">이벤트가 없습니다.</p>
+                            <p className="text-gray">이벤트가 없습니다.</p>
                         </div>
                     )
                 }

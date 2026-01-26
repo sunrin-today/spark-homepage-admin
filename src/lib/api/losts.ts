@@ -30,9 +30,6 @@ const lostsApi = {
                 formData.append("detailImages", file);
             });
         }
-        for (const [key, value] of formData.entries()) {
-  console.log(key, value);
-}
         const response = await api.post('/api/lost', 
              formData, {
                 headers: {

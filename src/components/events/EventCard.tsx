@@ -3,22 +3,24 @@ import { Trash2, Pencil } from "lucide-react";
 import Image from "next/image";
 import { Event } from "@/lib/types/events";
 import { useRouter } from "next/navigation";
-import { useDeleteEvent } from "@/lib/queries/events/mutations";
 import { ActionBarItem } from "../common/action/ActionBar";
 import ActionBarTrigger from "../common/action/ActionBarTrigger";
+import { useModal } from "@/contexts/ModalContexts";
+import EventDeleteModal from "./EventDeleteModal";
 
 export const EventCard = ({event}: {event: Event}) => {
   const router = useRouter();
-  const deleteEventMutation = useDeleteEvent();
+  const {open} = useModal();
   const actionItems: ActionBarItem[] = [
     
   {
     icon: <Trash2 size={24} />,
     label: '삭제',
-    backgroundColor: 'rgba(250, 83, 83, 0.2)',
+    backgroundColor: '#F9F9F9',
+    hoverBackgroundColor: 'rgba(250, 83, 83, 0.2)',
     iconColor: '#FA5353',
     textColor: '#FA5353',
-    onClick: () => deleteEventMutation.mutate(event.id),
+    onClick: () => open(<EventDeleteModal eventId={event.id}/>),
   },
   {
     icon: <Pencil size={24} />,

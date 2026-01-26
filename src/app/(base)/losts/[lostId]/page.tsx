@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import ActionBarTrigger from "@/components/common/action/ActionBarTrigger";
 import PageHeader from "@/components/layout/page/PageHeader";
 import { ActionBarItem } from "@/components/common/action/ActionBar";
@@ -9,8 +8,6 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useLostDetailQuery } from "@/lib/queries/losts/queries";
 import { useRouter } from "next/navigation";
-import { useDeleteLostMutation } from "@/lib/queries/losts/mutations";
-import { Modal, useModal } from "@/components/ui/modal";
 import { DataTable } from "@/components/common/table/DataTable";
 import { Column } from "@/lib/types/table";
 import { LostClaim } from "@/lib/types/lostClaims";
@@ -20,28 +17,25 @@ import { formatKoreanDate } from "@/utils/date";
 import { useLostClaimsQuery } from "@/lib/queries/lostsClaims/queries";
 import { getClaimStatusText } from "@/utils/lostClaims";
 import { useChangeLostClaimStatusMutation } from "@/lib/queries/lostsClaims/mutations";
+import ConfirmModal from "@/components/ui/modal/ConfirmModal";
+import { useModal } from "@/contexts/ModalContexts";
+import LostDeleteModal from "@/components/losts/LostDeleteModal";
+import DeleveryCompleteModal from "@/components/losts/DeliveryCompleteModal";
+import { UserLink } from "@/components/user/UserLink";
+import { useEffect } from "react";
 export default function LostDetailPage() {
     const params = useParams();
     const lostId = params.lostId!.toString();
-    const { openModal, isOpen , closeModal} = useModal();
     const { data: lostData, isLoading , error, refetch } = useLostDetailQuery(lostId);
     const { sort, onSortChange } = useTableSort({ key: "createdAt", order: "DESC" });
-    const { mutate: deleteLost } = useDeleteLostMutation();
-    const [processingClaim, setProcessingClaim] = useState<{id: string, status: string} | null>(null);
-    const { data: lostClaims , isLoading: isClaimsLoading , error: claimsError } = useLostClaimsQuery({ lostId, column: sort.key, orderDirection: sort.order });
+    const { open, close } = useModal();
+    const { data: lostClaims , isLoading: isClaimsLoading , error: claimsError, refetch: refetchClaims } = useLostClaimsQuery({ lostId, column: sort.key, orderDirection: sort.order });
     const { mutate: updateClaimStatus , isPending: isUpdatingStatus , error: updateStatusError } = useChangeLostClaimStatusMutation();
     const router = useRouter();
-    const handleStatusUpdateClick = (id: string, status: string) => {
-        setProcessingClaim({ id, status });
-        openModal();
-    };
-
-    const confirmStatusUpdate = () => {
-        if (processingClaim) {
-            updateClaimStatus(processingClaim);
-            closeModal();
-        }
-        };
+    useEffect(() => {
+        console.log(lostClaims)
+        console.log(lostData)
+    }, [lostClaims, lostData]);
     const actionItems: ActionBarItem[] = [
         {
             icon: <Trash2 size={24} />,
@@ -50,7 +44,7 @@ export default function LostDetailPage() {
             iconColor: '#FA5353',
             textColor: '#FA5353',
             onClick: () => {
-                deleteLost(lostId);
+                open(<LostDeleteModal lostId={lostId}/>)
             },
         },
         {
@@ -71,10 +65,7 @@ export default function LostDetailPage() {
             header: "이름",
             width: "200px",
             render: (row) => (
-            <Link href={`/users/${row.user.id}`} className="underline flex gap-1 items-center">
-                <Image src={row.user.avatarUrl!} alt="user" width={24} height={24} className="rounded-full" />
-                <span>{row.user.name}</span>
-            </Link>
+                <UserLink user={row.user} />
             ),
             isSortable: true,
             sortKey: "user",
@@ -101,7 +92,15 @@ export default function LostDetailPage() {
             <button
                 onClick={(e) => {
                     e.stopPropagation();
-                    handleStatusUpdateClick(row.id, "REJECTED");
+                    open(
+                        <DeleveryCompleteModal
+                        onClose={close}
+                        onConfirm={() => {
+                            updateClaimStatus({ id: row.id, status: "REJECTED" });
+                            close();
+                        }}
+                        />
+                    )
                 }}
                 className="rounded-lg text-gray items-center  no-underline hover:bg-[#C0C0C0] text-sm flex gap-1 px-[11px] py-1.5">
                 <X/>
@@ -110,7 +109,15 @@ export default function LostDetailPage() {
             <button 
                 onClick={(e) => {
                     e.stopPropagation();
-                    handleStatusUpdateClick(row.id, "COMPLETED");
+                    open(
+                        <DeleveryCompleteModal
+                        onClose={close}
+                        onConfirm={() => {
+                            updateClaimStatus({ id: row.id, status: "COMPLETED" });
+                            close();
+                        }}
+                        />
+                    )
                 }}
                 className="rounded-lg text-[#E9E9E9] items-center bg-black hover:bg-darkgray text-sm flex gap-1 px-[11px] py-1.5">
                 전달하기
@@ -173,7 +180,7 @@ export default function LostDetailPage() {
                     ) : 
                     lostData && (
                     <DataTable
-                        onRefresh={ refetch }
+                        onRefresh={refetchClaims}
                         columns={columns}
                         data={lostClaims?.items || []}
                         sort={sort}

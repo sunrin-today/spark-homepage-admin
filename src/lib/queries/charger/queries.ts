@@ -17,9 +17,9 @@ export const useGetChargers = (params: {page: number, limit: number, column: str
   });
 };
 
-export const useGetCharger = (chargerId: string) => {
+export const useGetChargerByChargerId = (chargerId: string) => {
   return useQuery({
-    queryKey: chargerKeys.status(),
-    queryFn: () => chargerAPI.getChargerDetailById(chargerId),
+    queryKey: chargerKeys.detail(chargerId),
+    queryFn: () => chargerAPI.getChargerDetailbychargerId(chargerId),
   });
 };

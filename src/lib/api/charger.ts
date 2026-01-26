@@ -24,8 +24,9 @@ const chargerApi =  {
         const response = await api.put(`/api/charger/${id}`, { description });
         return response.data;
     },
-    changeChargerStatus: async (id: string, status: string, rentalRequesId?: string) => {
-        const response = await api.put(`/api/charger/${id}`, { status, rentalRequesId });
+    changeChargerStatus: async (id: string, status: string, rentalRequestId?: string) => {
+        const response = await api.patch(`/api/charger/${id}`, { status : status, rentalRequestId : rentalRequestId });
+        
         return response.data;
     },
     // 충전기 생성

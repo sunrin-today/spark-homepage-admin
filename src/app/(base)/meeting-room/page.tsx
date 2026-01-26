@@ -1,6 +1,6 @@
 "use client";
 import { DataTable } from "@/components/common/table/DataTable";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Column } from "@/lib/types/table";
 import { RentalRecord } from "@/lib/types/meeting-room";
 import PageHeader from "@/components/layout/page/PageHeader";
@@ -16,6 +16,7 @@ import ActionBarTrigger from "@/components/common/action/ActionBarTrigger";
 import { useDeleteRentalMutation } from "@/lib/queries/meeting-room/mutations";
 import { UserLink } from "@/components/user/UserLink";
 import { useModal } from "@/contexts/ModalContexts";
+import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 export default function MeetingRoomPage() {
   const [limit, setLimit] = useState<number>(10);
   const { page: paginationPage, setPage: setPaginationPage } = usePaginationQuery("page", 1);
@@ -71,10 +72,13 @@ export default function MeetingRoomPage() {
             {
                 icon: <Trash2 size={24} />,
                 label: '삭제',
-                backgroundColor: 'rgba(250, 83, 83, 0.2)',
+                backgroundColor: '#F9F9F9',
+                hoverBackgroundColor: 'rgba(250, 83, 83, 0.2)',
                 iconColor: '#FA5353',
                 textColor: '#FA5353',
-                onClick: () => (row.id)
+                onClick: () => open(
+                    <ConfirmModal onConfirm={() => {deleteRental(row.id); close()}} onClose={() => close()} title="삭제 확인" message="정말로 삭제하시겠습니까?"/>
+                )
             }
             ]}
         />
@@ -85,7 +89,7 @@ export default function MeetingRoomPage() {
   return (
     <div className="px-8 py-12">
         <PageHeader title="소회의실 대여"/>
-        <div className="mt-[66px] flex flex-col gap-2">
+        <div className="mt-[22px] flex flex-col gap-2">
             
             {isloading && <p>로딩 중...</p>}
             {listError && <p className="text-[#FA5353]">불러오기에 실패했습니다: {listError.message}</p>}

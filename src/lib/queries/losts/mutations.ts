@@ -23,6 +23,9 @@ export function useCreateLostMutation() {
       queryClient.invalidateQueries({ queryKey: lostKeys.lists() });
       router.push("/losts");
     },
+    onError: (e) => {
+      alert("분실물을 생성하는데 오류가 발생하였습니다: " + e.message);
+    }
   });
 }
 
@@ -49,6 +52,9 @@ export function useUpdateLostMutation(
       queryClient.invalidateQueries({ queryKey: lostKeys.lists() });
       router.push("/losts");
     },
+    onError: (e) => {
+      alert("분실물을 수정하는데 오류가 발생하였습니다: " + e.message);
+    }
   });
 }
 
@@ -65,5 +71,8 @@ export function useDeleteLostMutation() {
       queryClient.invalidateQueries({ queryKey: lostKeys.lists() });
       router.push("/losts");
     },
+    onError: (e) => {
+      alert("분실물을 삭제하는데 오류가 발생하였습니다: " + e.message);
+    }
   });
 }

@@ -29,5 +29,5 @@ export function GetRemainingDays(date: string) {
   const now = new Date();
   const diff = d.getTime() - now.getTime();
   const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-  return days;
+  return days > 0 ? `${days}일 남음` : "일 지남";
 }
