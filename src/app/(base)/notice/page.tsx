@@ -179,7 +179,7 @@ export default function NoticesPage() {
             label: '수정',
             backgroundColor: '#F9F9F9',
             iconColor: '#FDC019',
-            textColor: '#010101',
+            textColor: 'black',
             onClick: () => router.push(`/notice/${notice.id}/edit`),
           },
         ];
