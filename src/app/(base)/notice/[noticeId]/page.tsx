@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { ChevronLeft, MoreVertical, Trash2, Edit } from 'lucide-react';
 import { noticesApi } from '@/lib/api/notice';
-import { Notice, NoticeImage } from '@/lib/types/notice';
+import { Notice } from '@/lib/types/notice';
 
 export default function NoticeDetailPage() {
   const router = useRouter();
@@ -73,17 +73,19 @@ export default function NoticeDetailPage() {
     setIsMenuOpen(false);
   };
 
-  // 이미지 배열 파싱 - NoticeImage[] 또는 string[] 또는 imageUrls 처리
+  // 이미지 배열 파싱 - imageUrls 우선, 없으면 images에서 추출
   const getImages = (notice: Notice): string[] => {
     // imageUrls가 있으면 우선 사용
-    if (notice.imageUrls && Array.isArray(notice.imageUrls)) {
+    if (notice.imageUrls && Array.isArray(notice.imageUrls) && notice.imageUrls.length > 0) {
       return notice.imageUrls;
     }
     
-    if (notice.images && Array.isArray(notice.images)) {
-      if (notice.images.length > 0 && typeof notice.images[0] === 'object' && 'url' in notice.images[0]) {
-        return notice.images.map(img => img.url);
-      }
+    // images 배열이 있으면 url 추출
+    if (notice.images && Array.isArray(notice.images) && notice.images.length > 0) {
+      return notice.images
+        .sort((a, b) => a.index - b.index) // index 순서로 정렬
+        .map(img => img.url)
+        .filter(url => url && url.trim() !== ''); // 빈 URL 필터링
     }
     
     return [];
@@ -164,28 +166,41 @@ export default function NoticeDetailPage() {
 
         {imageList.length > 0 && (
           <div className="mb-6">
-            <style jsx>{`
-              .image-gallery::-webkit-scrollbar {
-                display: none;
-              }
-            `}</style>
+            <label className="block text-sm text-gray-600 mb-2">이미지</label>
             <div 
-              className="image-gallery flex gap-4 overflow-x-auto pb-2 cursor-grab active:cursor-grabbing"
+              className="flex gap-4 overflow-x-auto pb-2"
               style={{
                 scrollbarWidth: 'none',
                 msOverflowStyle: 'none',
               }}
             >
-              {imageList.map((image, index) => (
+              <style jsx>{`
+                div::-webkit-scrollbar {
+                  display: none;
+                }
+              `}</style>
+              {imageList.map((imageUrl, index) => (
                 <div
                   key={index}
-                  className="flex-shrink-0 w-[400px] h-[280px] rounded-lg overflow-hidden bg-gray-100"
+                  className="flex-shrink-0 w-[400px] h-[280px] rounded-lg overflow-hidden bg-gray-100 border border-gray-200"
                 >
                   <img
-                    src={image}
+                    src={imageUrl}
                     alt={`공지사항 이미지 ${index + 1}`}
-                    className="w-full h-full object-cover pointer-events-none select-none"
-                    draggable={false}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      console.error(`Failed to load image ${index}:`, imageUrl);
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      const parent = target.parentElement;
+                      if (parent) {
+                        parent.innerHTML = `
+                          <div class="flex items-center justify-center h-full text-gray-400 text-sm">
+                            이미지를 불러올 수 없습니다
+                          </div>
+                        `;
+                      }
+                    }}
                   />
                 </div>
               ))}

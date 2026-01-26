@@ -20,6 +20,7 @@ export default function NoticeEditPage() {
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [originalImages, setOriginalImages] = useState<Array<{ url: string; index: number }>>([]);
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -30,6 +31,11 @@ export default function NoticeEditPage() {
     const fetchNotice = async () => {
       try {
         const data = await noticesApi.getNoticeById(noticeId);
+        
+        // 원본 이미지 URL만 저장 (비교용)
+        const originalUrls = (data.images || []).map(img => img.url);
+        setOriginalImages(originalUrls.map((url, idx) => ({ url, index: idx })));
+        
         setFormData({
           title: data.title || '',
           content: data.content || '',
@@ -75,12 +81,34 @@ export default function NoticeEditPage() {
     setSubmitting(true);
 
     try {
-      // 기존 이미지 url 배열
-      const existingImages = formData.images
+      // 원본 이미지 URL 목록
+      const originalUrls = originalImages.map(img => img.url);
+      
+      // 현재 존재하는 이미지들의 URL
+      const currentExistingUrls = formData.images
         .filter((img): img is Extract<FormImageListItem, { type: 'exists' }> => 
           img.type === 'exists'
         )
-        .map((img) => img.url);
+        .map(img => img.url);
+
+      // 삭제된 이미지 URL 찾기 (원본 공지사항에는 있었지만 현재는 없는 것)
+      const deletedUrls = originalUrls.filter(url => !currentExistingUrls.includes(url));
+
+      console.log('=== Image Tracking ===');
+      console.log('Original URLs:', originalUrls);
+      console.log('Current URLs:', currentExistingUrls);
+      console.log('Deleted URLs:', deletedUrls);
+
+      // 기존 이미지들 새로운 위치 정보
+      let existsIndex = 0;
+      const existsWithIndex = formData.images
+        .map((img) => {
+          if (img.type === 'exists') {
+            return { url: img.url, index: existsIndex++ };
+          }
+          return null;
+        })
+        .filter((item): item is { url: string; index: number } => item !== null);
 
       // 새 이미지를 base64로 변환
       const newImagePromises = formData.images
@@ -98,17 +126,46 @@ export default function NoticeEditPage() {
 
       const newBase64Images = await Promise.all(newImagePromises);
 
-      // 기존 이미지 + 새 이미지 합치기
-      const allImages = [...existingImages, ...newBase64Images];
+      // 새 이미지들의 인덱스 (전체 이미지 배열에서의 위치)
+      const newImageIndexes: number[] = [];
+      formData.images.forEach((img, index) => {
+        if (img.type === 'new') {
+          newImageIndexes.push(index);
+        }
+      });
 
+      // undefined 제거를 위한 필터링
       const requestData: any = {
         title: formData.title,
         content: formData.content,
+        exists: existsWithIndex, // 필수 필드
+        imageIndexes: [], // 기본값은 빈 배열
       };
 
-      if (allImages.length > 0) {
-        requestData.images = allImages;
+      // 옵셔널 필드는 값이 있을 때만 추가
+      if (deletedUrls.length > 0) {
+        requestData.deletes = deletedUrls;
       }
+      
+      // 새 이미지가 있을 때만 newImages와 imageIndexes 추가
+      if (newBase64Images.length > 0) {
+        requestData.newImages = newBase64Images;
+        // imageIndexes를 0부터 시작하는 연속된 숫자로
+        requestData.imageIndexes = Array.from({ length: newBase64Images.length }, (_, i) => i);
+      }
+
+      console.log('Update request data:', JSON.stringify(requestData, null, 2));
+      console.log('- Deleted images:', deletedUrls);
+      console.log('- Existing images with new positions:', existsWithIndex);
+      console.log('- New images:', newBase64Images.length);
+      console.log('- Original imageIndexes (positions in full array):', newImageIndexes);
+      console.log('- Sent imageIndexes:', requestData.imageIndexes);
+
+      console.log('Update request data:', JSON.stringify(requestData, null, 2));
+      console.log('- Deleted images:', deletedUrls);
+      console.log('- Existing images with new positions:', existsWithIndex);
+      console.log('- New images:', newBase64Images.length);
+      console.log('- New image indexes:', newImageIndexes);
 
       await noticesApi.updateNotice(noticeId, requestData);
 

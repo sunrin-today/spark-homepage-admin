@@ -11,7 +11,7 @@ export function usePaginationQuery(key: string, defaultPage = 1) {
   const setPage = (next: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set(key, String(next));
-    router.push(`?${params.toString()}`, { scroll: false });
+    router.replace(`?${params.toString()}`, { scroll: false });
   };
 
   return { page, setPage };

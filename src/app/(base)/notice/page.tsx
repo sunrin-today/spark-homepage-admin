@@ -2,11 +2,17 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight } from 'lucide-react';
+import Image from 'next/image';
+import { Plus, Trash2, Pencil } from 'lucide-react';
 import { noticesApi } from '@/lib/api/notice';
 import { Notice } from '@/lib/types/notice';
-import NoticeList from '@/components/notice/NoticeList';
-import BaseInput from '@/components/ui/input/Input';
+import { SearchBar } from '@/components/common/search/SearchBar';
+import Pagination from '@/components/common/pagination/Pagination';
+import { usePaginationQuery } from '@/lib/hooks/usePaginationQuery';
+import { DataTable } from '@/components/common/table/DataTable';
+import { Column } from '@/lib/types/table';
+import ActionBarTrigger from '@/components/common/action/ActionBarTrigger';
+import { ActionBarItem } from '@/components/common/action/ActionBar';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -16,29 +22,28 @@ export default function NoticesPage() {
   const [filteredNotices, setFilteredNotices] = useState<Notice[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
+  const { page: currentPage, setPage: setCurrentPage } = usePaginationQuery('page', 1);
+
+  const fetchNotices = async () => {
+    try {
+      const data = await noticesApi.getNotices();
+      console.log('Fetched notices:', data);
+      const noticeArray = Array.isArray(data) ? data : [];
+      setNotices(noticeArray);
+      setFilteredNotices(noticeArray);
+    } catch (error) {
+      console.error('Failed to fetch notices:', error);
+      setNotices([]);
+      setFilteredNotices([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchNotices = async () => {
-      try {
-        const data = await noticesApi.getNotices();
-        console.log('Fetched notices:', data);
-        const noticeArray = Array.isArray(data) ? data : [];
-        setNotices(noticeArray);
-        setFilteredNotices(noticeArray);
-      } catch (error) {
-        console.error('Failed to fetch notices:', error);
-        setNotices([]);
-        setFilteredNotices([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchNotices();
   }, []);
 
-  // 검색 필터링
   useEffect(() => {
     if (!searchQuery.trim()) {
       setFilteredNotices(notices);
@@ -53,8 +58,29 @@ export default function NoticesPage() {
     setCurrentPage(1);
   }, [searchQuery, notices]);
 
-  const handleSearch = () => {
-    // 검색은 실시간으로 이루어지므로 별도 동작 필요x
+  const handleSearch = (searchTerm: string) => {
+    
+  };
+
+  const handleDelete = async (noticeId: string, noticeTitle: string) => {
+    if (confirm(`"${noticeTitle}" 공지사항을 정말 삭제하시겠습니까?`)) {
+      try {
+        await noticesApi.deleteNotice(noticeId);
+        alert('공지사항이 삭제되었습니다.');
+        
+        await fetchNotices();
+        
+        // 삭제 후 현재 페이지에 데이터가 없으면 이전 페이지로
+        const newFilteredNotices = notices.filter(n => n.id !== noticeId);
+        const newTotalPages = Math.ceil(newFilteredNotices.length / ITEMS_PER_PAGE);
+        if (currentPage > newTotalPages && newTotalPages > 0) {
+          setCurrentPage(newTotalPages);
+        }
+      } catch (error) {
+        console.error('Failed to delete notice:', error);
+        alert('공지사항 삭제에 실패했습니다.');
+      }
+    }
   };
 
   // 페이지네이션 연산
@@ -63,11 +89,108 @@ export default function NoticesPage() {
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentNotices = filteredNotices.slice(startIndex, endIndex);
 
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
-  };
+  const columns: Column<Notice>[] = [
+    {
+      header: '#',
+      sortKey: 'index',
+      isSortable: false,
+      width: '80px',
+      render: (_, index) => <span>{startIndex + index + 1}</span>,
+    },
+    {
+      header: '제목',
+      sortKey: 'title',
+      isSortable: true,
+      width: 'auto',
+      render: (notice) => (
+        <span className="font-medium underline cursor-pointer">
+          {notice.title}
+        </span>
+      ),
+    },
+    {
+      header: '작성자',
+      sortKey: 'author',
+      isSortable: true,
+      width: '200px',
+      render: (notice) => {
+        const authorName = notice.author?.name || '관리자';
+        const avatarUrl = notice.author?.avatarUrl;
+        
+        return (
+          <div className="flex items-center gap-2">
+            {avatarUrl ? (
+              <div className="relative w-6 h-6 rounded-full overflow-hidden">
+                <Image
+                  src={avatarUrl}
+                  alt={authorName}
+                  fill
+                  sizes="24px"
+                  className="object-cover"
+                />
+              </div>
+            ) : (
+              <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center">
+                <span className="text-xs text-white">
+                  {authorName.charAt(0)}
+                </span>
+              </div>
+            )}
+            <span>{authorName}</span>
+          </div>
+        );
+      },
+    },
+    {
+      header: '작성일',
+      sortKey: 'createdAt',
+      isSortable: true,
+      width: '150px',
+      render: (notice) => (
+        <span>
+          {notice.createdAt 
+            ? new Date(notice.createdAt).toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+              }).replace(/\. /g, '.').replace(/\.$/, '')
+            : '-'}
+        </span>
+      ),
+    },
+    {
+      header: '액션',
+      sortKey: '',
+      isSortable: false,
+      width: '80px',
+      render: (notice) => {
+        const actionItems: ActionBarItem[] = [
+          {
+            icon: <Trash2 size={24} />,
+            label: '삭제',
+            backgroundColor: 'rgba(250, 83, 83, 0.2)',
+            iconColor: '#FA5353',
+            textColor: '#FA5353',
+            onClick: () => handleDelete(notice.id, notice.title),
+          },
+          {
+            icon: <Pencil size={24} />,
+            label: '수정',
+            backgroundColor: '#F9F9F9',
+            iconColor: '#FDC019',
+            textColor: '#010101',
+            onClick: () => router.push(`/notice/${notice.id}/edit`),
+          },
+        ];
+
+        return (
+          <div onClick={(e) => e.stopPropagation()}>
+            <ActionBarTrigger title="액션" items={actionItems} vertical />
+          </div>
+        );
+      },
+    },
+  ];
 
   if (loading) {
     return (
@@ -84,85 +207,49 @@ export default function NoticesPage() {
           <h1 className="text-2xl font-bold mb-6">공지사항</h1>
 
           <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3 flex-1 max-w-xl">
-              <BaseInput
-                leftIcon={<Search size={20} className="text-gray-400" />}
-                value={searchQuery}
-                onChange={setSearchQuery}
-                placeholder="검색어를 입력해주세요..."
-                className="flex-1"
-              />
-              <button
-                onClick={handleSearch}
-                className="px-6 py-4 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors whitespace-nowrap font-medium"
-              >
-                검색하기
-              </button>
-            </div>
+            <SearchBar
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              onSubmit={handleSearch}
+              placeholder="검색어를 입력해주세요..."
+              buttonText="검색하기"
+              className="flex-1 max-w-xl"
+            />
 
             <button
               onClick={() => router.push('/notice/add')}
-              className="px-6 py-4 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors whitespace-nowrap font-medium flex items-center gap-2"
+              className="px-3 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors whitespace-nowrap font-medium flex items-center gap-2"
             >
-              <span>+</span>
+              <Plus size={24} />
               <span>등록하기</span>
             </button>
           </div>
         </div>
 
-        <div className="bg-white">
-          <NoticeList notices={currentNotices} />
-        </div>
+        {filteredNotices.length > 0 ? (
+          <>
+            <DataTable
+              columns={columns}
+              data={currentNotices}
+              onRowClick={(notice) => router.push(`/notice/${notice.id}`)}
+            />
 
-        {filteredNotices.length > 0 && (
-          <div className="mt-8 flex items-center justify-center gap-2">
-            <span className="text-sm text-gray-600 mr-4">
-              {currentPage} / {totalPages} (총 {filteredNotices.length}개)
-            </span>
-
-            <button
-              onClick={() => handlePageChange(1)}
-              disabled={currentPage === 1}
-              className="p-2 hover:bg-gray-100 rounded disabled:opacity-30 disabled:cursor-not-allowed"
-              aria-label="첫 페이지"
-            >
-              <ChevronsLeft size={16} className="text-gray-600" />
-            </button>
-
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="p-2 hover:bg-gray-100 rounded disabled:opacity-30 disabled:cursor-not-allowed"
-              aria-label="이전 페이지"
-            >
-              <ChevronLeft size={16} className="text-gray-600" />
-            </button>
-
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="p-2 hover:bg-gray-100 rounded disabled:opacity-30 disabled:cursor-not-allowed"
-              aria-label="다음 페이지"
-            >
-              <ChevronRight size={16} className="text-gray-600" />
-            </button>
-
-            <button
-              onClick={() => handlePageChange(totalPages)}
-              disabled={currentPage === totalPages}
-              className="p-2 hover:bg-gray-100 rounded disabled:opacity-30 disabled:cursor-not-allowed"
-              aria-label="마지막 페이지"
-            >
-              <ChevronsRight size={16} className="text-gray-600" />
-            </button>
-          </div>
-        )}
-
-        {filteredNotices.length === 0 && !loading && (
-          <div className="text-center py-12 text-gray-500">
-            {searchQuery
-              ? '검색 결과가 없습니다.'
-              : '등록된 공지사항이 없습니다.'}
+            <div className="mt-8">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={filteredNotices.length}
+                onPageChange={setCurrentPage}
+              />
+            </div>
+          </>
+        ) : (
+          <div className="flex items-center justify-center py-20 border border-[#D5D5D5] rounded-2xl">
+            <div className="text-gray-500">
+              {searchQuery
+                ? '검색 결과가 없습니다.'
+                : '등록된 공지사항이 없습니다.'}
+            </div>
           </div>
         )}
       </div>

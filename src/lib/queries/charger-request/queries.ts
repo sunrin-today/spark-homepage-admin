@@ -4,7 +4,7 @@ import { chargerRequestKeys } from "./keys";
 
 export const useChargerRequests = ({page, limit, column, orderDirection}: {page: number, limit: number, column: string, orderDirection: string}, enabled: boolean) => {
     return useQuery({
-        queryKey: chargerRequestKeys.list(),
+        queryKey: chargerRequestKeys.list({page, limit, column, orderDirection}),
         queryFn: () => chargerRequestApi.getChargerRequests({page, limit, column, orderDirection}),
         enabled,
     });

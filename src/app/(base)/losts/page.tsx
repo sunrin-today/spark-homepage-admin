@@ -14,6 +14,10 @@ export default function LostsPage() {
     const [limit, setLimit] = useState(8);
     const { page: paginationPage, setPage: setPaginationPage } = usePaginationQuery("page", 1);
     const { data: losts, isLoading, error } = useLostListQuery({ page: paginationPage, limit, search: searchQuery });
+    const handleSearch = (value: string) => {
+        setSearchQuery(value);
+        setPaginationPage(1);
+    };
     return (
         <div className="px-8 py-12 gap-[10px] flex flex-col mx-auto max-w-[1440px]">
             <PageHeader title="월간 분실물"/>
@@ -21,7 +25,7 @@ export default function LostsPage() {
                 <SearchBar
                 value={searchValue}
                 onChangeText={setSearchValue}
-                onSubmit={setSearchQuery}
+                onSubmit={handleSearch}
                 placeholder="검색어를 입력해주세요..."
                 />
                  <div className="flex flex-col gap-3">

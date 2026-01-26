@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import lostClaimApi from "@/lib/api/losts-claims";
 import { lostClaimsKeys } from "./keys";
+import { lostKeys } from "../losts/keys";
 
 export const useChangeLostClaimStatusMutation = () => {
   const queryClient = useQueryClient();
@@ -9,7 +10,7 @@ export const useChangeLostClaimStatusMutation = () => {
     mutationFn: ({
       id,
       status,
-      rejectReason,
+      rejectReason, 
     }: {
       id: string;
       status: string;
@@ -19,7 +20,10 @@ export const useChangeLostClaimStatusMutation = () => {
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: lostClaimsKeys.lists(),
+        queryKey: lostClaimsKeys.lists()
+      });
+      queryClient.invalidateQueries({
+        queryKey: lostKeys.all,
       });
     },
   });
@@ -34,6 +38,9 @@ export const useDeleteLostClaimMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: lostClaimsKeys.lists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: lostKeys.all,
       });
     },
   });

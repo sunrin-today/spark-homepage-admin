@@ -2,18 +2,25 @@
 import PageHeader from "@/components/layout/page/PageHeader";
 import { InfoColumn } from "@/components/ui/InfoCol";
 import { useParams } from "next/navigation";
-import { useGetCharger } from "@/lib/queries/charger/queries";
+import { useGetChargerByChargerId } from "@/lib/queries/charger/queries";
 import { DataTable } from "@/components/common/table/DataTable";
 import { Column } from "@/lib/types/table";
 import { ChargerRentalRecord } from "@/lib/types/charger";
 import { useTableSort } from "@/lib/hooks/useTableSort";
 import ActionBarTrigger from "@/components/common/action/ActionBarTrigger";
+import { useModal } from "@/contexts/ModalContexts";
+import ConfirmModal from "@/components/ui/modal/ConfirmModal";
+import { useRentCharger, useReturnCharger, useTransferCharger } from "@/lib/queries/charger/mutations";
+import { UserLink } from "@/components/user/UserLink";
 
 export default function ChargerDetailPage() {
     const { chargerId } = useParams<{ chargerId: string }>();
-    const { data : chargerData, isLoading, error, refetch } = useGetCharger(chargerId);
+    const { data : chargerData, isLoading, error, refetch } = useGetChargerByChargerId(chargerId);
     const {sort, onSortChange} = useTableSort({key: "borrower", order: "ASC"})
-
+    const {open, close} = useModal();
+    const {mutate: returnCharger} = useReturnCharger();
+    const {mutate: transferCharger} = useTransferCharger();
+    const {mutate: rentCharger} = useRentCharger();
     const chargerColumn : Column<ChargerRentalRecord>[] = [
         {
             header: "#",
@@ -53,34 +60,97 @@ export default function ChargerDetailPage() {
             header: "액션",
             width: "100px",
             render: (row) => (
-                <button>
-                    반납
-                </button>
+                <ActionBarTrigger
+                    items={[
+                        // {
+                        //     label: "삭제",
+                        //     onClick: () => { 
+                                
+                        //     }
+                        // }
+                    ]}
+                />
             )
         }
     ]
     return (
         <div className="px-8 py-12 flex flex-col gap-[10px]">
-            <PageHeader title={chargerData?.chargerId + "번 충전기"} isBackButton/>
+            <PageHeader title={(chargerData?.chargerId || "") + "번 충전기"} isBackButton/>
             <InfoColumn
                 label="상태"
                 value={
-                    <span>
+                    <span className="flex gap-2">
                         {chargerData?.status === "not_rented" ? "미대여" 
                         : chargerData?.status === "renting" ? "대여중" 
                         : "전달예정"}
+                        {chargerData?.status !== "not_rented" && (
+                            <UserLink
+                                user={chargerData?.borrower || {}}
+                            />
+                        )}
                         <ActionBarTrigger
                             title="상태 변경"
-                            actionButton={<button className="px-[10px] py-[5px] text-[10px] bg-lightgray text-[#0D0D0D] rounded-[5px]">상태 변경</button>}
+                            actionButton={<button className="px-[10px] py-[5px] text-[10px] bg-[#0D0D0D] text-white rounded-[5px]">상태 변경</button>}
                             items={[
-                                {
-                                        label: "반납",
-                                        onClick: () => {},
-                                        icon: <></>,
-                                        hoverBackgroundColor: "#EEEEEE",
-                                        backgroundColor: "#F9F9F9",
+                                ...(chargerData?.status !== "not_rented" ? [{
+                                    label: "미대여",
+                                    onClick: () => {
+                                        open(
+                                            <ConfirmModal
+                                                onClose={() => close()}
+                                                onConfirm={() => {
+                                                    returnCharger(
+                                                        chargerData?.id || 0
+                                                    );
+                                                    close();
+                                                }}
+                                            />
+                                        )
                                     },
-                                ]}      
+                                    icon: <></>,
+                                    hoverBackgroundColor: "#EEEEEE",
+                                    backgroundColor: "#F9F9F9",
+                                }] : []),
+                                ...(chargerData?.status !== "renting" ? [{
+                                    label: "대여중",
+                                    onClick: () => {
+                                        open(
+                                            <ConfirmModal
+                                                onClose={() => close()}
+                                                onConfirm={() => {
+                                                    rentCharger(
+                                                        chargerData?.id || 0
+                                                    );
+                                                    close();
+                                                }}
+                                            />
+                                        )
+                                    },
+                                    icon: <></>,
+                                    hoverBackgroundColor: "#EEEEEE",
+                                    backgroundColor: "#F9F9F9",
+                                }] : []),
+                                ...(chargerData?.status !== "scheduled" ? [{
+                                    label: "전달예정",
+                                    onClick: () => {
+                                        open(
+                                            <ConfirmModal
+                                                onClose={() => close()}
+                                                onConfirm={() => {
+                                                    transferCharger(
+                                                        chargerData?.id || 0
+                                                    );
+                                                    close();
+                                                }}
+                                            />
+                                        )
+                                    },
+                                    icon: <></>,
+                                    hoverBackgroundColor: "#EEEEEE",
+                                    backgroundColor: "#F9F9F9",
+                                }] : [])
+                            ]}   
+                            
                         />
                     </span>
                 }

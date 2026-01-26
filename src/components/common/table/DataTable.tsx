@@ -11,10 +11,11 @@ type DataTableProps<T> = {
   isRefreshing?: boolean;
   tableHeader?: React.ReactNode;
   onRowClick?: (item: T) => void;
+  selectedRow?: T;
 };
 
 
-export function DataTable<T>({ columns, data, sort, onSortChange, onRefresh, isRefreshing, tableHeader, onRowClick }: DataTableProps<T>) {
+export function DataTable<T>({ columns, data, sort, onSortChange, onRefresh, isRefreshing, tableHeader, onRowClick, selectedRow }: DataTableProps<T>) {
   return (
     <div className="flex flex-col gap-3">
       <div className={`w-full flex items-center ${tableHeader ? "justify-between" : "justify-end"}`}>
@@ -74,7 +75,7 @@ export function DataTable<T>({ columns, data, sort, onSortChange, onRefresh, isR
           {data.map((row, rIdx) => (
             <tr 
               key={rIdx} 
-              className={`border-b border-[#D0D0D0] hover:bg-lightgray ${onRowClick ? 'cursor-pointer' : ''}`}
+              className={`border-b border-[#D0D0D0] hover:bg-lightgray hover:underline ${selectedRow === row ? 'bg-[#C0C0C0]' : ''}`}
               onClick={() => onRowClick?.(row)}
             >
               {columns.map((col, cIdx) => (
@@ -82,7 +83,6 @@ export function DataTable<T>({ columns, data, sort, onSortChange, onRefresh, isR
                   key={cIdx}
                   className="px-4 py-3 text-base truncate text-[#010101] relative"
                   onClick={(e) => {
-                    // 액션 컬럼은 행 클릭 이벤트 전파 막기
                     if (col.header === "액션") {
                       e.stopPropagation();
                     }

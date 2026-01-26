@@ -3,6 +3,7 @@ export const chargerKeys = {
   all: () => ["chargers"] as const,
 
   status: () => [...chargerKeys.all(), "status"] as const,
+
   statusList: (params: {
     page: number;
     limit: number;
@@ -16,4 +17,7 @@ export const chargerKeys = {
       params.column,
       params.orderDirection,
     ] as const,
+
+  detail: (chargerId: string) =>
+    [...chargerKeys.all(), "detail", chargerId] as const,
 };

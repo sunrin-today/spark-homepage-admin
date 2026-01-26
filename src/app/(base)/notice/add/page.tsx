@@ -43,32 +43,18 @@ export default function NoticeAddPage() {
     setSubmitting(true);
 
     try {
-      // FormImageListItem[]을 base64 문자열 배열로 변환
-      const imagePromises = formData.images
+      // FormImageListItem에서 File 객체 추출
+      const imageFiles = formData.images
         .filter((img): img is Extract<FormImageListItem, { type: 'new' }> => 
           img.type === 'new'
         )
-        .map(img => {
-          return new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result as string);
-            reader.onerror = reject;
-            reader.readAsDataURL(img.file);
-          });
-        });
+        .map(img => img.file);
 
-      const base64Images = await Promise.all(imagePromises);
-
-      const requestData: any = {
+      const requestData = {
         title: formData.title,
         content: formData.content,
+        imageFiles: imageFiles.length > 0 ? imageFiles : undefined,
       };
-
-      if (base64Images.length > 0) {
-        requestData.images = base64Images;
-      }
-
-      console.log('Sending notice data:', requestData);
 
       await noticesApi.createNotice(requestData);
 

@@ -16,12 +16,15 @@ import { useTableSort } from "@/lib/hooks/useTableSort";
 import { UserLink } from "@/components/user/UserLink";
 import { useModal } from "@/contexts/ModalContexts";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
+import { useChargerRequests } from "@/lib/queries/charger-request/queries";
 export default function ChargerPage() {
     const [activeTab, setActiveTab] = useState<"충전기 관리" | "신청서 관리">("충전기 관리");
-    const {page: page, setPage} = usePaginationQuery("page", 1);
-    
+    const {page: requestPage, setPage: setRequestPage} = usePaginationQuery("page", 1);
+    const { sort: requestSort, onSortChange: onRequestSortChange } = useTableSort({ key: "createdAt", order: "DESC" })    
     const { sort, onSortChange } = useTableSort({ key: "chargerId", order: "ASC" })    
-    const {data: chargers, isLoading, error, refetch: chargerRefresh} = useGetChargers({page, limit: 20, column: sort.key, orderDirection: sort.order}, activeTab === "충전기 관리");
+    const [requestLimit, setRequestLimit] = useState<number>(5);
+    const {data: chargers, isLoading, error, refetch: chargerRefresh} = useGetChargers({page:1, limit: 30, column: sort.key, orderDirection: sort.order}, activeTab === "충전기 관리");
+    const { data: rentalRequests, isLoading: isLoadingRentalRequests, error: rentalRequestError, refetch: rentalRequestRefresh } = useChargerRequests({page: requestPage, limit: requestLimit, column: requestSort.key, orderDirection: requestSort.order}, activeTab === "신청서 관리");
     const {open, close} = useModal()
     const columnCharger: Column<Charger>[] = [
          {
@@ -72,13 +75,15 @@ export default function ChargerPage() {
             {
                 icon: <Trash2 size={24} />,
                 label: '삭제',
-                backgroundColor: 'rgba(250, 83, 83, 0.2)',
+                hoverBackgroundColor: 'rgba(250, 83, 83, 0.2)',
+                backgroundColor: '#F9F9F9',
                 iconColor: '#FA5353',
                 textColor: '#FA5353',
                 onClick: () => 
                  {
                     open(<ConfirmModal
-                    
+                        title={row.chargerId + "번 충전기 삭제"}
+                        message={row.chargerId + "번 충전기를 삭제하시겠습니까?"}
                          onClose={() => close()} 
                          onConfirm={() =>
                         //대충 deleteItem 함수 호출
@@ -96,33 +101,51 @@ export default function ChargerPage() {
         {
             header: "#",
             width: "40px",
-            render: (_, index) => (page - 1) *  + index + 1,
+            render: (_, index) => <span className="text-gray font-medium">{(requestPage - 1) * requestLimit + index + 1}</span>,
         },  
         {
             header: "이름",
             width: "550px",
-            render: (row) => (
-                <span>대여 요청</span>
-        ),
+            isSortable: true,
+            sortKey: "user",
+            render: (row) => <UserLink user={row.user}/>,
         },
         {
-            header: "대여 시각",
+            header: "대여 신청 날짜",
             width: "326px",
+            isSortable: true,
+            sortKey: "createdAt",
             render: (row) => formatKoreanDate(row.createdAt)
         },
         {
             header: "액션",
             width: "106px",
-            render: (row) => {
-                return (
-                    <div>
-                        <button>승인</button>
-                        <button>거절</button>
-                    </div>
-                )
+            render: (row) => (
+            <ActionBarTrigger
+                items={[{
+                icon: <Trash2 size={24} />,
+                label: '삭제',
+                hoverBackgroundColor: 'rgba(250, 83, 83, 0.2)',
+                backgroundColor: '#F9F9F9',
+                iconColor: '#FA5353',
+                textColor: '#FA5353',
+                onClick: () => 
+                 {
+                    open(<ConfirmModal
+                        title="신청서 삭제"
+                        message="신청서를 삭제하시겠습니까?"
+                         onClose={() => close()} 
+                         onConfirm={() =>
+                        //대충 deleteItem 함수 호출
+                        close()
+                    }
+                    />); 
+                 }            
+                }]}
+                />
+            )
             }
-        }
-    ]
+        ]
     return (
         <div className="px-8 py-12 flex flex-col gap-[10px]">
             <PageHeader title={"충전기 대여 - " + activeTab}/>
@@ -130,12 +153,33 @@ export default function ChargerPage() {
                 {isLoading && <div>로딩중...</div>}
                 {!error && !isLoading && (
                     <> 
+                        {activeTab === "충전기 관리" && (
+                            <DataTable
+                                columns={columnCharger}
+                                data={chargers?.items || []} 
+                                onRefresh={() => chargerRefresh()}
+                                sort={sort}
+                                onSortChange={onSortChange}
+                                tableHeader={
+                                    <div className="flex gap-[10px]">
+                                        <button
+                                            onClick={() => setActiveTab("충전기 관리")}
+                                            className="px-[10px] py-[5px] text-[10px] bg-[#010101] text-[#FAFAFA] rounded-[5px]">충전기 관리</button>
+                                        <button 
+                                            onClick={() => setActiveTab("신청서 관리")}
+                                            className="px-[10px] py-[5px] text-[10px] bg-lightgray text-[#0D0D0D] rounded-[5px]">신청서 관리</button>
+                                    </div>
+                                }
+                            />
+                        )}
+                        {activeTab === "신청서 관리" && (
+                        <>
                         <DataTable
-                            columns={activeTab === "충전기 관리" ? columnCharger : columnRentalRequest }
-                            data={ activeTab === "충전기 관리" ? chargers?.items || [] : []} 
-                            onRefresh={activeTab === "충전기 관리" ? () => chargerRefresh() : () => {}}
-                            onSortChange={activeTab === "충전기 관리" ? onSortChange : () => {}}
-                            sort={activeTab === "충전기 관리" ? sort : { key: "createdAt", order: "DESC" }}
+                            columns={columnRentalRequest}
+                            data={rentalRequests?.items || []} 
+                            onRefresh={() => rentalRequestRefresh()}
+                            sort={requestSort}
+                            onSortChange={onRequestSortChange}
                             tableHeader={
                                 <div className="flex gap-[10px]">
                                     <button
@@ -146,20 +190,18 @@ export default function ChargerPage() {
                                         className="px-[10px] py-[5px] text-[10px] bg-lightgray text-[#0D0D0D] rounded-[5px]">신청서 관리</button>
                                 </div>
                             }
-                            
                         />
+                        
+                        <Pagination
+                            currentPage={requestPage}
+                            totalPages={rentalRequests?.totalPages || 1}
+                            totalItems={rentalRequests?.total || 100}
+                            onPageChange={setRequestPage}
+                        />
+                        </>
+                        )}
                     </>
                 )}
-                {
-                        activeTab === "신청서 관리" && (
-                        <Pagination
-                            currentPage={page}
-                            totalPages={10}
-                            totalItems={100}
-                            onPageChange={setPage}
-                        />
-                        )
-                    }
                 
             </div>
         </div>
