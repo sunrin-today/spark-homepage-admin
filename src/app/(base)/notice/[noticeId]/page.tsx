@@ -14,7 +14,7 @@ export default function NoticeDetailPage() {
   const router = useRouter();
   const params = useParams();
   const noticeId = params.noticeId as string;
-  const { open } = useModal();
+  const { open, close } = useModal();
   
   const [notice, setNotice] = useState<Notice | null>(null);
   const [loading, setLoading] = useState(true);
@@ -91,7 +91,31 @@ export default function NoticeDetailPage() {
       iconColor: '#FA5353',
       textColor: '#FA5353',
       onClick: () => {
-        open();
+        open(
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
+              <h3 className="text-lg font-semibold mb-2">삭제 확인</h3>
+              <p className="text-gray-600 mb-6">정말 삭제하시겠습니까?</p>
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={() => close()}
+                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
+                >
+                  취소
+                </button>
+                <button
+                  onClick={() => {
+                    close();
+                    handleDelete();
+                  }}
+                  className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  삭제
+                </button>
+              </div>
+            </div>
+          </div>
+        );
       },
     },
     {
