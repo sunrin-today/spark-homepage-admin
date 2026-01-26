@@ -186,7 +186,7 @@ export default function NoticesPage() {
 
         return (
           <div onClick={(e) => e.stopPropagation()}>
-            <ActionBarTrigger title="액션" items={actionItems} vertical />
+            <ActionBarTrigger title="액션" items={actionItems} />
           </div>
         );
       },
