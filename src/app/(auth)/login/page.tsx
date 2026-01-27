@@ -28,9 +28,16 @@ export default function LoginPage() {
 
         {/* 에러 메시지 */}
         {loginMutation.isError && (
-          <p className="mt-4 text-sm text-red-500">
-            {loginMutation.error?.message || "로그인에 실패했습니다."}
-          </p>
+          <div className="mt-4 text-sm text-center">
+            <p className="text-red-500 font-medium">
+              {loginMutation.error?.message || "로그인에 실패했습니다."}
+            </p>
+            {loginMutation.error?.message?.includes("관리자 권한") && (
+              <p className="text-gray-600 mt-2">
+                이 페이지는 관리자만 접근할 수 있습니다.
+              </p>
+            )}
+          </div>
         )}
       </LoginCard>
     </div>

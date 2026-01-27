@@ -7,7 +7,7 @@ import { usersApi } from "@/lib/api/users";
 // 구글 로그인 mutation
 export const useGoogleLoginMutation = () => {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, logout } = useAuth();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -20,18 +20,22 @@ export const useGoogleLoginMutation = () => {
       
       return { token, userData };
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       const { userData } = data;
+      
+      // ADMIN 권한 체크
+      if (userData.role !== "ADMIN") {
+        // ADMIN 아니라면 로그아웃 처리
+        await logout();
+        queryClient.clear();
+        throw new Error("관리자 권한이 필요합니다.");
+      }
       
       // 사용자 정보 캐시에 저장
       queryClient.setQueryData(authKeys.me(), userData);
       
-      // role에 따라 페이지 이동
-      if (userData.role === "ADMIN") {
-        router.push("/admin");
-      } else {
-        router.push("/");
-      }
+      // ADMIN 페이지로 이동
+      router.push("/");
     },
     onError: (error: any) => {
       console.error("로그인 실패:", error);

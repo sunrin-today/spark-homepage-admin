@@ -11,7 +11,7 @@ export default function BaseLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user: firebaseUser, loading: authLoading } = useAuth();
+  const { user: firebaseUser, loading: authLoading, logout } = useAuth();
   const router = useRouter();
 
   // TanStack Query로 사용자 정보 조회
@@ -30,8 +30,16 @@ export default function BaseLayout({
     // 사용자 정보 로딩 실패 시 로그인 페이지로 이동
     if (!isUserLoading && !userInfo) {
       router.push("/login");
+      return;
     }
-  }, [firebaseUser, authLoading, userInfo, isUserLoading, router]);
+
+    // ADMIN 권한 체크
+    if (!isUserLoading && userInfo && userInfo.role !== "ADMIN") {
+      alert("관리자 권한이 필요합니다.");
+      logout();
+      router.push("/login");
+    }
+  }, [firebaseUser, authLoading, userInfo, isUserLoading, router, logout]);
 
   // 로딩 중이거나 인증되지 않은 경우
   if (authLoading || isUserLoading) {
@@ -42,8 +50,8 @@ export default function BaseLayout({
     );
   }
 
-  // 인증되지 않은 경우
-  if (!firebaseUser || !userInfo) {
+  // 인증되지 않은 경우 or ADMIN이 아닌 경우
+  if (!firebaseUser || !userInfo || userInfo.role !== "ADMIN") {
     return null;
   }
 
