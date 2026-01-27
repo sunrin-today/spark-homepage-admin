@@ -4,7 +4,8 @@ import { use } from "react";
 import { useRouter } from "next/navigation";
 import PageHeader from "@/components/layout/page/PageHeader";
 import ScheduleForm from "@/components/schedule/ScheduleForm";
-import { scheduleDummyData } from "@/lib/scheduleDummy";
+import { useScheduleById } from "@/lib/queries/schedule/queries";
+import { useUpdateSchedule } from "@/lib/queries/schedule/mutations";
 
 interface PageProps {
   params: Promise<{ scheduleId: string }>;
@@ -22,9 +23,44 @@ export default function ScheduleEditPage({ params }: PageProps) {
   const router = useRouter();
   const { scheduleId } = use(params);
 
-  const schedule = scheduleDummyData.find((s) => s.id === scheduleId);
+  // 일정 조회
+  const { data: schedule, isLoading, isError } = useScheduleById(scheduleId);
+  const updateScheduleMutation = useUpdateSchedule();
 
-  if (!schedule) {
+  const handleSubmit = async (data: ScheduleFormData) => {
+    try {
+      await updateScheduleMutation.mutateAsync({
+        id: scheduleId,
+        data: {
+          title: data.title,
+          description: data.description,
+          startDate: data.startDate,
+          endDate: data.endDate,
+          color: data.color,
+        },
+      });
+      router.push(`/schedule/${scheduleId}`);
+    } catch (error) {
+      console.error("일정 수정 실패:", error);
+    }
+  };
+
+  const handleCancel = () => {
+    router.back();
+  };
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-full p-6">
+        <PageHeader title="일정 수정" isBackButton />
+        <div className="mt-6 text-center text-gray-500">
+          로딩 중...
+        </div>
+      </div>
+    );
+  }
+
+  if (isError || !schedule) {
     return (
       <div className="w-full h-full p-6">
         <PageHeader title="일정 수정" isBackButton />
@@ -41,16 +77,6 @@ export default function ScheduleEditPage({ params }: PageProps) {
     endDate: schedule.endDate,
     description: schedule.description,
     color: schedule.color,
-  };
-
-  const handleSubmit = (data: ScheduleFormData) => {
-    console.log("일정 수정:", scheduleId, data);
-    // TODO: API 호출 및 데이터 저장
-    router.push(`/schedule/${scheduleId}`);
-  };
-
-  const handleCancel = () => {
-    router.back();
   };
 
   return (

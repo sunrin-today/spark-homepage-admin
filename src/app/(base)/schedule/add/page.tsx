@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import PageHeader from "@/components/layout/page/PageHeader";
 import ScheduleForm from "@/components/schedule/ScheduleForm";
+import { useCreateSchedule } from "@/lib/queries/schedule/mutations";
 
 interface ScheduleFormData {
   title: string;
@@ -14,11 +15,22 @@ interface ScheduleFormData {
 
 export default function ScheduleAddPage() {
   const router = useRouter();
+  const createScheduleMutation = useCreateSchedule();
 
-  const handleSubmit = (data: ScheduleFormData) => {
-    console.log("일정 추가:", data);
-    // TODO: API 호출 및 데이터 저장
-    router.push("/schedule");
+  const handleSubmit = async (data: ScheduleFormData) => {
+    try {
+      await createScheduleMutation.mutateAsync({
+        title: data.title,
+        description: data.description,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        color: data.color,
+        type: "ACADEMIC", 
+      });
+      router.push("/schedule");
+    } catch (error) {
+      console.error("일정 생성 실패:", error);
+    }
   };
 
   const handleCancel = () => {

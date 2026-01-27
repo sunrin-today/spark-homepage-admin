@@ -1,18 +1,10 @@
 'use client';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import PageCalendar from '@/components/schedule/PageCalendar';
 import ScheduleList from '@/components/schedule/ScheduleList';
 import ScheduleDetailPopup from '@/components/schedule/ScheduleDetailPopup';
-import { scheduleDummyData } from '@/lib/scheduleDummy';
-
-interface Schedule {
-  id: string;
-  title: string;
-  startDate: string;
-  endDate: string;
-  color: string;
-  description: string;
-}
+import { useAllSchedules } from '@/lib/queries/schedule/queries';
+import { Schedule } from '@/lib/types/schedule';
 
 interface PopupState {
   schedules: Schedule[];
@@ -22,6 +14,9 @@ interface PopupState {
 export default function SchedulePage() {
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [popup, setPopup] = useState<PopupState | null>(null);
+
+  // API를 통해 전체 스케줄 조회
+  const { data: schedules = [], isLoading, isError } = useAllSchedules();
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
@@ -48,6 +43,28 @@ export default function SchedulePage() {
     setPopup(null);
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white p-8">
+        <h1 className="text-2xl font-bold mb-8">일정</h1>
+        <div className="flex items-center justify-center h-96">
+          <p className="text-gray-500">로딩 중...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-white p-8">
+        <h1 className="text-2xl font-bold mb-8">일정</h1>
+        <div className="flex items-center justify-center h-96">
+          <p className="text-red-500">일정을 불러오는데 실패했습니다.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white p-8">
       <h1 className="text-2xl font-bold mb-8">일정</h1>
@@ -57,14 +74,14 @@ export default function SchedulePage() {
           <PageCalendar
             selectedDate={selectedDate}
             onDateSelect={handleDateSelect}
-            schedules={scheduleDummyData}
+            schedules={schedules}
             onScheduleClick={handleScheduleClick}
           />
         </div>
 
         <div className="w-[427px]">
           <ScheduleList
-            schedules={scheduleDummyData}
+            schedules={schedules}
             onScheduleClick={(schedule) => handleScheduleClick([schedule])}
           />
         </div>

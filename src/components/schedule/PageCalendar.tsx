@@ -1,14 +1,6 @@
 import React from 'react';
 import CalendarCore from './CalendarCore';
-
-interface Schedule {
-  id: string;
-  title: string;
-  startDate: string;
-  endDate: string;
-  color: string;
-  description: string;
-}
+import { Schedule } from '@/lib/types/schedule';
 
 interface PageCalendarProps {
   selectedDate?: Date;

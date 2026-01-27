@@ -2,16 +2,7 @@
 import { ChevronRight, Plus } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { scheduleDummyData } from '@/lib/scheduleDummy';
-
-interface Schedule {
-  id: string;
-  title: string;
-  startDate: string;
-  endDate: string;
-  color: string;
-  description: string;
-}
+import { Schedule } from '@/lib/types/schedule';
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -27,7 +18,7 @@ interface ScheduleListProps {
 }
 
 export default function ScheduleList({ 
-  schedules = scheduleDummyData,
+  schedules = [],
   onScheduleClick
 }: ScheduleListProps) {
   const router = useRouter();
