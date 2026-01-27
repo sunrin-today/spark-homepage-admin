@@ -1,7 +1,5 @@
-// components/common/search/SearchBar.tsx
 import { Search } from "lucide-react";
 import BaseInput from "@/components/ui/input/Input";
-// import { Button } from "@/components/ui/button"; // Assuming you have a Button component
 
 interface SearchBarProps {
   value: string;
@@ -26,19 +24,20 @@ export const SearchBar = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className={`flex items-center gap-2 w-full ${className}`}>
-      
+    <form onSubmit={handleSubmit} className={`flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full ${className}`}>
+      <div className="flex-1 w-full">
         <BaseInput
           leftIcon={<Search size={20} />}
           placeholder={placeholder}
           value={value}
           onChange={onChangeText}
-          className="max-w-[400px]"
+          className="w-full"
         />
+      </div>
       {buttonText && (
         <button
           type="submit" 
-          className="whitespace-nowrap bg-black text-white rounded-[12px] px-[20px] py-[12px]"
+          className="w-full sm:w-auto whitespace-nowrap bg-black text-white rounded-[12px] px-[20px] py-[12px] hover:bg-gray-800 transition-colors"
         >
           {buttonText}
         </button>

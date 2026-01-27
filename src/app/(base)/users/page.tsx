@@ -73,7 +73,7 @@ const UsersPage = () => {
       render: (user) => (
         <div className="flex items-center gap-2">
           {user.avatarUrl ? (
-            <div className="relative w-6 h-6 rounded-full overflow-hidden">
+            <div className="relative w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
               <Image
                 src={user.avatarUrl}
                 alt={user.name}
@@ -83,8 +83,8 @@ const UsersPage = () => {
               />
             </div>
           ) : (
-            <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center">
-              <span className="font-regiular text-black text-base">
+            <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0">
+              <span className="font-regular text-black text-base">
                 {user.name.charAt(0)}
               </span>
             </div>
@@ -98,7 +98,7 @@ const UsersPage = () => {
       sortKey: "email",
       isSortable: true,
       width: "300px",
-      render: (user) => <span className="font-regiular text-black text-base">{user.email}</span>,
+      render: (user) => <span className="font-regular text-black text-base">{user.email}</span>,
     },
     {
       header: "역할",
@@ -106,7 +106,7 @@ const UsersPage = () => {
       isSortable: true,
       width: "120px",
       render: (user) => (
-        <span className="font-regiular text-black text-base">
+        <span className="font-regular text-black text-base">
           {user.role === "ADMIN" ? "관리자" : "학생"}
         </span>
       ),
@@ -137,45 +137,54 @@ const UsersPage = () => {
   ];
 
   return (
-    <div className="flex flex-col gap-6 p-8">
+    <div className="flex flex-col gap-4 sm:gap-6 p-4 sm:p-8 pt-20 lg:pt-8">
       <PageHeader title="사용자 목록" />
 
-      <SearchBar
-        value={searchTerm}
-        placeholder="검색어를 입력해주세요..."
-        buttonText="검색하기"
-        onChangeText={setSearchTerm}
-        onSubmit={handleSearch}
-      />
+      <div className="w-full">
+        <SearchBar
+          value={searchTerm}
+          placeholder="검색어를 입력해주세요..."
+          buttonText="검색하기"
+          onChangeText={setSearchTerm}
+          onSubmit={handleSearch}
+          className="w-full"
+        />
+      </div>
 
       {data?.items && data.items.length > 0 ? (
         <>
-          <DataTable
-            columns={columns}
-            data={data.items}
-            sort={sort}
-            onSortChange={onSortChange}
-            onRowClick={(user: User) => {
-              const params = new URLSearchParams({
-                name: user.name,
-                email: user.email,
-                role: user.role,
-                ...(user.avatarUrl && { avatarUrl: user.avatarUrl })
-              });
-              router.push(`/users/${user.id}?${params.toString()}`);
-            }}
-          />
+          <div className="overflow-x-auto">
+            <div className="min-w-[800px]">
+              <DataTable
+                columns={columns}
+                data={data.items}
+                sort={sort}
+                onSortChange={onSortChange}
+                onRowClick={(user: User) => {
+                  const params = new URLSearchParams({
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                    ...(user.avatarUrl && { avatarUrl: user.avatarUrl })
+                  });
+                  router.push(`/users/${user.id}?${params.toString()}`);
+                }}
+              />
+            </div>
+          </div>
 
-          <Pagination
-            currentPage={page}
-            totalPages={data.totalPages}
-            totalItems={data.total}
-            onPageChange={setPage}
-          />
+          <div className="px-4 sm:px-0">
+            <Pagination
+              currentPage={page}
+              totalPages={data.totalPages}
+              totalItems={data.total}
+              onPageChange={setPage}
+            />
+          </div>
         </>
       ) : (
-        <div className="flex items-center justify-center py-20 border border-[#D5D5D5] rounded-2xl">
-          <div className="text-gray-500">사용자가 없습니다.</div>
+        <div className="flex items-center justify-center py-20 border border-[#D5D5D5] rounded-2xl mx-4 sm:mx-0">
+          <div className="text-gray-500 text-sm sm:text-base">사용자가 없습니다.</div>
         </div>
       )}
     </div>

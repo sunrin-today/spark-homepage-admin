@@ -72,7 +72,6 @@ const UserDetailPage = () => {
     retry: false,
   });
 
-  // 반납 상태 변경 mutation
   const toggleReturnMutation = useMutation({
     mutationFn: async ({ recordId, currentStatus }: { recordId: string; currentStatus: boolean }) => {
       // 이미 반납된 경우 토글할 수 없음
@@ -128,7 +127,7 @@ const UserDetailPage = () => {
       sortKey: "chargerId",
       isSortable: true,
       width: "150px",
-      render: (record) => <span>{record.chargerId}번 충전기</span>,
+      render: (record) => <span className="whitespace-nowrap">{record.chargerId}번 충전기</span>,
     },
     {
       header: "반납 여부",
@@ -153,7 +152,7 @@ const UserDetailPage = () => {
       width: "200px",
       render: (record) => {
         const date = new Date(record.deadline);
-        return <span>{date.getFullYear()}년 {date.getMonth() + 1}월 {date.getDate()}일</span>;
+        return <span className="whitespace-nowrap">{date.getFullYear()}년 {date.getMonth() + 1}월 {date.getDate()}일</span>;
       },
     },
   ];
@@ -172,19 +171,19 @@ const UserDetailPage = () => {
       sortKey: "title",
       isSortable: true,
       width: "200px",
-      render: (lost) => <span>{lost.title}</span>,
+      render: (lost) => <span className="truncate block">{lost.title}</span>,
     },
     {
       header: "습득 위치",
       sortKey: "location",
       isSortable: true,
       width: "250px",
-      render: (lost) => <span>{lost.location}</span>,
+      render: (lost) => <span className="truncate block">{lost.location}</span>,
     },
   ];
 
   return (
-    <div className="flex flex-col gap-6 p-8">
+    <div className="flex flex-col gap-4 sm:gap-6 p-4 sm:p-8 pt-20 lg:pt-8">
       <div className="flex items-center gap-3">
         <button
           onClick={() => router.back()}
@@ -192,32 +191,32 @@ const UserDetailPage = () => {
         >
           <ChevronLeft className="w-6 h-6" />
         </button>
-        <h1 className="text-xl font-semibold">사용자 상세</h1>
+        <h1 className="text-lg sm:text-xl font-semibold">사용자 상세</h1>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
         {userAvatarUrl ? (
-          <div className="w-20 h-20 rounded-full overflow-hidden relative">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden relative flex-shrink-0">
             <Image
               src={userAvatarUrl}
               alt={userName}
               fill
-              sizes="64px"
+              sizes="80px"
               className="object-cover"
             />
           </div>
         ) : (
-          <div className="w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center">
-            <span className="text-xl text-white font-semibold">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0">
+            <span className="text-xl sm:text-2xl text-white font-semibold">
               {userName.charAt(0)}
             </span>
           </div>
         )}
-        <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl font-semibold">{userName}</h2>
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h2 className="text-lg sm:text-xl font-semibold break-words">{userName}</h2>
             <span
-              className={`px-3 py-1 rounded-lg text-sm ${
+              className={`px-2 sm:px-3 py-1 rounded-lg text-xs sm:text-sm whitespace-nowrap ${
                 userRole === "ADMIN" ? "text-[#ffb22d]" : "text-[#34B83D]"
               }`}
               style={{
@@ -229,42 +228,48 @@ const UserDetailPage = () => {
               {userRole === "ADMIN" ? "관리자" : "학생"}
             </span>
           </div>
-          <p className="text-[#767676] mt-1">{userEmail}</p>
+          <p className="text-[#767676] mt-1 text-sm sm:text-base break-all">{userEmail}</p>
         </div>
       </div>
 
       <div className="flex flex-col gap-4">
         {chargerData?.items && chargerData.items.length > 0 ? (
           <>
-            <DataTable
-              columns={chargerColumns}
-              data={chargerData.items}
-              sort={chargerSort}
-              onSortChange={onChargerSortChange}
-              onRefresh={() => refetchCharger()}
-              isRefreshing={isChargerLoading}
-              tableHeader={
-                <h3 className="text-xl font-semibold">충전기 대여 기록</h3>
-              }
-            />
-            <Pagination
-              currentPage={chargerPage}
-              totalPages={chargerData.totalPages}
-              totalItems={chargerData.total}
-              onPageChange={setChargerPage}
-            />
+            <div className="overflow-x-auto">
+              <div className="min-w-[700px]">
+                <DataTable
+                  columns={chargerColumns}
+                  data={chargerData.items}
+                  sort={chargerSort}
+                  onSortChange={onChargerSortChange}
+                  onRefresh={() => refetchCharger()}
+                  isRefreshing={isChargerLoading}
+                  tableHeader={
+                    <h3 className="text-lg sm:text-xl font-semibold">충전기 대여 기록</h3>
+                  }
+                />
+              </div>
+            </div>
+            <div className="px-4 sm:px-0">
+              <Pagination
+                currentPage={chargerPage}
+                totalPages={chargerData.totalPages}
+                totalItems={chargerData.total}
+                onPageChange={setChargerPage}
+              />
+            </div>
           </>
         ) : (
           <div className="flex flex-col gap-4">
-            <div className="w-full flex items-center justify-between">
-              <h3 className="text-xl font-semibold">충전기 대여 기록</h3>
+            <div className="w-full flex items-center justify-between px-4 sm:px-0">
+              <h3 className="text-lg sm:text-xl font-semibold">충전기 대여 기록</h3>
               <RefreshCw 
                 className="w-6 h-6 p-1 text-gray cursor-pointer" 
                 onClick={() => refetchCharger()}
               />
             </div>
-            <div className="flex items-center justify-center py-20 border border-[#D5D5D5] rounded-2xl">
-              <div className="text-gray-500">대여 기록이 없습니다.</div>
+            <div className="flex items-center justify-center py-20 border border-[#D5D5D5] rounded-2xl mx-4 sm:mx-0">
+              <div className="text-gray-500 text-sm sm:text-base">대여 기록이 없습니다.</div>
             </div>
           </div>
         )}
@@ -273,35 +278,41 @@ const UserDetailPage = () => {
       <div className="flex flex-col gap-4">
         {lostData?.items && lostData.items.length > 0 ? (
           <>
-            <DataTable
-              columns={lostColumns}
-              data={lostData.items}
-              sort={lostSort}
-              onSortChange={onLostSortChange}
-              onRefresh={() => refetchLost()}
-              isRefreshing={isLostLoading}
-              tableHeader={
-                <h3 className="text-xlfont-semibold">분실물 기록</h3>
-              }
-            />
-            <Pagination
-              currentPage={lostPage}
-              totalPages={lostData.totalPages}
-              totalItems={lostData.total}
-              onPageChange={setLostPage}
-            />
+            <div className="overflow-x-auto">
+              <div className="min-w-[600px]">
+                <DataTable
+                  columns={lostColumns}
+                  data={lostData.items}
+                  sort={lostSort}
+                  onSortChange={onLostSortChange}
+                  onRefresh={() => refetchLost()}
+                  isRefreshing={isLostLoading}
+                  tableHeader={
+                    <h3 className="text-lg sm:text-xl font-semibold">분실물 기록</h3>
+                  }
+                />
+              </div>
+            </div>
+            <div className="px-4 sm:px-0">
+              <Pagination
+                currentPage={lostPage}
+                totalPages={lostData.totalPages}
+                totalItems={lostData.total}
+                onPageChange={setLostPage}
+              />
+            </div>
           </>
         ) : (
           <div className="flex flex-col gap-4">
-            <div className="w-full flex items-center justify-between">
-              <h3 className="text-xl font-semibold">분실물 기록</h3>
+            <div className="w-full flex items-center justify-between px-4 sm:px-0">
+              <h3 className="text-lg sm:text-xl font-semibold">분실물 기록</h3>
               <RefreshCw 
                 className="w-6 h-6 p-1 text-gray cursor-pointer" 
                 onClick={() => refetchLost()}
               />
             </div>
-            <div className="flex items-center justify-center py-20 border border-[#D5D5D5] rounded-2xl">
-              <div className="text-gray-500">분실물 기록이 없습니다.</div>
+            <div className="flex items-center justify-center py-20 border border-[#D5D5D5] rounded-2xl mx-4 sm:mx-0">
+              <div className="text-gray-500 text-sm sm:text-base">분실물 기록이 없습니다.</div>
             </div>
           </div>
         )}

@@ -13,17 +13,21 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 sm:px-6">
       <LoginCard>
-        <div className="mb-12">
-          <img src="/logo/logo.svg" alt="SPARK!" className="w-64" />
+        <div className="mb-8 sm:mb-12">
+          <img 
+            src="/logo/logo.svg" 
+            alt="SPARK!" 
+            className="w-48 sm:w-64 mx-auto" 
+          />
         </div>
 
         <GoogleLoginButton onClick={handleGoogleLogin} />
 
         {/* 로딩 상태 */}
         {loginMutation.isPending && (
-          <p className="mt-4 text-sm text-gray-600">로그인 중...</p>
+          <p className="mt-4 text-sm text-gray-600 text-center">로그인 중...</p>
         )}
 
         {/* 에러 메시지 */}

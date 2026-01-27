@@ -38,12 +38,12 @@ export default function ScheduleAddPage() {
   };
 
   return (
-    <div className="w-full h-full">
-      <div className="p-6">
+    <div className="w-full h-full pt-20 lg:pt-0">
+      <div className="p-4 sm:p-6">
         <PageHeader title="일정 추가" isBackButton />
       </div>
 
-      <div className="px-10 pb-10">
+      <div className="px-4 sm:px-10 pb-10">
         <ScheduleForm
           onSubmit={handleSubmit}
           onCancel={handleCancel}
