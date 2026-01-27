@@ -81,7 +81,7 @@ export function DataTable<T>({ columns, data, sort, onSortChange, onRefresh, isR
               {columns.map((col, cIdx) => (
                 <td
                   key={cIdx}
-                  className="px-4 py-3 text-base truncate text-[#010101] relative"
+                  className="px-4 py-3 text-base truncate text-black relative"
                   onClick={(e) => {
                     if (col.header === "액션") {
                       e.stopPropagation();

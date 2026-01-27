@@ -1,4 +1,3 @@
-// components/image/DetailImageGrid.tsx
 "use client";
 
 import {
@@ -101,11 +100,6 @@ export function DetailImageGrid({
           ))}
         </div>
 
-        {value.length < min && (
-          <p className="text-sm text-red-500 mt-2">
-            최소 {min}개의 이미지를 추가해주세요.
-          </p>
-        )}
       </SortableContext>
     </DndContext>
   );

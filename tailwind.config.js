@@ -9,7 +9,7 @@ export default {
     extend: {},
     colors: {
       white: "#F9F9F9",
-      black: "#1B1B1B",
+      black: "#010101",
       council: "#6CA9FF",
       software: "#F79447",
       computersecurity: "#6CA9FF",

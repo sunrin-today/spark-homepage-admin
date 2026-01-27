@@ -95,7 +95,7 @@ export default function ChargerDetailPage() {
                             title="상태 변경"
                             actionButton={
                                         <button
-                                            className="px-[10px] leading-normal py-[5px] text-[10px] bg-[#010101] text-[#FAFAFA] rounded-[5px]">상태 변경</button>}
+                                            className="px-[10px] leading-normal py-[5px] text-[10px] bg-[#010101 ]text-[#FAFAFA] rounded-[5px]">상태 변경</button>}
                             items={[
                                 ...(chargerData?.status !== "not_rented" ? [{
                                     label: "미대여",
@@ -135,7 +135,7 @@ export default function ChargerDetailPage() {
                                     hoverBackgroundColor: "#EEEEEE",
                                     backgroundColor: "#F9F9F9",
                                 }] : []),
-                                ...(chargerData?.status !== "scheduled" ? [{
+                                ...(chargerData?.status !== "waiting" ? [{
                                     label: "전달예정",
                                     onClick: () => {
                                         open(
@@ -163,7 +163,7 @@ export default function ChargerDetailPage() {
                         <span className="text-sm text-darkgray">대여기록</span>
                     }
                     columns={chargerColumn}
-                    data={chargerData? || []}
+                    data={chargerData || []}
                     sort={sort}
                     onSortChange={onSortChange}
                     onRefresh={refetch}

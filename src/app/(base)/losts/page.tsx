@@ -55,9 +55,9 @@ export default function LostsPage() {
                             onPageChange={(page) => setPaginationPage(page)}
                         />
                         </>
-                    ) : (
+                    ) : !isLoading && (
                         <div className="text-center py-8">
-                            <p className="text-gray-500">이벤트가 없습니다.</p>
+                            <p className="text-gray">분실물이 없습니다.</p>
                         </div>
                     )
                 }

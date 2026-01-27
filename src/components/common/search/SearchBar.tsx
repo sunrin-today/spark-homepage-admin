@@ -38,7 +38,7 @@ export const SearchBar = ({
       {buttonText && (
         <button
           type="submit" 
-          className="whitespace-nowrap bg-[#1B1B1B] text-white rounded-[12px] px-[20px] py-[12px]"
+          className="whitespace-nowrap bg-black text-white rounded-[12px] px-[20px] py-[12px]"
         >
           {buttonText}
         </button>

@@ -148,7 +148,7 @@ export default function ChargerPage() {
             }
         ]
     return (
-        <div className="px-8 py-12 flex flex-col gap-[10px]">
+        <div className="px-8 py-12 flex flex-col gap-[32px]">
             <PageHeader title={"충전기 대여 - " + activeTab}/>
             <div className="px-2">
                 {!error && !isLoading && (
@@ -164,10 +164,10 @@ export default function ChargerPage() {
                                     <div className="flex gap-[10px]">
                                         <button
                                             onClick={() => setActiveTab("충전기 관리")}
-                                            className="px-[10px] py-[5px] text-[10px] bg-[#010101] text-[#FAFAFA] rounded-[5px]">충전기 관리</button>
+                                            className="px-[16px] py-[12px] text-sm leading-[17px] font-medium bg-black text-[#FAFAFA] rounded-[8px]">충전기 관리</button>
                                         <button 
                                             onClick={() => setActiveTab("신청서 관리")}
-                                            className="px-[10px] py-[5px] text-[10px] bg-lightgray text-[#0D0D0D] rounded-[5px]">신청서 관리</button>
+                                            className="px-[16px] py-[12px] text-sm leading-[17px]  bg-lightgray font-medium text-black rounded-[8px]">신청서 관리</button>
                                     </div>
                                 }
                             />
@@ -184,10 +184,10 @@ export default function ChargerPage() {
                                 <div className="flex gap-[10px]">
                                     <button
                                         onClick={() => setActiveTab("충전기 관리")}
-                                        className="px-[10px] py-[5px] text-[10px] bg-[#010101] text-[#FAFAFA] rounded-[5px]">충전기 관리</button>
+                                        className="px-[16px] py-[12px] text-sm bg-black font-medium leading-[17px] text-[#FAFAFA] rounded-[8px]">충전기 관리</button>
                                     <button 
                                         onClick={() => setActiveTab("신청서 관리")}
-                                        className="px-[10px] py-[5px] text-[10px] bg-lightgray text-[#0D0D0D] rounded-[5px]">신청서 관리</button>
+                                        className="px-[16px] py-[12px] text-sm bg-lightgray leading-[17px] font-medium text-black rounded-[8px]">신청서 관리</button>
                                 </div>
                             }
                         />

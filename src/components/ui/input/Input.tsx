@@ -33,7 +33,7 @@ const BaseInput = forwardRef<HTMLInputElement | HTMLTextAreaElement, BaseInputPr
           hover:border-[#565656] ${className}`}
         onClick={onClick}
       >
-        {leftIcon && <span className="flex-shrink-0 mr-2 focus-within:text-[#010101]">{leftIcon}</span>}
+        {leftIcon && <span className="flex-shrink-0 mr-2 focus-within:text-black">{leftIcon}</span>}
 
         <div className="flex-1 min-w-0">
           <input

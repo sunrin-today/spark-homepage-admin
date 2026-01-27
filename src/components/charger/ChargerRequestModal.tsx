@@ -75,10 +75,9 @@ export const ChargerRequestModal = ({id, chargerId, onClose}: {id: string, charg
             
                 <div className="flex gap-3">
                     <ChevronLeft />
-                    <h2 className="text-[#000000] text-2xl font-semibold">대여 유저 선택하기</h2>
+                    <h2 className="text-black text-2xl font-semibold">대여 유저 선택하기</h2>
                 </div>
                 <div className="flex flex-col gap-2">
-                    {isLoading && <div className="w-full flex items-center justify-center">로딩 중...</div>}
                     {error && <div className="text-error">오류가 발생했습니다.</div>}
                     {
                         !isLoading && !error && (
@@ -120,7 +119,7 @@ export const ChargerRequestModal = ({id, chargerId, onClose}: {id: string, charg
                                 }}
                             />
                         )}
-                        className="px-[22px] py-[10px] text-base text-white bg-[#0D0D0D] rounded-[100px]">선택완료</button>
+                        className="px-[22px] py-[10px] text-base text-white bg-black rounded-[100px]">선택완료</button>
                 </div>
         </Modal>
     );
