@@ -1,4 +1,4 @@
-FROM node:23-bookworm-slim AS base
+FROM node:20-bookworm-slim AS base
 
 WORKDIR /app
 
@@ -18,7 +18,7 @@ FROM base AS deps
 
 RUN pnpm install --frozen-lockfile --prod
 
-FROM node:23-bookworm-slim AS production
+FROM node:20-bookworm-slim AS production
 
 WORKDIR /app
 
