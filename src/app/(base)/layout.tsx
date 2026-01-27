@@ -2,10 +2,9 @@
 
 import { useAuth } from "@/contexts/AuthContexts";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Sidebar from '@/components/layout/sidebar/Sidebar';
-import { usersApi } from "@/lib/api/users";
-import type { User } from "@/lib/types/users";
+import { useMeQuery } from "@/lib/queries/auth/queries";
 
 export default function BaseLayout({
   children,
@@ -14,47 +13,40 @@ export default function BaseLayout({
 }) {
   const { user: firebaseUser, loading: authLoading } = useAuth();
   const router = useRouter();
-  const [userInfo, setUserInfo] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+
+  // TanStack Query로 사용자 정보 조회
+  const { data: userInfo, isLoading: isUserLoading } = useMeQuery(
+    !!firebaseUser && !authLoading
+  );
 
   useEffect(() => {
-    const checkAuth = async () => {
-      if (authLoading) return;
+    if (authLoading) return;
 
-      if (!firebaseUser) {
-        router.push("/login");
-        return;
-      }
+    if (!firebaseUser) {
+      router.push("/login");
+      return;
+    }
 
-      try {
-        const userData = await usersApi.getMe();
-        setUserInfo(userData);
+    // 사용자 정보 로딩 실패 시 로그인 페이지로 이동
+    if (!isUserLoading && !userInfo) {
+      router.push("/login");
+    }
+  }, [firebaseUser, authLoading, userInfo, isUserLoading, router]);
 
-        /*
-        if (userData.role !== "ADMIN") {
-          alert("관리자만 로그인이 가능합니다.");
-          router.push("/login");
-        }
-        */
-      } catch (error) {
-        console.error("사용자 정보 로드 실패:", error);
-        router.push("/login");
-      } finally {
-        setLoading(false);
-      }
-    };
+  // 로딩 중이거나 인증되지 않은 경우
+  if (authLoading || isUserLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p className="text-gray-500">로딩 중...</p>
+      </div>
+    );
+  }
 
-    checkAuth();
-  }, [firebaseUser, authLoading, router]);
-
-  // 인증되지 않은 경우 또는 ADMIN이 아닐 때
-  /*
-  if (!firebaseUser || !userInfo || userInfo.role !== "ADMIN") {
+  // 인증되지 않은 경우
+  if (!firebaseUser || !userInfo) {
     return null;
   }
-  */
 
-  // ADMIN 권한이 있으면 정상 렌더링
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />

@@ -15,14 +15,13 @@ import {
   Proportions,
   LogOut
 } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContexts';
-import { getUserInfo } from '@/lib/api/users';
-import type { UserResponse } from '@/lib/types/users';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation'; 
+import { usePathname } from 'next/navigation';
+import { useMeQuery } from '@/lib/queries/auth/queries';
+import { useLogoutMutation } from '@/lib/queries/auth/mutations';
 
 const Sidebar = () => {
-  const pathname = usePathname(); // 현재 경로
+  const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState<{
     [key: string]: boolean;
@@ -30,31 +29,10 @@ const Sidebar = () => {
     management: true,
     service: true
   });
-  const [userInfo, setUserInfo] = useState<UserResponse | null>(null);
-  const [isLoadingUser, setIsLoadingUser] = useState(true);
-  
-  const { user, logout } = useAuth();
 
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      if (!user) {
-        setIsLoadingUser(false);
-        return;
-      }
-
-      try {
-        setIsLoadingUser(true);
-        const data = await getUserInfo();
-        setUserInfo(data);
-      } catch (error) {
-        console.error('사용자 정보 조회 실패:', error);
-      } finally {
-        setIsLoadingUser(false);
-      }
-    };
-
-    fetchUserInfo();
-  }, [user]);
+  // TanStack Query로 사용자 정보 조회
+  const { data: userInfo, isLoading: isLoadingUser } = useMeQuery();
+  const logoutMutation = useLogoutMutation();
 
   const toggleSection = (section: string) => {
     setExpandedSections(prev => ({
@@ -63,11 +41,9 @@ const Sidebar = () => {
     }));
   };
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-    } catch (error) {
-      console.error('로그아웃 실패:', error);
+  const handleLogout = () => {
+    if (confirm('로그아웃 하시겠습니까?')) {
+      logoutMutation.mutate();
     }
   };
 
@@ -139,10 +115,9 @@ const Sidebar = () => {
                   <a
                     key={index}
                     href={item.href}
-                    // isCollapsed 상태에 따라 padding과 정렬(justify)을 다르게 적용함
                     className={`flex items-center transition-colors group rounded-[12px] ${
                       isCollapsed 
-                        ? 'justify-center p-[10px]' // 접혔을 때 - 중앙 정렬 및 적절한 패딩
+                        ? 'justify-center p-[10px]'
                         : 'p-[15px]'
                     } ${
                       isActive ? 'bg-[#EDEDED]' : 'hover:bg-[#EDEDED]'
@@ -237,7 +212,10 @@ const Sidebar = () => {
             {!isCollapsed && (
               <button
                 onClick={handleLogout}
-                className="p-1 hover:bg-gray-100 rounded transition-colors flex-shrink-0"
+                disabled={logoutMutation.isPending}
+                className={`p-1 hover:bg-gray-100 rounded transition-colors flex-shrink-0 ${
+                  logoutMutation.isPending ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               >
                 <LogOut className="w-6 h-6 text-gray-600" />
               </button>
