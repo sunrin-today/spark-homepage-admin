@@ -95,7 +95,7 @@ export default function NoticesPage() {
       sortKey: 'index',
       isSortable: false,
       width: '80px',
-      render: (_, index) => <span>{startIndex + index + 1}</span>,
+      render: (_, index) => <span className="text-[#767676]">{startIndex + index + 1}</span>,
     },
     {
       header: '제목',
@@ -103,7 +103,7 @@ export default function NoticesPage() {
       isSortable: true,
       width: 'auto',
       render: (notice) => (
-        <span className="font-medium underline cursor-pointer">
+        <span className="font-regiular text-black text-base">
           {notice.title}
         </span>
       ),
@@ -131,7 +131,7 @@ export default function NoticesPage() {
               </div>
             ) : (
               <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center">
-                <span className="text-xs text-white">
+                <span className="font-regiular text-black text-base">
                   {authorName.charAt(0)}
                 </span>
               </div>
@@ -147,7 +147,7 @@ export default function NoticesPage() {
       isSortable: true,
       width: '150px',
       render: (notice) => (
-        <span>
+        <span className="font-regiular text-black text-base">
           {notice.createdAt 
             ? new Date(notice.createdAt).toLocaleDateString('ko-KR', {
                 year: 'numeric',
@@ -179,14 +179,14 @@ export default function NoticesPage() {
             label: '수정',
             backgroundColor: '#F9F9F9',
             iconColor: '#FDC019',
-            textColor: '#010101',
+            textColor: 'black',
             onClick: () => router.push(`/notice/${notice.id}/edit`),
           },
         ];
 
         return (
           <div onClick={(e) => e.stopPropagation()}>
-            <ActionBarTrigger title="액션" items={actionItems} vertical />
+            <ActionBarTrigger title="액션" items={actionItems} />
           </div>
         );
       },

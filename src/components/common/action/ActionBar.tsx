@@ -52,7 +52,7 @@ const ActionBar: React.FC<ActionBarProps> = ({ title, items }) => {
             <span
               className="text-base font-normal"
               style={{
-                color: item.textColor || '#000000',
+                color: item.textColor || 'black',
               }}
             >
               {item.label}

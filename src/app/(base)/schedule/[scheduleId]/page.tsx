@@ -4,7 +4,8 @@ import { use } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import PageHeader from "@/components/layout/page/PageHeader";
-import { scheduleDummyData } from "@/lib/scheduleDummy";
+import { useScheduleById } from "@/lib/queries/schedule/queries";
+import { useDeleteSchedule } from "@/lib/queries/schedule/mutations";
 
 interface PageProps {
   params: Promise<{ scheduleId: string }>;
@@ -22,11 +23,41 @@ export default function ScheduleDetailPage({ params }: PageProps) {
   const router = useRouter();
   const { scheduleId } = use(params);
   
-  // 해당 일정 찾기
-  const schedule = scheduleDummyData.find((s) => s.id === scheduleId);
+  // 일정 조회
+  const { data: schedule, isLoading, isError } = useScheduleById(scheduleId);
+  const deleteScheduleMutation = useDeleteSchedule();
 
-  // 일정을 찾지 못 했을 때
-  if (!schedule) {
+  const handleEdit = () => {
+    router.push(`/schedule/${scheduleId}/edit`);
+  };
+
+  const handleDelete = async () => {
+    if (confirm("정말 삭제하시겠습니까?")) {
+      try {
+        // 먼저 페이지로 이동
+        router.push("/schedule");
+        // 그 다음 삭제 실행
+        await deleteScheduleMutation.mutateAsync(scheduleId);
+      } catch (error) {
+        console.error("일정 삭제 실패:", error);
+        // 에러 발생 시 다시 상세 페이지로 복귀
+        router.push(`/schedule/${scheduleId}`);
+      }
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-full p-6">
+        <PageHeader title="일정 상세" isBackButton />
+        <div className="mt-6 text-center text-gray-500">
+          로딩 중...
+        </div>
+      </div>
+    );
+  }
+
+  if (isError || !schedule) {
     return (
       <div className="w-full h-full p-6">
         <PageHeader title="일정 상세" isBackButton />
@@ -36,18 +67,6 @@ export default function ScheduleDetailPage({ params }: PageProps) {
       </div>
     );
   }
-
-  const handleEdit = () => {
-    router.push(`/schedule/${scheduleId}/edit`);
-  };
-
-  const handleDelete = () => {
-    // TODO: 삭제 기능 구현
-    if (confirm("정말 삭제하시겠습니까?")) {
-      console.log("삭제", scheduleId);
-      router.push("/schedule");
-    }
-  };
 
   return (
     <div className="w-full h-full">
@@ -66,22 +85,23 @@ export default function ScheduleDetailPage({ params }: PageProps) {
               {schedule.title}
             </h2>
             <div className="flex gap-2 ml-[20px]">
-                <button
-                    onClick={handleEdit}
-                    className="w-8 h-8 p-1.5 flex items-center justify-center rounded-lg transition-colors"
-                    style={{ backgroundColor: "rgba(253, 192, 25, 0.2)" }}
-                >
-                    <Pencil className="w-5 h-5" style={{ color: "#FDC019" }} />
-                </button>
+              <button
+                onClick={handleEdit}
+                className="w-8 h-8 p-1.5 flex items-center justify-center rounded-lg transition-colors"
+                style={{ backgroundColor: "rgba(253, 192, 25, 0.2)" }}
+              >
+                <Pencil className="w-5 h-5" style={{ color: "#FDC019" }} />
+              </button>
 
-                <button
-                    onClick={handleDelete}
-                    className="w-8 h-8 p-1.5 flex items-center justify-center rounded-lg transition-colors"
-                    style={{ backgroundColor: "rgba(250, 83, 83, 0.2)" }}
-                >
-                    <Trash2 className="w-5 h-5" style={{ color: "#FA5353" }} />
-                </button>
-                </div>
+              <button
+                onClick={handleDelete}
+                className="w-8 h-8 p-1.5 flex items-center justify-center rounded-lg transition-colors"
+                style={{ backgroundColor: "rgba(250, 83, 83, 0.2)" }}
+                disabled={deleteScheduleMutation.isPending}
+              >
+                <Trash2 className="w-5 h-5" style={{ color: "#FA5353" }} />
+              </button>
+            </div>
           </div>
 
           <div className="space-y-6">

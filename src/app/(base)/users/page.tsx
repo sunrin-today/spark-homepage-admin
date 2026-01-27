@@ -62,7 +62,7 @@ const UsersPage = () => {
       width: "60px",
       render: (_, index) => {
         const itemNumber = (page - 1) * ITEMS_PER_PAGE + index + 1;
-        return <span>{itemNumber}</span>;
+        return <span className="text-[#767676]">{itemNumber}</span>;
       },
     },
     {
@@ -84,7 +84,7 @@ const UsersPage = () => {
             </div>
           ) : (
             <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center">
-              <span className="text-base text-white">
+              <span className="font-regiular text-black text-base">
                 {user.name.charAt(0)}
               </span>
             </div>
@@ -98,7 +98,7 @@ const UsersPage = () => {
       sortKey: "email",
       isSortable: true,
       width: "300px",
-      render: (user) => <span>{user.email}</span>,
+      render: (user) => <span className="font-regiular text-black text-base">{user.email}</span>,
     },
     {
       header: "역할",
@@ -106,7 +106,7 @@ const UsersPage = () => {
       isSortable: true,
       width: "120px",
       render: (user) => (
-        <span className={user.role === "ADMIN" ? "font-regular" : ""}>
+        <span className="font-regiular text-black text-base">
           {user.role === "ADMIN" ? "관리자" : "학생"}
         </span>
       ),
@@ -129,7 +129,7 @@ const UsersPage = () => {
 
         return (
           <div onClick={(e) => e.stopPropagation()}>
-            <ActionBarTrigger title="액션" items={actionItems} vertical />
+            <ActionBarTrigger title="액션" items={actionItems} />
           </div>
         );
       },

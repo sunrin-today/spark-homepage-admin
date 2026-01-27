@@ -1,15 +1,7 @@
 'use client';
 import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-
-interface Schedule {
-  id: string;
-  title: string;
-  startDate: string;
-  endDate: string;
-  color: string;
-  description: string;
-}
+import { Schedule } from '@/lib/types/schedule';
 
 interface ScheduleDetailPopupProps {
   schedules: Schedule[];

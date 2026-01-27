@@ -9,6 +9,7 @@ interface TextareaInputProps {
   name?: string;
   showCounter?: boolean;
   required?: boolean;
+  className?: string;
 }
 
 export const TextareaInput = ({ 
@@ -18,7 +19,8 @@ export const TextareaInput = ({
   maxLength = 500,
   name,
   showCounter = true,
-  required = false
+  required = false,
+  className = "",
 }: TextareaInputProps) => {
   const [charCount, setCharCount] = useState(value.length);
 
@@ -34,9 +36,9 @@ export const TextareaInput = ({
   };
 
   return (
-    <div className="relative w-full">
+    <div className={`relative w-full ${className}`}>
       <textarea 
-        className="w-full h-40 bg-white border border-inputborder rounded-lg py-4 px-5 pr-[60px]
+        className="w-full h-full bg-white border border-inputborder rounded-lg py-4 px-5 pr-[40px] pb-10
         resize-none outline-none hover:border-[#565656] focus:border-[#565656] focus:ring-0 text-base font-medium
         placeholder:text-gray"
         value={value} 
@@ -48,10 +50,14 @@ export const TextareaInput = ({
         required={required}
       />
       { value.length > 0 && (
-        <X size={20} className="absolute top-[20px] text-gray right-[20px] cursor-pointer" onClick={() => onChange("")}/>
+        <X 
+          size={20} 
+          className="absolute top-4 right-4 text-gray cursor-pointer" 
+          onClick={() => onChange("")}
+        />
       )}
       {showCounter && (
-        <div className="absolute bottom-[-20px] right-2 text-md text-gray-400">
+        <div className="absolute bottom-4 right-4 text-md text-[#767676]">
           {charCount}/{maxLength}
         </div>
       )}
