@@ -34,10 +34,14 @@ export default function ScheduleDetailPage({ params }: PageProps) {
   const handleDelete = async () => {
     if (confirm("정말 삭제하시겠습니까?")) {
       try {
-        await deleteScheduleMutation.mutateAsync(scheduleId);
+        // 먼저 페이지로 이동
         router.push("/schedule");
+        // 그 다음 삭제 실행
+        await deleteScheduleMutation.mutateAsync(scheduleId);
       } catch (error) {
         console.error("일정 삭제 실패:", error);
+        // 에러 발생 시 다시 상세 페이지로 복귀
+        router.push(`/schedule/${scheduleId}`);
       }
     }
   };

@@ -42,7 +42,10 @@ export const useDeleteSchedule = () => {
 
   return useMutation({
     mutationFn: (id: string) => scheduleApi.deleteSchedule(id),
-    onSuccess: () => {
+    onSuccess: (_, id) => {
+      // 삭제된 일정의 상세 쿼리 제거
+      queryClient.removeQueries({ queryKey: scheduleKeys.detail(id) });
+      // 전체 목록 쿼리 무효화
       queryClient.invalidateQueries({ queryKey: scheduleKeys.all });
       alert('일정이 삭제되었습니다.');
     },
