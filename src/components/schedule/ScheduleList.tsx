@@ -1,5 +1,5 @@
 'use client';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Plus } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { scheduleDummyData } from '@/lib/scheduleDummy';
@@ -28,7 +28,7 @@ interface ScheduleListProps {
 
 export default function ScheduleList({ 
   schedules = scheduleDummyData,
-  onScheduleClick 
+  onScheduleClick
 }: ScheduleListProps) {
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -59,9 +59,22 @@ export default function ScheduleList({
     router.push(`/schedule/${schedule.id}`);
   };
 
+  const handleAddClick = () => {
+    router.push('/schedule/add');
+  };
+
   return (
     <div className="w-full">
-      <h2 className="text-base font-medium mb-3">총 {schedules.length}개</h2>
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-base font-medium">총 {schedules.length}개</h2>
+        <button
+          onClick={handleAddClick}
+          className="px-2 py-[6px] bg-black text-white rounded-lg text-[10px] font-semibold transition-colors flex items-center gap-1"
+        >
+          <Plus className="w-[18px] h-[18px]" />
+          <span>등록하기</span>
+        </button>
+      </div>
       
       <div 
         className="relative bg-white overflow-hidden"
