@@ -1,36 +1,41 @@
-FROM node:20.11.1-alpine AS base
+FROM node:23-bookworm-slim AS base
+
 WORKDIR /app
 
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
+RUN corepack enable && corepack prepare pnpm --activate
+
+COPY package.json pnpm-lock.yaml ./
+
+RUN pnpm install --frozen-lockfile
+
+FROM base AS build
+
+COPY . .
+
+RUN pnpm run build
 
 FROM base AS deps
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
 
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-RUN npm run build
+RUN pnpm install --frozen-lockfile --prod
 
-FROM node:20.11.1-alpine AS runner
+FROM node:23-bookworm-slim AS production
+
 WORKDIR /app
 
+RUN corepack enable && corepack prepare pnpm --activate
+
+ENV time_zone=Asia/Seoul
 ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN addgroup -g 1001 -S nextjs \
-  && adduser -S nextjs -u 1001 -G nextjs
+COPY --from=build /app/.next .next
+COPY --from=build /app/public public
+COPY --from=build /app/package.json .
+COPY --from=deps /app/node_modules node_modules
 
-COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nextjs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nextjs /app/.next/static ./.next/static
+RUN mkdir -p /app/.next/cache/images && chown -R node:node /app/.next
 
-USER nextjs
+USER node
 
 EXPOSE 3000
-ENV PORT=3000
-ENV HOSTNAME=0.0.0.0
 
-CMD ["node", "server.js"]
+CMD ["pnpm", "run", "start"]

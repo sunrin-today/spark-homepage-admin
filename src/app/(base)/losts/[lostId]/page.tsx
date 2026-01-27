@@ -33,11 +33,6 @@ export default function LostDetailPage() {
     const { mutate: updateClaimStatus , isPending: isUpdatingStatus , error: updateStatusError } = useChangeLostClaimStatusMutation();
     const router = useRouter();
 
-    useEffect(() => {
-        console.log(lostClaims)
-        console.log(lostData)
-    }, [lostClaims, lostData]);
-
     const actionItems: ActionBarItem[] = [
         {
             icon: <Trash2 size={24} />,
@@ -152,7 +147,7 @@ export default function LostDetailPage() {
                 />
                 <InfoColumn
                     label="습득 날짜"
-                    value={lostData?.foundDate || '-'}
+                    value={formatKoreanDate(lostData?.foundDate || '') || '-'}
                 />
                 <div className="flex gap-4 overflow-x-auto pb-2 ">
                 {lostData?.detailImageUrls.map((image, index) => (
@@ -176,7 +171,7 @@ export default function LostDetailPage() {
                     value={lostData?.description || '-'}
                 />
                 {error ? (
-                        <div>오류가 발생했습니다. {error.message}</div>
+                        <div className="text-error">오류가 발생했습니다. {error.message}</div>
                     ) : 
                     lostData && (
                     <DataTable

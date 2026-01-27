@@ -24,10 +24,16 @@ export const formatDateDash = (isoDate: string): string => {
     return isoDate;
   }
 };
-export function GetRemainingDays(date: string) {
-  const d = new Date(date);
-  const now = new Date();
-  const diff = d.getTime() - now.getTime();
-  const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-  return days > 0 ? `${days}일 남음` : "일 지남";
+export function getRemainingDays(date: string) {
+  const target = new Date(date);
+  const today = new Date();
+
+  target.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+
+  const diffDays =
+    Math.floor((target.getTime() - today.getTime()) / 86400000);
+
+  if (diffDays >= 0) return `${diffDays}일 남음`;
+  return `${Math.abs(diffDays)}일 지남`;
 }

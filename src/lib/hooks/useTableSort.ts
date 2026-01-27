@@ -1,4 +1,5 @@
 // hooks/table/useTableSort.ts
+"use client"
 import { useState } from "react";
 
 export type SortOrder = "ASC" | "DESC";

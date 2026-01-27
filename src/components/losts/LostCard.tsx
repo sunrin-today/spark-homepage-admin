@@ -71,7 +71,7 @@ export const LostCard = ({lost}: {lost: Lost}) => {
                 </h2>
                 <ActionBarTrigger items={actionItems} vertical={true}/>
             </div>
-            <div className="text-sm w-full font-regular text-gray line-clamp-2">
+            <div className="text-sm w-full font-regular text-gray break-words line-clamp-2">
                 {lost.description}
                 </div>
         </div>
