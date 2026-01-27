@@ -1,6 +1,6 @@
 "use client"
 import PageHeader from "@/components/layout/page/PageHeader";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { usePaginationQuery } from "@/lib/hooks/usePaginationQuery";
 import { Column } from "@/lib/types/table";
 import { DataTable } from "@/components/common/table/DataTable";

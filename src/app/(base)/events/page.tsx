@@ -1,10 +1,8 @@
 "use client";
 import { SearchBar } from "@/components/common/search/SearchBar";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { EventCard } from "@/components/events/EventCard";
 import { Plus } from "lucide-react";
-import { Event } from "@/lib/types/events";
-import eventsApi from "@/lib/api/events";
 import Link from "next/link";
 import PageHeader from "@/components/layout/page/PageHeader";
 import { useEvents } from "@/lib/queries/events/queries";
@@ -19,7 +17,7 @@ export default function EventsPage() {
   const { data: events, isLoading, error } = useEvents({ page: paginationPage, limit, search: searchQuery });
   
   return (
-    <div className="px-8 py-12 flex-col flex gap-[10px] mx-auto max-w-[1440px]"> {/*TODO: Page Container 컴포넌트로 변환*/}
+    <div className="px-8 py-12 flex-col flex gap-[10px] mx-auto max-w-[1440px]"> 
         <PageHeader title="이벤트 목록" /> 
         <div className="flex flex-col gap-6 px-2 py-3">
             
@@ -59,14 +57,14 @@ export default function EventsPage() {
                             onPageChange={(page) => setPaginationPage(page)}
                         />
                         </>
-                    ) : (
+                    ) : !isLoading && (
                         <div className="text-center py-8">
                             <p className="text-gray">이벤트가 없습니다.</p>
                         </div>
                     )
                 }
             </div>
-        </div>
+        </div>  
     </div>
   );
 }

@@ -95,9 +95,25 @@ export default function ChargerDetailPage() {
                             title="상태 변경"
                             actionButton={
                                         <button
-                                            className="px-[10px] leading-normal py-[5px] text-[10px] bg-[#010101 ]text-[#FAFAFA] rounded-[5px]">상태 변경</button>}
+                                            className="px-[10px] leading-normal py-[5px] text-[10px] bg-black text-[#FAFAFA] rounded-[5px]">상태 변경</button>}
                             items={[
-                                ...(chargerData?.status !== "not_rented" ? [{
+                                ...(chargerData?.status === "not_rented" ? [{
+                                    label: "전달예정",
+                                    onClick: () => {
+                                        open(
+                                            <ChargerRequestModal
+                                                id={chargerData?.id || ""}
+                                                chargerId={chargerData?.chargerId || ""}
+                                                onClose={() => close()}
+                                            />
+                                        )
+                                    },
+                                    icon: <></>,
+                                    hoverBackgroundColor: "#EEEEEE",
+                                    backgroundColor: "#F9F9F9",
+                                }
+                                    ] : []),
+                                ...(chargerData?.status === "renting" ? [{
                                     label: "미대여",
                                     onClick: () => {
                                         open(
@@ -116,8 +132,7 @@ export default function ChargerDetailPage() {
                                     hoverBackgroundColor: "#EEEEEE",
                                     backgroundColor: "#F9F9F9",
                                 }] : []),
-                                ...(chargerData?.status !== "renting" ? [{
-                                    label: "대여중",
+                                ...(chargerData?.status === "waiting" ? [{label: "대여중",
                                     onClick: () => {
                                         open(
                                             <ConfirmModal
@@ -128,21 +143,6 @@ export default function ChargerDetailPage() {
                                                     );
                                                     close();
                                                 }}
-                                            />
-                                        )
-                                    },
-                                    icon: <></>,
-                                    hoverBackgroundColor: "#EEEEEE",
-                                    backgroundColor: "#F9F9F9",
-                                }] : []),
-                                ...(chargerData?.status !== "waiting" ? [{
-                                    label: "전달예정",
-                                    onClick: () => {
-                                        open(
-                                            <ChargerRequestModal
-                                                id={chargerData?.id || ""}
-                                                chargerId={chargerData?.chargerId || ""}
-                                                onClose={() => close()}
                                             />
                                         )
                                     },
@@ -163,7 +163,7 @@ export default function ChargerDetailPage() {
                         <span className="text-sm text-darkgray">대여기록</span>
                     }
                     columns={chargerColumn}
-                    data={chargerData || []}
+                    data={chargerData?.rentalRecords || []}
                     sort={sort}
                     onSortChange={onSortChange}
                     onRefresh={refetch}
