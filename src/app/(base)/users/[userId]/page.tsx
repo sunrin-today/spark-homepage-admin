@@ -10,11 +10,12 @@ import { usePaginationQuery } from "@/lib/hooks/usePaginationQuery";
 import { Column } from "@/lib/types/table";
 import { ChargerRentalRecord } from "@/lib/types/charger";
 import { Lost } from "@/lib/types/losts";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import chargerApi from "@/lib/api/charger";
 import lostsApi from "@/lib/api/losts";
 import Toggle from "@/components/ui/input/Toggle";
 import Image from "next/image";
+import api from "@/lib/api/api";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -23,6 +24,7 @@ const UserDetailPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const userId = params.userId as string;
+  const queryClient = useQueryClient();
 
   // url 파라미터에서 사용자 정보 가져옴
   const userName = searchParams.get("name") || "사용자";
@@ -67,6 +69,25 @@ const UserDetailPage = () => {
     retry: false,
   });
 
+  // 반납 상태 변경 mutation
+  const toggleReturnMutation = useMutation({
+    mutationFn: async ({ recordId, currentStatus }: { recordId: string; currentStatus: boolean }) => {
+      // 이미 반납된 경우 토글할 수 없음
+      if (currentStatus) {
+        throw new Error("이미 반납된 충전기는 취소할 수 없습니다.");
+      }
+      const response = await api.patch(`/api/rental-record/${recordId}/returned`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["rental-records", userId] });
+      refetchCharger();
+    },
+    onError: (error: any) => {
+      alert(error.message || "반납 상태 변경에 실패했습니다.");
+    }
+  });
+
   const chargerColumns: Column<ChargerRentalRecord>[] = [
     {
       header: "#",
@@ -89,12 +110,23 @@ const UserDetailPage = () => {
       isSortable: true,
       width: "150px",
       render: (record) => (
-        <Toggle
-          checked={record.isReturned}
-          onChange={() => {}}
-          disabled={true}
-          size="md"
-        />
+        <div onClick={(e) => e.stopPropagation()}>
+          <Toggle
+            checked={record.isReturned}
+            onChange={(checked) => {
+              if (!checked && record.isReturned) {
+                alert("이미 반납된 충전기는 취소할 수 없습니다.");
+                return;
+              }
+              toggleReturnMutation.mutate({ 
+                recordId: record.id, 
+                currentStatus: record.isReturned 
+              });
+            }}
+            disabled={toggleReturnMutation.isPending || record.isReturned}
+            size="md"
+          />
+        </div>
       ),
     },
     {
