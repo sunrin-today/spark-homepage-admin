@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X } from "lucide-react";
+import { X, Save } from "lucide-react";
 import { InputWrapper } from "@/components/ui/input/InputWrapper";
 import { DateInput } from "@/components/ui/input/DateInput";
 import { TextareaInput } from "@/components/ui/input/TextareaInput";
@@ -122,18 +122,21 @@ export default function ScheduleForm({
         />
       </InputWrapper>
 
-      <div className="flex justify-end gap-3 pt-4">
+      <div className="flex justify-end gap-3 pt-4 text-sm font-medium">
         <button
           type="button"
           onClick={onCancel}
-          className="px-6 py-2.5 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          className="px-2 py-1.5 rounded-lg text-gray hover:bg-gray/10 flex items-center gap-2 transition-colors"
         >
+          <X size={20} />
           취소
         </button>
+
         <button
           type="submit"
-          className="px-6 py-2.5 text-base font-medium text-white bg-black rounded-lg hover:bg-gray-800 transition-colors"
+          className="px-2 py-1.5 bg-black text-white rounded-lg flex items-center gap-2 hover:bg-gray-800 transition-colors"
         >
+          <Save size={20} />
           {submitLabel}
         </button>
       </div>

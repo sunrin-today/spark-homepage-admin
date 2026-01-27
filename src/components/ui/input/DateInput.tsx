@@ -59,7 +59,7 @@ export const DateInput = ({
           onChange={onChange} // Read-only
           placeholder={placeholder}
           required={true}
-          className={className}
+          className={`${className} ${value ? "text-black" : "#767676"}`}
           ref={inputRef}
           noChange={true}
         />
