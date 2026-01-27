@@ -9,6 +9,7 @@ import PageHeader from '@/components/layout/page/PageHeader';
 import ActionBarTrigger from '@/components/common/action/ActionBarTrigger';
 import { ActionBarItem } from '@/components/common/action/ActionBar';
 import { useModal } from '@/contexts/ModalContexts';
+import ConfirmModal from '@/components/ui/modal/ConfirmModal';
 
 export default function NoticeDetailPage() {
   const router = useRouter();
@@ -66,16 +67,25 @@ export default function NoticeDetailPage() {
   const handleDelete = async () => {
     if (!notice) return;
 
-    if (confirm('정말 삭제하시겠습니까?')) {
-      try {
-        await noticesApi.deleteNotice(notice.id);
-        alert('삭제되었습니다.');
-        router.push('/notice');
-      } catch (error) {
-        console.error('Failed to delete notice:', error);
-        alert('삭제에 실패했습니다.');
-      }
-    }
+    open(
+      <ConfirmModal
+        title="공지사항 삭제"
+        message="정말로 삭제하시겠습니까?"
+        onClose={() => close()}
+        onConfirm={async () => {
+          try {
+            await noticesApi.deleteNotice(notice.id);
+            alert('삭제되었습니다.');
+            router.push('/notice');
+            close();
+          } catch (error) {
+            console.error('Failed to delete notice:', error);
+            alert('삭제에 실패했습니다.');
+            close();
+          }
+        }}
+      />
+    );
   };
 
   const handleEdit = () => {
@@ -91,33 +101,7 @@ export default function NoticeDetailPage() {
       backgroundColor: '#F9F9F9',
       iconColor: '#FA5353',
       textColor: '#FA5353',
-      onClick: () => {
-        open(
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
-              <h3 className="text-lg font-semibold mb-2">삭제 확인</h3>
-              <p className="text-gray-600 mb-6">정말 삭제하시겠습니까?</p>
-              <div className="flex gap-3 justify-end">
-                <button
-                  onClick={() => close()}
-                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
-                >
-                  취소
-                </button>
-                <button
-                  onClick={() => {
-                    close();
-                    handleDelete();
-                  }}
-                  className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                >
-                  삭제
-                </button>
-              </div>
-            </div>
-          </div>
-        );
-      },
+      onClick: handleDelete,
     },
     {
       icon: <Pencil size={24} />,

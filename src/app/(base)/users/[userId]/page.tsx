@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, RefreshCw } from "lucide-react";
 import { DataTable } from "@/components/common/table/DataTable";
@@ -16,6 +16,8 @@ import lostsApi from "@/lib/api/losts";
 import Toggle from "@/components/ui/input/Toggle";
 import Image from "next/image";
 import api from "@/lib/api/api";
+import { useModal } from "@/contexts/ModalContexts";
+import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -25,6 +27,7 @@ const UserDetailPage = () => {
   const searchParams = useSearchParams();
   const userId = params.userId as string;
   const queryClient = useQueryClient();
+  const { open, close } = useModal();
 
   // url 파라미터에서 사용자 정보 가져옴
   const userName = searchParams.get("name") || "사용자";
@@ -82,11 +85,34 @@ const UserDetailPage = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["rental-records", userId] });
       refetchCharger();
+      close();
     },
     onError: (error: any) => {
       alert(error.message || "반납 상태 변경에 실패했습니다.");
+      close();
     }
   });
+
+  const handleToggleChange = (recordId: string, currentStatus: boolean) => {
+    if (currentStatus) {
+      alert("이미 반납된 충전기는 취소할 수 없습니다.");
+      return;
+    }
+
+    open(
+      <ConfirmModal
+        title="반납 상태 변경"
+        message="상태를 반납 완료로 변경하시겠습니까? 이후에는 반납 상태를 변경할 수 없습니다."
+        onClose={() => close()}
+        onConfirm={() => {
+          toggleReturnMutation.mutate({ 
+            recordId, 
+            currentStatus 
+          });
+        }}
+      />
+    );
+  };
 
   const chargerColumns: Column<ChargerRentalRecord>[] = [
     {
@@ -113,16 +139,7 @@ const UserDetailPage = () => {
         <div onClick={(e) => e.stopPropagation()}>
           <Toggle
             checked={record.isReturned}
-            onChange={(checked) => {
-              if (!checked && record.isReturned) {
-                alert("이미 반납된 충전기는 취소할 수 없습니다.");
-                return;
-              }
-              toggleReturnMutation.mutate({ 
-                recordId: record.id, 
-                currentStatus: record.isReturned 
-              });
-            }}
+            onChange={() => handleToggleChange(record.id, record.isReturned)}
             disabled={toggleReturnMutation.isPending || record.isReturned}
             size="md"
           />

@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import PageHeader from "@/components/layout/page/PageHeader";
 import { useScheduleById } from "@/lib/queries/schedule/queries";
 import { useDeleteSchedule } from "@/lib/queries/schedule/mutations";
+import { useModal } from "@/contexts/ModalContexts";
+import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 
 interface PageProps {
   params: Promise<{ scheduleId: string }>;
@@ -22,6 +24,7 @@ const formatDate = (dateString: string) => {
 export default function ScheduleDetailPage({ params }: PageProps) {
   const router = useRouter();
   const { scheduleId } = use(params);
+  const { open, close } = useModal();
   
   // 일정 조회
   const { data: schedule, isLoading, isError } = useScheduleById(scheduleId);
@@ -31,19 +34,28 @@ export default function ScheduleDetailPage({ params }: PageProps) {
     router.push(`/schedule/${scheduleId}/edit`);
   };
 
-  const handleDelete = async () => {
-    if (confirm("정말 삭제하시겠습니까?")) {
-      try {
-        // 먼저 페이지로 이동
-        router.push("/schedule");
-        // 그 다음 삭제 실행
-        await deleteScheduleMutation.mutateAsync(scheduleId);
-      } catch (error) {
-        console.error("일정 삭제 실패:", error);
-        // 에러 발생 시 다시 상세 페이지로 복귀
-        router.push(`/schedule/${scheduleId}`);
-      }
-    }
+  const handleDelete = () => {
+    open(
+      <ConfirmModal
+        title="일정 삭제"
+        message="정말로 삭제하시겠습니까?"
+        onClose={() => close()}
+        onConfirm={async () => {
+          try {
+            // 먼저 페이지로 이동
+            router.push("/schedule");
+            // 그 다음 삭제 실행
+            await deleteScheduleMutation.mutateAsync(scheduleId);
+            close();
+          } catch (error) {
+            console.error("일정 삭제 실패:", error);
+            // 에러 발생 시 다시 상세 페이지로 복귀
+            router.push(`/schedule/${scheduleId}`);
+            close();
+          }
+        }}
+      />
+    );
   };
 
   if (isLoading) {

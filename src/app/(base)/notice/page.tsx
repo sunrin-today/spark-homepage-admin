@@ -13,11 +13,14 @@ import { DataTable } from '@/components/common/table/DataTable';
 import { Column } from '@/lib/types/table';
 import ActionBarTrigger from '@/components/common/action/ActionBarTrigger';
 import { ActionBarItem } from '@/components/common/action/ActionBar';
+import { useModal } from '@/contexts/ModalContexts';
+import ConfirmModal from '@/components/ui/modal/ConfirmModal';
 
 const ITEMS_PER_PAGE = 10;
 
 export default function NoticesPage() {
   const router = useRouter();
+  const { open, close } = useModal();
   const [notices, setNotices] = useState<Notice[]>([]);
   const [filteredNotices, setFilteredNotices] = useState<Notice[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,24 +66,33 @@ export default function NoticesPage() {
   };
 
   const handleDelete = async (noticeId: string, noticeTitle: string) => {
-    if (confirm(`"${noticeTitle}" 공지사항을 정말 삭제하시겠습니까?`)) {
-      try {
-        await noticesApi.deleteNotice(noticeId);
-        alert('공지사항이 삭제되었습니다.');
-        
-        await fetchNotices();
-        
-        // 삭제 후 현재 페이지에 데이터가 없으면 이전 페이지로
-        const newFilteredNotices = notices.filter(n => n.id !== noticeId);
-        const newTotalPages = Math.ceil(newFilteredNotices.length / ITEMS_PER_PAGE);
-        if (currentPage > newTotalPages && newTotalPages > 0) {
-          setCurrentPage(newTotalPages);
-        }
-      } catch (error) {
-        console.error('Failed to delete notice:', error);
-        alert('공지사항 삭제에 실패했습니다.');
-      }
-    }
+    open(
+      <ConfirmModal
+        title="공지사항 삭제"
+        message={`"${noticeTitle}" 공지사항을 정말로 삭제하시겠습니까?`}
+        onClose={() => close()}
+        onConfirm={async () => {
+          try {
+            await noticesApi.deleteNotice(noticeId);
+            alert('공지사항이 삭제되었습니다.');
+            
+            await fetchNotices();
+            
+            // 삭제 후 현재 페이지에 데이터가 없으면 이전 페이지로
+            const newFilteredNotices = notices.filter(n => n.id !== noticeId);
+            const newTotalPages = Math.ceil(newFilteredNotices.length / ITEMS_PER_PAGE);
+            if (currentPage > newTotalPages && newTotalPages > 0) {
+              setCurrentPage(newTotalPages);
+            }
+            close();
+          } catch (error) {
+            console.error('Failed to delete notice:', error);
+            alert('공지사항 삭제에 실패했습니다.');
+            close();
+          }
+        }}
+      />
+    );
   };
 
   // 페이지네이션 연산
