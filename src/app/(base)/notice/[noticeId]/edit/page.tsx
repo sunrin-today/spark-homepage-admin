@@ -20,7 +20,7 @@ export default function NoticeEditPage() {
   const params = useParams();
   const noticeId = params.noticeId as string;
 
-  const { data: noticeDetail, isLoading } = useNotice(noticeId);
+  const { data: noticeDetail } = useNotice(noticeId);
   
   const [originalImages, setOriginalImages] = useState<string[]>([]);
   const { mutate: updateNotice, isPending } = useUpdateNotice(noticeId, originalImages);

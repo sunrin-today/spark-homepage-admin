@@ -30,7 +30,7 @@ const UsersPage = () => {
   const deleteUserMutation = useDeleteUserMutation();
 
   // 사용자 목록 조회
-  const { data, isLoading } = useUsersQuery({
+  const { data } = useUsersQuery({
     page,
     limit: ITEMS_PER_PAGE,
     column: sort.key,

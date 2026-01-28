@@ -27,7 +27,7 @@ export default function ScheduleDetailPage({ params }: PageProps) {
   const { open, close } = useModal();
   
   // 일정 조회
-  const { data: schedule, isLoading, isError } = useScheduleById(scheduleId);
+  const { data: schedule, isError } = useScheduleById(scheduleId);
   const deleteScheduleMutation = useDeleteSchedule();
 
   const handleEdit = () => {
@@ -57,17 +57,6 @@ export default function ScheduleDetailPage({ params }: PageProps) {
       />
     );
   };
-
-  if (isLoading) {
-    return (
-      <div className="w-full h-full p-4 sm:p-6 pt-20 lg:pt-6">
-        <PageHeader title="일정 상세" isBackButton />
-        <div className="mt-6 text-center text-gray text-sm sm:text-base">
-          로딩 중...
-        </div>
-      </div>
-    );
-  }
 
   if (isError || !schedule) {
     return (

@@ -16,7 +16,7 @@ export default function SchedulePage() {
   const [popup, setPopup] = useState<PopupState | null>(null);
 
   // API를 통해 전체 스케줄 조회
-  const { data: schedules = [], isLoading, isError } = useAllSchedules();
+  const { data: schedules = [], isError } = useAllSchedules();
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
@@ -42,17 +42,6 @@ export default function SchedulePage() {
   const handleClosePopup = () => {
     setPopup(null);
   };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-white p-4 sm:p-8 pt-20 lg:pt-8">
-        <h1 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8">일정</h1>
-        <div className="flex items-center justify-center h-96">
-          <p className="text-gray text-sm sm:text-base">로딩 중...</p>
-        </div>
-      </div>
-    );
-  }
 
   if (isError) {
     return (

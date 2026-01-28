@@ -24,7 +24,7 @@ export default function ScheduleEditPage({ params }: PageProps) {
   const { scheduleId } = use(params);
 
   // 일정 조회
-  const { data: schedule, isLoading, isError } = useScheduleById(scheduleId);
+  const { data: schedule, isError } = useScheduleById(scheduleId);
   const updateScheduleMutation = useUpdateSchedule();
 
   const handleSubmit = async (data: ScheduleFormData) => {
@@ -48,17 +48,6 @@ export default function ScheduleEditPage({ params }: PageProps) {
   const handleCancel = () => {
     router.back();
   };
-
-  if (isLoading) {
-    return (
-      <div className="w-full h-full p-4 sm:p-6 pt-20 lg:pt-6">
-        <PageHeader title="일정 수정" isBackButton />
-        <div className="mt-6 text-center text-gray text-sm sm:text-base">
-          로딩 중...
-        </div>
-      </div>
-    );
-  }
 
   if (isError || !schedule) {
     return (
