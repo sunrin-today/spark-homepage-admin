@@ -8,18 +8,11 @@ import { useScheduleById } from "@/lib/queries/schedule/queries";
 import { useDeleteSchedule } from "@/lib/queries/schedule/mutations";
 import { useModal } from "@/contexts/ModalContexts";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
+import { formatKoreanDate } from "@/utils/date";
 
 interface PageProps {
   params: Promise<{ scheduleId: string }>;
 }
-
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}년 ${month}월 ${day}일`;
-};
 
 export default function ScheduleDetailPage({ params }: PageProps) {
   const router = useRouter();
@@ -113,13 +106,13 @@ export default function ScheduleDetailPage({ params }: PageProps) {
               <div>
                 <div className="text-sm text-[#767676] mb-2">시작일</div>
                 <div className="text-base text-black">
-                  {formatDate(schedule.startDate)}
+                  {formatKoreanDate(schedule.startDate)}
                 </div>
               </div>
               <div>
                 <div className="text-sm text-[#767676] mb-2">종료일</div>
                 <div className="text-base text-black">
-                  {formatDate(schedule.endDate)}
+                  {formatKoreanDate(schedule.endDate)}
                 </div>
               </div>
             </div>
