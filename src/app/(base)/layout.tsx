@@ -1,0 +1,57 @@
+"use client";
+
+import { useAuth } from "@/contexts/AuthContexts";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import Sidebar from '@/components/layout/sidebar/Sidebar';
+import { useMeQuery } from "@/lib/queries/auth/queries";
+
+export default function BaseLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { user: firebaseUser, loading: authLoading, logout } = useAuth();
+  const router = useRouter();
+
+  // TanStack Query로 사용자 정보 조회
+  const { data: userInfo, isLoading: isUserLoading } = useMeQuery(
+    !!firebaseUser && !authLoading
+  );
+
+  useEffect(() => {
+    if (authLoading) return;
+
+    if (!firebaseUser) {
+      router.push("/login");
+      return;
+    }
+
+    // 사용자 정보 로딩 실패 시 로그인 페이지로 이동
+    if (!isUserLoading && !userInfo) {
+      router.push("/login");
+      return;
+    }
+
+    // ADMIN 권한 체크
+    if (!isUserLoading && userInfo && userInfo.role !== "ADMIN") {
+      alert("관리자 권한이 필요합니다.");
+      logout();
+      router.push("/login");
+    }
+  }, [firebaseUser, authLoading, userInfo, isUserLoading, router, logout]);
+
+  // 인증되지 않은 경우 or ADMIN이 아닌 경우
+  if (!firebaseUser || !userInfo || userInfo.role !== "ADMIN") {
+    return null;
+  }
+
+  return (
+    <div className="flex h-screen overflow-hidden">
+      <Sidebar />
+      <main className="flex-1 overflow-y-auto bg-white">
+        {children}
+      </main>
+    </div>
+  );
+}
