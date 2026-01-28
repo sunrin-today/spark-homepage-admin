@@ -60,7 +60,7 @@ export default function ScheduleList({
         <h2 className="text-base font-medium">총 {schedules.length}개</h2>
         <button
           onClick={handleAddClick}
-          className="px-2 py-[6px] bg-black text-white rounded-lg text-[10px] font-semibold transition-colors flex items-center gap-1"
+          className="px-2 py-1.5 bg-black text-white rounded-lg text-[10px] font-semibold transition-colors flex items-center gap-1"
         >
           <Plus className="w-[18px] h-[18px]" />
           <span>등록하기</span>

@@ -173,7 +173,7 @@ export default function NoticeEditPage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="px-6 py-3 text-gray transition-colors flex items-center gap-2"
+              className="px-2 py-1.5 text-gray transition-colors flex items-center gap-2"
               disabled={isPending}
             >
               <X className="w-5 h-5" />
@@ -181,7 +181,7 @@ export default function NoticeEditPage() {
             </button>
             <button
               type="submit"
-              className={`px-6 py-3 ${
+              className={`px-2 py-1.5 ${
                 isPending ? 'bg-black/50 cursor-not-allowed' : 'bg-black'
               } text-white rounded-lg flex items-center gap-2`}
               disabled={isPending}

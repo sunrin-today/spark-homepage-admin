@@ -106,7 +106,7 @@ export default function NoticesPage() {
       sortKey: 'index',
       isSortable: false,
       width: '80px',
-      render: (_, index) => <span className="text-[#767676]">{startIndex + index + 1}</span>,
+      render: (_, index) => <span className="text-[#767676] font-medium">{startIndex + index + 1}</span>,
     },
     {
       header: '제목',
@@ -225,7 +225,7 @@ export default function NoticesPage() {
 
             <button
               onClick={() => router.push('/notice/add')}
-              className="w-full sm:w-auto px-3 py-3 bg-black text-white rounded-lg transition-colors whitespace-nowrap font-medium flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-2 py-1.5 bg-black text-white rounded-lg transition-colors whitespace-nowrap font-medium flex items-center justify-center gap-2"
             >
               <Plus size={24} />
               <span>등록하기</span>

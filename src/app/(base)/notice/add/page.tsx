@@ -116,7 +116,7 @@ export default function NoticeAddPage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="px-6 py-3 text-gray transition-colors flex items-center gap-2"
+              className="px-2 py-1.5 text-gray transition-colors flex items-center gap-2"
               disabled={submitting}
             >
               <X className="w-5 h-5" />
@@ -124,7 +124,7 @@ export default function NoticeAddPage() {
             </button>
             <button
               type="submit"
-              className={`px-6 py-3 ${
+              className={`px-2 py-1.5 ${
                 submitting ? 'bg-black/50 cursor-not-allowed' : 'bg-black'
               } text-white rounded-lg flex items-center gap-2`}
               disabled={submitting}
