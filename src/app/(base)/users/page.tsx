@@ -16,6 +16,8 @@ import { Column } from "@/lib/types/table";
 import { User } from "@/lib/types/users";
 import { Trash2 } from "lucide-react";
 import { ActionBarItem } from "@/components/common/action/ActionBar";
+import { useModal } from "@/contexts/ModalContexts";
+import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -23,6 +25,7 @@ const UsersPage = () => {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [query, setQuery] = useState("");
+  const { open, close } = useModal();
   
   const { page, setPage } = usePaginationQuery("page", 1);
   const { sort, onSortChange } = useTableSort({ key: "email", order: "DESC" });
@@ -45,15 +48,24 @@ const UsersPage = () => {
   };
 
   // 사용자 삭제
-  const handleDelete = async (userId: string) => {
-    if (confirm("정말 삭제하시겠습니까?")) {
-      try {
-        await deleteUserMutation.mutateAsync(userId);
-        alert("삭제되었습니다.");
-      } catch (error) {
-        alert("삭제에 실패했습니다.");
-      }
-    }
+  const handleDelete = async (userId: string, userName: string) => {
+    open(
+      <ConfirmModal
+        title="사용자 삭제"
+        message={`"${userName}" 사용자를 정말로 삭제하시겠습니까?`}
+        onClose={() => close()}
+        onConfirm={async () => {
+          try {
+            await deleteUserMutation.mutateAsync(userId);
+            alert("삭제되었습니다.");
+            close();
+          } catch (error) {
+            alert("삭제에 실패했습니다.");
+            close();
+          }
+        }}
+      />
+    );
   };
 
   const columns: Column<User>[] = [
@@ -83,7 +95,7 @@ const UsersPage = () => {
               />
             </div>
           ) : (
-            <div className="w-6 h-6 rounded-full bg-gray flex items-center justify-center flex-shrink-0">
+            <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0">
               <span className="font-regular text-black text-base">
                 {user.name.charAt(0)}
               </span>
@@ -123,7 +135,7 @@ const UsersPage = () => {
             backgroundColor: '#F9F9F9',
             iconColor: '#FA5353',
             textColor: '#FA5353',
-            onClick: () => handleDelete(user.id),
+            onClick: () => handleDelete(user.id, user.name),
           },
         ];
 

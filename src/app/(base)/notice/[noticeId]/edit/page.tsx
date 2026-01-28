@@ -11,6 +11,8 @@ import { FormImageListItem } from '@/lib/types/common';
 import { useNotice } from '@/lib/queries/notices/queries';
 import { useUpdateNotice } from '@/lib/queries/notices/mutations';
 import PageHeader from '@/components/layout/page/PageHeader';
+import { useModal } from '@/contexts/ModalContexts';
+import ConfirmModal from '@/components/ui/modal/ConfirmModal';
 
 const MAX_IMAGES = 10;
 const MAX_CONTENT_LENGTH = 300;
@@ -19,6 +21,7 @@ export default function NoticeEditPage() {
   const router = useRouter();
   const params = useParams();
   const noticeId = params.noticeId as string;
+  const { open, close } = useModal();
 
   const { data: noticeDetail } = useNotice(noticeId);
   
@@ -68,58 +71,70 @@ export default function NoticeEditPage() {
       return;
     }
 
-    try {
-      // formData.images 사용
-      const currentImages = formData.images;
-      
-      // exists: 현재 남아있는 기존 이미지들의 위치 정보
-      const exists = currentImages
-        .map((img: FormImageListItem, index: number) => 
-          img.type === 'exists' 
-            ? { url: img.url, index } 
-            : null
-        )
-        .filter((item): item is { url: string; index: number } => item !== null);
+    open(
+      <ConfirmModal
+        title="수정 저장 하실건가요?"
+        message="예를 누르실 경우 바로 수정된 내용이 적용됨을 명심하세요."
+        onClose={close}
+        onConfirm={() => {
+          try {
+            // formData.images 사용
+            const currentImages = formData.images;
+            
+            // exists: 현재 남아있는 기존 이미지들의 위치 정보
+            const exists = currentImages
+              .map((img: FormImageListItem, index: number) => 
+                img.type === 'exists' 
+                  ? { url: img.url, index } 
+                  : null
+              )
+              .filter((item): item is { url: string; index: number } => item !== null);
 
-      // deletes: 원본에는 있었지만 현재 없는 이미지들
-      const deletes = originalImages.filter(
-        url => !exists.some((item: { url: string; index: number }) => item.url === url)
-      );
+            // deletes: 원본에는 있었지만 현재 없는 이미지들
+            const deletes = originalImages.filter(
+              url => !exists.some((item: { url: string; index: number }) => item.url === url)
+            );
 
-      // newImages: 새로 추가된 File 객체들
-      const newImages = currentImages
-        .filter((img: FormImageListItem): img is Extract<FormImageListItem, { type: 'new' }> => 
-          img.type === 'new'
-        )
-        .map((img: Extract<FormImageListItem, { type: 'new' }>) => img.file);
+            // newImages: 새로 추가된 File 객체들
+            const newImages = currentImages
+              .filter((img: FormImageListItem): img is Extract<FormImageListItem, { type: 'new' }> => 
+                img.type === 'new'
+              )
+              .map((img: Extract<FormImageListItem, { type: 'new' }>) => img.file);
 
-      // imageIndexes: 새 이미지들이 들어갈 위치
-      const imageIndexes = currentImages
-        .map((img: FormImageListItem, index: number) => img.type === 'new' ? index : null)
-        .filter((index): index is number => index !== null);
+            // imageIndexes: 새 이미지들이 들어갈 위치
+            const imageIndexes = currentImages
+              .map((img: FormImageListItem, index: number) => img.type === 'new' ? index : null)
+              .filter((index): index is number => index !== null);
 
-      const requestData = {
-        title: formData.title,
-        content: formData.content,
-        exists,
-        deletes,
-        newImages,
-        imageIndexes,
-      };
+            const requestData = {
+              title: formData.title,
+              content: formData.content,
+              exists,
+              deletes,
+              newImages,
+              imageIndexes,
+            };
 
-      updateNotice(requestData as any, {
-        onSuccess: () => {
-          alert('수정되었습니다.');
-          router.push(`/notice/${noticeId}`);
-        },
-        onError: (error: any) => {
-          console.error('Update Error:', error.response?.data);
-          alert('수정 실패: ' + (error.response?.data?.message || '알 수 없는 오류'));
-        }
-      });
-    } catch (error) {
-      alert('오류가 발생했습니다.');
-    }
+            updateNotice(requestData as any, {
+              onSuccess: () => {
+                alert('수정되었습니다.');
+                router.push(`/notice/${noticeId}`);
+                close();
+              },
+              onError: (error: any) => {
+                console.error('Update Error:', error.response?.data);
+                alert('수정 실패: ' + (error.response?.data?.message || '알 수 없는 오류'));
+                close();
+              }
+            });
+          } catch (error) {
+            alert('오류가 발생했습니다.');
+            close();
+          }
+        }}
+      />
+    );
   };
 
 

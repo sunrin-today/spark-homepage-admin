@@ -6,6 +6,8 @@ import PageHeader from "@/components/layout/page/PageHeader";
 import ScheduleForm from "@/components/schedule/ScheduleForm";
 import { useScheduleById } from "@/lib/queries/schedule/queries";
 import { useUpdateSchedule } from "@/lib/queries/schedule/mutations";
+import { useModal } from "@/contexts/ModalContexts";
+import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 
 interface PageProps {
   params: Promise<{ scheduleId: string }>;
@@ -22,38 +24,61 @@ interface ScheduleFormData {
 export default function ScheduleEditPage({ params }: PageProps) {
   const router = useRouter();
   const { scheduleId } = use(params);
+  const { open, close } = useModal();
 
   // 일정 조회
-  const { data: schedule, isError } = useScheduleById(scheduleId);
+  const { data: schedule, isLoading, isError } = useScheduleById(scheduleId);
   const updateScheduleMutation = useUpdateSchedule();
 
   const handleSubmit = async (data: ScheduleFormData) => {
-    try {
-      await updateScheduleMutation.mutateAsync({
-        id: scheduleId,
-        data: {
-          title: data.title,
-          description: data.description,
-          startDate: data.startDate,
-          endDate: data.endDate,
-          color: data.color,
-        },
-      });
-      router.push(`/schedule/${scheduleId}`);
-    } catch (error) {
-      console.error("일정 수정 실패:", error);
-    }
+    open(
+      <ConfirmModal
+        title="수정 저장 하실건가요?"
+        message="예를 누르실 경우 바로 수정된 내용이 적용됨을 명심하세요."
+        onClose={() => close()}
+        onConfirm={async () => {
+          try {
+            await updateScheduleMutation.mutateAsync({
+              id: scheduleId,
+              data: {
+                title: data.title,
+                description: data.description,
+                startDate: data.startDate,
+                endDate: data.endDate,
+                color: data.color,
+              },
+            });
+            close();
+            router.push(`/schedule/${scheduleId}`);
+          } catch (error) {
+            console.error("일정 수정 실패:", error);
+            close();
+          }
+        }}
+      />
+    );
   };
 
   const handleCancel = () => {
     router.back();
   };
 
+  if (isLoading) {
+    return (
+      <div className="w-full h-full p-4 sm:p-6 pt-20 lg:pt-6">
+        <PageHeader title="일정 수정" isBackButton />
+        <div className="mt-6 text-center text-gray-500 text-sm sm:text-base">
+          로딩 중...
+        </div>
+      </div>
+    );
+  }
+
   if (isError || !schedule) {
     return (
       <div className="w-full h-full p-4 sm:p-6 pt-20 lg:pt-6">
         <PageHeader title="일정 수정" isBackButton />
-        <div className="mt-6 text-center text-gray text-sm sm:text-base">
+        <div className="mt-6 text-center text-gray-500 text-sm sm:text-base">
           일정을 찾을 수 없습니다.
         </div>
       </div>

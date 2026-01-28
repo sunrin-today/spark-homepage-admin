@@ -10,12 +10,15 @@ import { TextareaInput } from '@/components/ui/input/TextareaInput';
 import { DetailImageGrid } from '@/components/image/DetailImageGrid';
 import { FormImageListItem } from '@/lib/types/common';
 import PageHeader from '@/components/layout/page/PageHeader';
+import { useModal } from '@/contexts/ModalContexts';
+import ConfirmModal from '@/components/ui/modal/ConfirmModal';
 
 const MAX_IMAGES = 10;
 const MAX_CONTENT_LENGTH = 300;
 
 export default function NoticeAddPage() {
   const router = useRouter();
+  const { open, close } = useModal();
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -41,32 +44,42 @@ export default function NoticeAddPage() {
       return;
     }
 
-    setSubmitting(true);
+    open(
+      <ConfirmModal
+        title="업로드 하실건가요?"
+        message="예를 누르실 경우 바로 등록됨을 명심하세요."
+        onClose={close}
+        onConfirm={async () => {
+          setSubmitting(true);
 
-    try {
-      // FormImageListItem에서 File 객체 추출
-      const imageFiles = formData.images
-        .filter((img): img is Extract<FormImageListItem, { type: 'new' }> => 
-          img.type === 'new'
-        )
-        .map(img => img.file);
+          try {
+            // FormImageListItem에서 File 객체 추출
+            const imageFiles = formData.images
+              .filter((img): img is Extract<FormImageListItem, { type: 'new' }> => 
+                img.type === 'new'
+              )
+              .map(img => img.file);
 
-      const requestData = {
-        title: formData.title,
-        content: formData.content,
-        imageFiles: imageFiles.length > 0 ? imageFiles : undefined,
-      };
+            const requestData = {
+              title: formData.title,
+              content: formData.content,
+              imageFiles: imageFiles.length > 0 ? imageFiles : undefined,
+            };
 
-      await noticesApi.createNotice(requestData);
+            await noticesApi.createNotice(requestData);
 
-      alert('등록되었습니다.');
-      router.push('/notice');
-    } catch (error) {
-      console.error('Failed to create notice:', error);
-      alert('등록에 실패했습니다.');
-    } finally {
-      setSubmitting(false);
-    }
+            alert('등록되었습니다.');
+            router.push('/notice');
+          } catch (error) {
+            console.error('Failed to create notice:', error);
+            alert('등록에 실패했습니다.');
+          } finally {
+            setSubmitting(false);
+            close();
+          }
+        }}
+      />
+    );
   };
 
   return (
