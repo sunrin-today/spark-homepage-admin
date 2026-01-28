@@ -33,7 +33,7 @@ const UsersPage = () => {
   const deleteUserMutation = useDeleteUserMutation();
 
   // 사용자 목록 조회
-  const { data } = useUsersQuery({
+  const { data, refetch, isRefetching } = useUsersQuery({
     page,
     limit: ITEMS_PER_PAGE,
     column: sort.key,
@@ -44,7 +44,11 @@ const UsersPage = () => {
   // 검색 처리
   const handleSearch = (searchQuery: string) => {
     setQuery(searchQuery);
-    setPage(1); // 검색 시 첫 페이지로
+    setPage(1);
+  };
+
+  const handleRefresh = () => {
+    refetch();
   };
 
   // 사용자 삭제
@@ -172,6 +176,8 @@ const UsersPage = () => {
                 data={data.items}
                 sort={sort}
                 onSortChange={onSortChange}
+                onRefresh={handleRefresh}
+                isRefreshing={isRefetching}
                 onRowClick={(user: User) => {
                   const params = new URLSearchParams({
                     name: user.name,

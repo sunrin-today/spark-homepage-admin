@@ -9,6 +9,7 @@ import { Notice } from '@/lib/types/notice';
 import { SearchBar } from '@/components/common/search/SearchBar';
 import Pagination from '@/components/common/pagination/Pagination';
 import { usePaginationQuery } from '@/lib/hooks/usePaginationQuery';
+import { useTableSort } from '@/lib/hooks/useTableSort';
 import { DataTable } from '@/components/common/table/DataTable';
 import { Column } from '@/lib/types/table';
 import ActionBarTrigger from '@/components/common/action/ActionBarTrigger';
@@ -25,12 +26,15 @@ export default function NoticesPage() {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [filteredNotices, setFilteredNotices] = useState<Notice[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState(''); // 입력 중인 검색어
-  const [actualSearchQuery, setActualSearchQuery] = useState(''); // 실제 적용된 검색어
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [actualSearchQuery, setActualSearchQuery] = useState('');
   const { page: currentPage, setPage: setCurrentPage } = usePaginationQuery('page', 1);
+  const { sort, onSortChange } = useTableSort({ key: 'createdAt', order: 'DESC' });
 
   const fetchNotices = async () => {
     try {
+      setIsRefreshing(true);
       const data = await noticesApi.getNotices();
       const noticeArray = Array.isArray(data) ? data : [];
       setNotices(noticeArray);
@@ -41,6 +45,7 @@ export default function NoticesPage() {
       setFilteredNotices([]);
     } finally {
       setLoading(false);
+      setIsRefreshing(false);
     }
   };
 
@@ -65,6 +70,10 @@ export default function NoticesPage() {
 
   const handleSearch = (searchTerm: string) => {
     setActualSearchQuery(searchTerm);
+  };
+
+  const handleRefresh = () => {
+    fetchNotices();
   };
 
   const handleDelete = async (noticeId: string, noticeTitle: string) => {
@@ -97,11 +106,26 @@ export default function NoticesPage() {
     );
   };
 
+  const sortedNotices = [...filteredNotices].sort((a, b) => {
+    if (!sort.key) return 0;
+    
+    const aValue = a[sort.key as keyof Notice];
+    const bValue = b[sort.key as keyof Notice];
+    
+    if (aValue === undefined || bValue === undefined) return 0;
+    
+    if (sort.order === 'ASC') {
+      return aValue > bValue ? 1 : -1;
+    } else {
+      return aValue < bValue ? 1 : -1;
+    }
+  });
+
   // 페이지네이션 연산
-  const totalPages = Math.ceil(filteredNotices.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(sortedNotices.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentNotices = filteredNotices.slice(startIndex, endIndex);
+  const currentNotices = sortedNotices.slice(startIndex, endIndex);
 
   const columns: Column<Notice>[] = [
     {
@@ -240,6 +264,10 @@ export default function NoticesPage() {
               <DataTable
                 columns={columns}
                 data={currentNotices}
+                sort={sort}
+                onSortChange={onSortChange}
+                onRefresh={handleRefresh}
+                isRefreshing={isRefreshing}
                 onRowClick={(notice) => router.push(`/notice/${notice.id}`)}
               />
             </div>
@@ -249,7 +277,7 @@ export default function NoticesPage() {
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
-              totalItems={filteredNotices.length}
+              totalItems={sortedNotices.length}
               onPageChange={setCurrentPage}
             />
           </div>
