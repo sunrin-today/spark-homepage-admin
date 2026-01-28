@@ -1,9 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { X, File } from 'lucide-react';
-import { noticesApi } from '@/lib/api/notice';
 import { InputWrapper } from '@/components/ui/input/InputWrapper';
 import BaseInput from '@/components/ui/input/Input';
 import { TextareaInput } from '@/components/ui/input/TextareaInput';
@@ -12,14 +10,15 @@ import { FormImageListItem } from '@/lib/types/common';
 import PageHeader from '@/components/layout/page/PageHeader';
 import { useModal } from '@/contexts/ModalContexts';
 import ConfirmModal from '@/components/ui/modal/ConfirmModal';
+import { useCreateNotice } from '@/lib/queries/notices/mutations';
 
 const MAX_IMAGES = 10;
 const MAX_CONTENT_LENGTH = 300;
 
 export default function NoticeAddPage() {
-  const router = useRouter();
   const { open, close } = useModal();
-  const [submitting, setSubmitting] = useState(false);
+  const createNoticeMutation = useCreateNotice();
+  
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -49,34 +48,21 @@ export default function NoticeAddPage() {
         title="업로드 하실건가요?"
         message="예를 누르실 경우 바로 등록됨을 명심하세요."
         onClose={close}
-        onConfirm={async () => {
-          setSubmitting(true);
+        onConfirm={() => {
+          const imageFiles = formData.images
+            .filter((img): img is Extract<FormImageListItem, { type: 'new' }> => 
+              img.type === 'new'
+            )
+            .map(img => img.file);
 
-          try {
-            // FormImageListItem에서 File 객체 추출
-            const imageFiles = formData.images
-              .filter((img): img is Extract<FormImageListItem, { type: 'new' }> => 
-                img.type === 'new'
-              )
-              .map(img => img.file);
+          const requestData = {
+            title: formData.title,
+            content: formData.content,
+            imageFiles: imageFiles.length > 0 ? imageFiles : undefined,
+          };
 
-            const requestData = {
-              title: formData.title,
-              content: formData.content,
-              imageFiles: imageFiles.length > 0 ? imageFiles : undefined,
-            };
-
-            await noticesApi.createNotice(requestData);
-
-            alert('등록되었습니다.');
-            router.push('/notice');
-          } catch (error) {
-            console.error('Failed to create notice:', error);
-            alert('등록에 실패했습니다.');
-          } finally {
-            setSubmitting(false);
-            close();
-          }
+          createNoticeMutation.mutate(requestData);
+          close();
         }}
       />
     );
@@ -128,9 +114,9 @@ export default function NoticeAddPage() {
         <div className="flex justify-end gap-3 pt-4">
           <button
             type="button"
-            onClick={() => router.back()}
+            onClick={() => window.history.back()}
             className="px-2 py-1.5 text-gray transition-colors flex items-center gap-2"
-            disabled={submitting}
+            disabled={createNoticeMutation.isPending}
           >
             <X className="w-5 h-5" />
             취소
@@ -138,12 +124,12 @@ export default function NoticeAddPage() {
           <button
             type="submit"
             className={`px-2 py-1.5 ${
-              submitting ? 'bg-black/50 cursor-not-allowed' : 'bg-black'
+              createNoticeMutation.isPending ? 'bg-black/50 cursor-not-allowed' : 'bg-black'
             } text-white rounded-lg flex items-center gap-2`}
-            disabled={submitting}
+            disabled={createNoticeMutation.isPending}
           >
             <File className="w-5 h-5" />
-            {submitting ? '저장 중...' : '저장'}
+            {createNoticeMutation.isPending ? '저장 중...' : '저장'}
           </button>
         </div>
       </form>

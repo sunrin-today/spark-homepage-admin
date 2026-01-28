@@ -1,11 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Plus, Trash2, Pencil } from 'lucide-react';
-import { noticesApi } from '@/lib/api/notice';
-import { Notice } from '@/lib/types/notice';
 import { SearchBar } from '@/components/common/search/SearchBar';
 import Pagination from '@/components/common/pagination/Pagination';
 import { usePaginationQuery } from '@/lib/hooks/usePaginationQuery';
@@ -17,94 +15,28 @@ import { ActionBarItem } from '@/components/common/action/ActionBar';
 import { useModal } from '@/contexts/ModalContexts';
 import ConfirmModal from '@/components/ui/modal/ConfirmModal';
 import PageHeader from '@/components/layout/page/PageHeader';
+import { useNotices } from '@/lib/queries/notices/queries';
+import { useDeleteNotice } from '@/lib/queries/notices/mutations';
+import { Notice } from '@/lib/types/notice';
 
 const ITEMS_PER_PAGE = 10;
 
 export default function NoticesPage() {
   const router = useRouter();
   const { open, close } = useModal();
-  const [notices, setNotices] = useState<Notice[]>([]);
-  const [filteredNotices, setFilteredNotices] = useState<Notice[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [actualSearchQuery, setActualSearchQuery] = useState('');
   const { page: currentPage, setPage: setCurrentPage } = usePaginationQuery('page', 1);
   const { sort, onSortChange } = useTableSort({ key: 'createdAt', order: 'DESC' });
 
-  const fetchNotices = async () => {
-    try {
-      setIsRefreshing(true);
-      const data = await noticesApi.getNotices();
-      const noticeArray = Array.isArray(data) ? data : [];
-      setNotices(noticeArray);
-      setFilteredNotices(noticeArray);
-    } catch (error) {
-      console.error('Failed to fetch notices:', error);
-      setNotices([]);
-      setFilteredNotices([]);
-    } finally {
-      setLoading(false);
-      setIsRefreshing(false);
-    }
-  };
+  const { data: notices = [], isLoading, refetch, isRefetching } = useNotices();
+  const deleteNoticeMutation = useDeleteNotice();
 
-  useEffect(() => {
-    fetchNotices();
-  }, []);
-
-  // actualSearchQuery가 변경될 때만 필터링 실행
-  useEffect(() => {
-    if (!actualSearchQuery.trim()) {
-      setFilteredNotices(notices);
-      setCurrentPage(1);
-      return;
-    }
-
-    const filtered = notices.filter((notice) =>
-      notice.title?.toLowerCase().includes(actualSearchQuery.toLowerCase())
-    );
-    setFilteredNotices(filtered);
-    setCurrentPage(1);
-  }, [actualSearchQuery, notices]);
-
-  const handleSearch = (searchTerm: string) => {
-    setActualSearchQuery(searchTerm);
-  };
-
-  const handleRefresh = () => {
-    fetchNotices();
-  };
-
-  const handleDelete = async (noticeId: string, noticeTitle: string) => {
-    open(
-      <ConfirmModal
-        title="공지사항 삭제"
-        message={`"${noticeTitle}" 공지사항을 정말로 삭제하시겠습니까?`}
-        onClose={() => close()}
-        onConfirm={async () => {
-          try {
-            await noticesApi.deleteNotice(noticeId);
-            alert('공지사항이 삭제되었습니다.');
-            
-            await fetchNotices();
-            
-            // 삭제 후 현재 페이지에 데이터가 없으면 이전 페이지로
-            const newFilteredNotices = notices.filter(n => n.id !== noticeId);
-            const newTotalPages = Math.ceil(newFilteredNotices.length / ITEMS_PER_PAGE);
-            if (currentPage > newTotalPages && newTotalPages > 0) {
-              setCurrentPage(newTotalPages);
-            }
-            close();
-          } catch (error) {
-            console.error('Failed to delete notice:', error);
-            alert('공지사항 삭제에 실패했습니다.');
-            close();
-          }
-        }}
-      />
-    );
-  };
+  const filteredNotices = actualSearchQuery.trim()
+    ? notices.filter((notice) =>
+        notice.title?.toLowerCase().includes(actualSearchQuery.toLowerCase())
+      )
+    : notices;
 
   const sortedNotices = [...filteredNotices].sort((a, b) => {
     if (!sort.key) return 0;
@@ -121,11 +53,29 @@ export default function NoticesPage() {
     }
   });
 
-  // 페이지네이션 연산
   const totalPages = Math.ceil(sortedNotices.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentNotices = sortedNotices.slice(startIndex, endIndex);
+
+  const handleSearch = (searchTerm: string) => {
+    setActualSearchQuery(searchTerm);
+    setCurrentPage(1);
+  };
+
+  const handleDelete = async (noticeId: string, noticeTitle: string) => {
+    open(
+      <ConfirmModal
+        title="공지사항 삭제"
+        message={`"${noticeTitle}" 공지사항을 정말로 삭제하시겠습니까?`}
+        onClose={() => close()}
+        onConfirm={() => {
+          deleteNoticeMutation.mutate(noticeId);
+          close();
+        }}
+      />
+    );
+  };
 
   const columns: Column<Notice>[] = [
     {
@@ -231,7 +181,6 @@ export default function NoticesPage() {
     },
   ];
 
-
   return (
     <div className="flex flex-col gap-4 px-8 py-12">
       <PageHeader title="공지사항" />
@@ -266,8 +215,8 @@ export default function NoticesPage() {
                 data={currentNotices}
                 sort={sort}
                 onSortChange={onSortChange}
-                onRefresh={handleRefresh}
-                isRefreshing={isRefreshing}
+                onRefresh={refetch}
+                isRefreshing={isRefetching}
                 onRowClick={(notice) => router.push(`/notice/${notice.id}`)}
               />
             </div>
