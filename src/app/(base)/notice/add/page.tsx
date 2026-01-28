@@ -110,11 +110,6 @@ export default function NoticeAddPage() {
               required
               maxLength={MAX_CONTENT_LENGTH}
             />
-            <div className="text-center mt-2">
-              <span className="text-sm text-gray">
-                {formData.content.length} / {MAX_CONTENT_LENGTH}
-              </span>
-            </div>
           </InputWrapper>
 
           <div className="flex justify-end gap-3 pt-4">
