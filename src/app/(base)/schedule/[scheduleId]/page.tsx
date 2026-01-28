@@ -64,7 +64,7 @@ export default function ScheduleDetailPage({ params }: PageProps) {
 
   return (
     <div className="w-full h-full pt-20 lg:pt-0">
-      <div className="p-4 sm:p-6">
+      <div className="px-8 py-12">
         <PageHeader title="일정 상세" isBackButton />
       </div>
       

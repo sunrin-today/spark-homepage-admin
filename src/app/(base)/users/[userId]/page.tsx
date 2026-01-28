@@ -184,7 +184,7 @@ const UserDetailPage = () => {
   ];
 
   return (
-    <div className="flex flex-col gap-4 sm:gap-6 p-4 sm:p-8 pt-20 lg:pt-8">
+    <div className="flex flex-col gap-4 px-8 py-12">
       <PageHeader title="사용자 상세" isBackButton />
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">

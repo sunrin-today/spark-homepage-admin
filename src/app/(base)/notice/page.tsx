@@ -15,6 +15,7 @@ import ActionBarTrigger from '@/components/common/action/ActionBarTrigger';
 import { ActionBarItem } from '@/components/common/action/ActionBar';
 import { useModal } from '@/contexts/ModalContexts';
 import ConfirmModal from '@/components/ui/modal/ConfirmModal';
+import PageHeader from '@/components/layout/page/PageHeader';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -129,7 +130,7 @@ export default function NoticesPage() {
         const avatarUrl = notice.author?.avatarUrl;
         
         return (
-          <div className="flex items-center gap-2">
+          <div className="px-8 py-12 flex items-center gap-2">
             {avatarUrl ? (
               <div className="relative w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
                 <Image
@@ -209,7 +210,7 @@ export default function NoticesPage() {
     <div className="min-h-screen bg-white pt-16 lg:pt-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6 sm:py-8">
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">공지사항</h1>
+          <PageHeader title="공지사항" />
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
             <div className="w-full sm:flex-1 sm:max-w-xl">

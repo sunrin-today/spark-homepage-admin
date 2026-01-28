@@ -83,72 +83,70 @@ export default function NoticeAddPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-4xl mx-auto px-8 py-8">
-        <div className="mb-8">
-          <PageHeader title="공지사항 추가하기" isBackButton />
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <InputWrapper label="제목" htmlFor="title" className="max-w-[400px]">
-            <BaseInput
-              name="title"
-              value={formData.title}
-              onChange={(value) =>
-                setFormData((prev) => ({ ...prev, title: value }))
-              }
-              placeholder="제목을 입력해주세요..."
-              required
-            />
-          </InputWrapper>
-
-          <InputWrapper label="이미지" htmlFor="images" className="max-w-[810px]">
-            <DetailImageGrid
-              value={formData.images}
-              onChange={(images) =>
-                setFormData((prev) => ({ ...prev, images }))
-              }
-              max={MAX_IMAGES}
-            />
-          </InputWrapper>
-
-          <InputWrapper label="설명" htmlFor="content" className="max-w-[400px]">
-            <TextareaInput
-              name="content"
-              value={formData.content}
-              onChange={(value) =>
-                setFormData((prev) => ({ ...prev, content: value }))
-              }
-              placeholder="설명을 입력해주세요..."
-              required
-              maxLength={MAX_CONTENT_LENGTH}
-              className='h-[188px]'
-            />
-          </InputWrapper>
-
-          <div className="flex justify-end gap-3 pt-4">
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="px-2 py-1.5 text-gray transition-colors flex items-center gap-2"
-              disabled={submitting}
-            >
-              <X className="w-5 h-5" />
-              취소
-            </button>
-            <button
-              type="submit"
-              className={`px-2 py-1.5 ${
-                submitting ? 'bg-black/50 cursor-not-allowed' : 'bg-black'
-              } text-white rounded-lg flex items-center gap-2`}
-              disabled={submitting}
-            >
-              <File className="w-5 h-5" />
-              {submitting ? '저장 중...' : '저장'}
-            </button>
-          </div>
-        </form>
+    <div className="px-8 py-12 gap-[10px] flex flex-col">
+      <div className="mb-8">
+        <PageHeader title="공지사항 추가하기" isBackButton />
       </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <InputWrapper label="제목" htmlFor="title" className="max-w-[400px]">
+          <BaseInput
+            name="title"
+            value={formData.title}
+            onChange={(value) =>
+              setFormData((prev) => ({ ...prev, title: value }))
+            }
+            placeholder="제목을 입력해주세요..."
+            required
+          />
+        </InputWrapper>
+
+        <InputWrapper label="이미지" htmlFor="images" className="max-w-[810px]">
+          <DetailImageGrid
+            value={formData.images}
+            onChange={(images) =>
+              setFormData((prev) => ({ ...prev, images }))
+            }
+            max={MAX_IMAGES}
+          />
+        </InputWrapper>
+
+        <InputWrapper label="설명" htmlFor="content" className="max-w-[400px]">
+          <TextareaInput
+            name="content"
+            value={formData.content}
+            onChange={(value) =>
+              setFormData((prev) => ({ ...prev, content: value }))
+            }
+            placeholder="설명을 입력해주세요..."
+            required
+            maxLength={MAX_CONTENT_LENGTH}
+            className='h-[188px]'
+          />
+        </InputWrapper>
+
+        <div className="flex justify-end gap-3 pt-4">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="px-2 py-1.5 text-gray transition-colors flex items-center gap-2"
+            disabled={submitting}
+          >
+            <X className="w-5 h-5" />
+            취소
+          </button>
+          <button
+            type="submit"
+            className={`px-2 py-1.5 ${
+              submitting ? 'bg-black/50 cursor-not-allowed' : 'bg-black'
+            } text-white rounded-lg flex items-center gap-2`}
+            disabled={submitting}
+          >
+            <File className="w-5 h-5" />
+            {submitting ? '저장 중...' : '저장'}
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

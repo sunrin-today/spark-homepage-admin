@@ -63,17 +63,6 @@ export default function ScheduleEditPage({ params }: PageProps) {
     router.back();
   };
 
-  if (isLoading) {
-    return (
-      <div className="w-full h-full p-4 sm:p-6 pt-20 lg:pt-6">
-        <PageHeader title="일정 수정" isBackButton />
-        <div className="mt-6 text-center text-gray-500 text-sm sm:text-base">
-          로딩 중...
-        </div>
-      </div>
-    );
-  }
-
   if (isError || !schedule) {
     return (
       <div className="w-full h-full p-4 sm:p-6 pt-20 lg:pt-6">
@@ -95,7 +84,7 @@ export default function ScheduleEditPage({ params }: PageProps) {
 
   return (
     <div className="w-full h-full pt-20 lg:pt-0">
-      <div className="p-4 sm:p-6">
+      <div className="px-8 py-12">
         <PageHeader title="일정 수정" isBackButton />
       </div>
 

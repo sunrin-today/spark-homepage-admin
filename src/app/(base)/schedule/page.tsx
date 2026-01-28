@@ -1,10 +1,11 @@
 'use client';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import PageCalendar from '@/components/schedule/PageCalendar';
 import ScheduleList from '@/components/schedule/ScheduleList';
 import ScheduleDetailPopup from '@/components/schedule/ScheduleDetailPopup';
 import { useAllSchedules } from '@/lib/queries/schedule/queries';
 import { Schedule } from '@/lib/types/schedule';
+import PageHeader from '@/components/layout/page/PageHeader';
 
 interface PopupState {
   schedules: Schedule[];
@@ -16,7 +17,7 @@ export default function SchedulePage() {
   const [popup, setPopup] = useState<PopupState | null>(null);
 
   // API를 통해 전체 스케줄 조회
-  const { data: schedules = [], isError } = useAllSchedules();
+  const { data: schedules = [], isLoading, isError } = useAllSchedules();
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
@@ -46,7 +47,7 @@ export default function SchedulePage() {
   if (isError) {
     return (
       <div className="min-h-screen bg-white p-4 sm:p-8 pt-20 lg:pt-8">
-        <h1 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8">일정</h1>
+        <PageHeader title="일정" />
         <div className="flex items-center justify-center h-96">
           <p className="text-red-500 text-sm sm:text-base">일정을 불러오는데 실패했습니다.</p>
         </div>
@@ -55,10 +56,10 @@ export default function SchedulePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white p-4 sm:p-8 pt-20 lg:pt-8">
-      <h1 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8">일정</h1>
+    <div className="px-8 py-12">
+      <PageHeader title="일정" />
       
-      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 mt-6">
         <div className="flex-1 w-full">
           <PageCalendar
             selectedDate={selectedDate}
