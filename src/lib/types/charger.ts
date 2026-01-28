@@ -20,7 +20,7 @@ export type Charger = {
 };
 
 export type ChargerRentalRequest = {
-    id: number;
+    id: string;
     user: User;
     createdAt: string;
 };

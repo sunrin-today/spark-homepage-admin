@@ -13,15 +13,18 @@ import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 import { useRentCharger, useReturnCharger } from "@/lib/queries/charger/mutations";
 import { UserLink } from "@/components/user/UserLink";
 import { ChargerRequestModal } from "@/components/charger/ChargerRequestModal";
-
+import { ChargerStatusBadge } from "@/components/charger/StatusBadge";
+import { getChargerRentalRecordByCharger } from "@/lib/queries/charger-record/queries";
+import { formatKoreanDate } from "@/utils/date";
 export default function ChargerDetailPage() {
     const { chargerId } = useParams<{ chargerId: string }>();
     const { data : chargerData, isLoading, error, refetch } = useGetChargerByChargerId(chargerId);
+    const { data : rentalRecords, isLoading: isLoadingRentalRecords, error: rentalRequestError, refetch: rentalRequestRefresh } = getChargerRentalRecordByCharger(chargerId);
     const {sort, onSortChange} = useTableSort({key: "borrower", order: "ASC"})
     const {open, close} = useModal();
     const {mutate: returnCharger} = useReturnCharger();
     const {mutate: rentCharger} = useRentCharger();
-    console.log(chargerData)
+    
     const chargerColumn : Column<ChargerRentalRecord>[] = [
         {
             header: "#",
@@ -33,46 +36,29 @@ export default function ChargerDetailPage() {
             isSortable: true,
             header: "이름",
             width: '270px',
-            render: (row) => row.borrower.name,
+            render: (row) => <UserLink user={row.borrower}/>,
         },
         {
             sortKey: "reviwer",
             isSortable: true,
             header: "관리자",
             width: '280px',
-            render: (row) => row.reviewer?.name ?? "",
+            render: (row) => row.reviewer ? <UserLink user={row.reviewer}/>: "",
         },
         {
             sortKey: "createdAt",
             isSortable: true,
             header: "대여 날짜",
             width: "168px",
-            render: (row) => row.createdAt,
+            render: (row) => formatKoreanDate(row.createdAt),
         },
         {
             sortKey: "deadline",
             isSortable: true,
             header: "반납 날짜",
             width: "154px",
-            render: (row) => row.deadline,
+            render: (row) => formatKoreanDate(row.deadline),
         },
-        
-        {
-            header: "액션",
-            width: "100px",
-            render: (row) => (
-                <ActionBarTrigger
-                    items={[
-                        // {
-                        //     label: "삭제",
-                        //     onClick: () => { 
-                                
-                        //     }
-                        // }
-                    ]}
-                />
-            )
-        }
     ]
     return (
         <div className="px-8 py-12 flex flex-col gap-[10px]">
@@ -81,9 +67,7 @@ export default function ChargerDetailPage() {
                 label="상태"
                 value={
                     <div className="flex items-center gap-[10px]">
-                        {chargerData?.status === "not_rented" ? "미대여" 
-                        : chargerData?.status === "renting" ? "대여중" 
-                        : "전달예정"}
+                        <ChargerStatusBadge status={chargerData?.status || "not_rented"} />
                         {chargerData?.status === "renting" || chargerData?.status === "waiting" ? (
                             <p>
                             <UserLink
@@ -114,7 +98,7 @@ export default function ChargerDetailPage() {
                                 }
                                     ] : []),
                                 ...(chargerData?.status === "renting" ? [{
-                                    label: "미대여",
+                                    label: "반납완료(미대여)",
                                     onClick: () => {
                                         open(
                                             <ConfirmModal
@@ -132,13 +116,33 @@ export default function ChargerDetailPage() {
                                     hoverBackgroundColor: "#EEEEEE",
                                     backgroundColor: "#F9F9F9",
                                 }] : []),
-                                ...(chargerData?.status === "waiting" ? [{label: "대여중",
+                                ...(chargerData?.status === "waiting" ? [{
+                                    label: "전달완료(대여중)",
                                     onClick: () => {
                                         open(
                                             <ConfirmModal
                                                 onClose={() => close()}
                                                 onConfirm={() => {
                                                     rentCharger(
+                                                        chargerData?.id || 0
+                                                    );
+                                                    close();
+                                                }}
+                                            />
+                                        )
+                                    },
+                                    icon: <></>,
+                                    hoverBackgroundColor: "#EEEEEE",
+                                    backgroundColor: "#F9F9F9",
+                                },
+                                {
+                                    label: "미대여",
+                                    onClick: () => {
+                                        open(
+                                            <ConfirmModal
+                                                onClose={() => close()}
+                                                onConfirm={() => {
+                                                    returnCharger(
                                                         chargerData?.id || 0
                                                     );
                                                     close();
@@ -163,10 +167,10 @@ export default function ChargerDetailPage() {
                         <span className="text-sm text-darkgray">대여기록</span>
                     }
                     columns={chargerColumn}
-                    data={chargerData?.rentalRecords || []}
+                    data={rentalRecords?.data.items || []}
                     sort={sort}
                     onSortChange={onSortChange}
-                    onRefresh={refetch}
+                    onRefresh={rentalRequestRefresh}
                 />
             </div>
         </div>

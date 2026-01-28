@@ -153,7 +153,7 @@ export default function LostDetailPage() {
                 {lostData?.detailImageUrls.map((image, index) => (
                     <div
                         key={index}
-                        className="flex-shrink-0 w-[400px] h-[280px] rounded-lg overflow-x-auto bg-gray-100"
+                        className="flex-shrink-0 w-[400px] h-[280px] rounded-lg overflow-x-auto bg-gray"
                     >
                         <Image
                             width={400}

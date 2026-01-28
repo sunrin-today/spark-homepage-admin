@@ -5,7 +5,7 @@ import { chargerRequestKeys } from "./keys";
 
 export const useDeleteChargerRequest = () => {
     
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => chargerRequestApi.deleteChargerRequest(id),
     onSuccess: () => {

@@ -1,33 +1,33 @@
 import { ListResponse } from "../types/common";
-import { RentalRecord } from "../types/meeting-room";
+import { ChargerRentalRecord } from "../types/charger";
 import api from "./api";
 const chargerRentalRecordApi = {
     getChargerRentalRecords: () => {
-        const response = api.get<ListResponse<RentalRecord>>("/rental-record");
+        const response = api.get<ListResponse<ChargerRentalRecord>>("/api/rental-record");
         return response;
     },
     getChargerRentalRecordsByUser: (userId: string) => {
-        const response = api.get<ListResponse<RentalRecord>>(`/rental-record/user/${userId}`);
+        const response = api.get<ListResponse<ChargerRentalRecord>>(`/api/rental-record/user/${userId}`);
         return response;
     },
     getChargerRentalRecordByCharger: (chargerId: string) => {
-        const response = api.get<RentalRecord>(`/rental-record/charger/${chargerId}`);
+        const response = api.get<ListResponse<ChargerRentalRecord>>(`/api/rental-record/charger/${chargerId}`);
         return response;
     },
     getChargerRentalRecordById: (recordId: string) => {
-        const response = api.get<RentalRecord>(`/rental-record/${recordId}`);
+        const response = api.get<ChargerRentalRecord>(`/api/rental-record/${recordId}`);
         return response;
     },
     checkChargerRentalRecordReturned: (recordId: string) => {
-        const response = api.patch(`/rental-record/${recordId}/returned`);
+        const response = api.patch(`/api/rental-record/${recordId}/returned`);
         return response;
     },
     remindChargerRentalRecord: (recordId: string) => {
-        const response = api.post(`/rental-record/${recordId}/remind`);
+        const response = api.post(`/api/rental-record/${recordId}/remind`);
         return response;
     },
     deleteChargerRentalRecord: (recordId: string) => {
-        const response = api.delete(`/rental-record/${recordId}`);
+        const response = api.delete(`/api/rental-record/${recordId}`);
         return response;
     }
 }

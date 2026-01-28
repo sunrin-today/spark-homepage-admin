@@ -9,7 +9,7 @@ export default function LostDeleteModal({lostId}: {lostId: string}) {
             title="분실물 삭제"
             message="정말로 이 분실물을 삭제하시겠습니까?"
             onClose={() => {close()}}
-            onConfirm={() => {deleteLostMutation.mutate(lostId);}}
+            onConfirm={() => {deleteLostMutation.mutate(lostId); close();}}
         />
     )
 }
