@@ -53,6 +53,10 @@ const chargerApi =  {
             }
         });
         return response.data;
+    },
+    deleteCharger: async (id: string) => {
+        const response = await api.delete(`/api/charger/${id}`);
+        return response.data;
     }
 }
 

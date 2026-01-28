@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import chargerAPI from "@/lib/api/charger";
 import { chargerKeys } from "./keys";
+import chargerApi from "@/lib/api/charger";
 
 export const useReturnCharger = () => {
     
@@ -49,3 +50,21 @@ export const useWaitingCharger = () => {
     }
   });
 };
+
+export const useDeleteCharger = () => {
+
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    {
+      mutationFn: (id: string) => chargerApi.deleteCharger(id),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: chargerKeys.all() });
+        alert("충전기가 삭제되었습니다.");
+      },
+      onError: () => {
+        alert("충전기 삭제에 실패했습니다.");
+      }
+    }
+  )
+}

@@ -51,9 +51,8 @@ export default function MeetingRoomDetail() {
         <div className="flex justify-end items-center text-base gap-2 pt-4 sm:flex-row flex-col">
             {meetingRoomData && meetingRoomData.status !== 2 && <p className="text-black text-xs">이미 {statusMessage}된 신청서입니다.</p>}
             <div className={"flex gap-[15px]" + (isDisabled ? " opacity-40" : "")}>
-             {/* TODO: 버튼 컴포넌트로 변경 */}
               <button onClick={() => open(<ConfirmModal onConfirm={() => {rejectRental(id); close()}} onClose={() => close()} title="취소 확인" message="정말로 취소하시겠습니까?"/>)} disabled={isDisabled} className="px-2 py-[6px] flex items-center gap-1 text-gray rounded-lg"><X/>취소</button>
-              <button onClick={() => open(<ConfirmModal onConfirm={() => {approveRental(id); close()}} onClose={() => close()} title="수락 확인" message="정말로 수락하시겠습니까?"/>)} disabled={isDisabled} className="px-2 py-[6px] flex items-center gap-1 bg-blackS text-white rounded-lg"><Check/>수락</button>
+              <button onClick={() => open(<ConfirmModal onConfirm={() => {approveRental(id); close()}} onClose={() => close()} title="수락 확인" message="정말로 수락하시겠습니까?"/>)} disabled={isDisabled} className="px-2 py-[6px] flex items-center gap-1 bg-black text-white rounded-lg"><Check/>수락</button>
             </div>
         </div>  
       </div>

@@ -9,7 +9,6 @@ import { formatKoreanDate } from "@/utils/date";
 import Link from "next/link";
 import ActionBarTrigger from "@/components/common/action/ActionBarTrigger";
 import { Trash2 } from "lucide-react";
-import { getChargerStatusText } from "@/utils/charger";
 import Pagination from "@/components/common/pagination/Pagination";
 import { useGetChargers } from "@/lib/queries/charger/queries";
 import { useTableSort } from "@/lib/hooks/useTableSort";
@@ -17,6 +16,9 @@ import { UserLink } from "@/components/user/UserLink";
 import { useModal } from "@/contexts/ModalContexts";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 import { useChargerRequests } from "@/lib/queries/charger-request/queries";
+import { ChargerStatusBadge } from "@/components/charger/StatusBadge";
+import { useDeleteChargerRequest } from "@/lib/queries/charger-request/mutations";
+import { useDeleteCharger } from "@/lib/queries/charger/mutations";
 export default function ChargerPage() {
     
     const [activeTab, setActiveTab] = useState<"충전기 관리" | "신청서 관리">("충전기 관리");
@@ -24,6 +26,8 @@ export default function ChargerPage() {
     const { sort: requestSort, onSortChange: onRequestSortChange } = useTableSort({ key: "createdAt", order: "DESC" })    
     const { sort, onSortChange } = useTableSort({ key: "chargerId", order: "ASC" })    
     const [requestLimit, setRequestLimit] = useState<number>(5);
+    const { mutate: deleteCharger, isPending: deleteChargerPending, error: deleteChargerError   } = useDeleteCharger()
+    const {mutate: deleteChargerRequest, isPending: deleteChargerRequestPending, error: deleteChargerRequestError   } = useDeleteChargerRequest()
     const {data: chargers, isLoading, error, refetch: chargerRefresh} = useGetChargers({page:1, limit: 30, column: sort.key, orderDirection: sort.order}, activeTab === "충전기 관리");
     const { data: rentalRequests, isLoading: isLoadingRentalRequests, error: rentalRequestError, refetch: rentalRequestRefresh } = useChargerRequests({page: requestPage, limit: requestLimit, column: requestSort.key, orderDirection: requestSort.order}, activeTab === "신청서 관리");
     const {open, close} = useModal()
@@ -62,7 +66,7 @@ export default function ChargerPage() {
     {
         header: "상태",
         width: "154px",
-        render: (row) => getChargerStatusText(row.status),
+        render: (row) => <ChargerStatusBadge status={row.status}/>,
         isSortable: true,
         sortKey: "status",
     },
@@ -86,10 +90,10 @@ export default function ChargerPage() {
                         title={row.chargerId + "번 충전기 삭제"}
                         message={row.chargerId + "번 충전기를 삭제하시겠습니까?"}
                          onClose={() => close()} 
-                         onConfirm={() =>
-                        //대충 deleteItem 함수 호출
-                        close()
-                    }
+                         onConfirm={() =>{
+                            deleteCharger(row.id);
+                            close();
+                        }}
                          />); 
                  }            
             }
@@ -136,10 +140,10 @@ export default function ChargerPage() {
                         title="신청서 삭제"
                         message="신청서를 삭제하시겠습니까?"
                          onClose={() => close()} 
-                         onConfirm={() =>
-                        //대충 deleteItem 함수 호출
-                        close()
-                    }
+                         onConfirm={() => {
+                            deleteChargerRequest(row.id);
+                            close();
+                        }}
                     />); 
                  }            
                 }]}
