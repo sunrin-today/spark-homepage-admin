@@ -13,7 +13,9 @@ import {
   Box,
   Zap,
   Proportions,
-  LogOut
+  LogOut,
+  Menu,
+  X as CloseIcon
 } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -23,6 +25,7 @@ import { useLogoutMutation } from '@/lib/queries/auth/mutations';
 const Sidebar = () => {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [expandedSections, setExpandedSections] = useState<{
     [key: string]: boolean;
   }>({
@@ -30,9 +33,25 @@ const Sidebar = () => {
     service: true
   });
 
-  // TanStack Query로 사용자 정보 조회
   const { data: userInfo, isLoading: isLoadingUser } = useMeQuery();
   const logoutMutation = useLogoutMutation();
+
+  // 모바일 메뉴가 열렸을 때 body 스크롤 방지
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMobileMenuOpen]);
+
+  // 라우트 변경 시 모바일 메뉴 닫기
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
 
   const toggleSection = (section: string) => {
     setExpandedSections(prev => ({
@@ -60,12 +79,8 @@ const Sidebar = () => {
     { icon: Proportions, label: '소회의실 대여', href: '/meeting-room' }
   ];
 
-  return (
-    <div 
-      className={`h-full bg-white border-r-2 border-[#EEEEEE] flex flex-col transition-all duration-300 ${
-        isCollapsed ? 'w-16' : 'w-72'
-      }`}
-    >
+  const SidebarContent = () => (
+    <>
       {/* Header */}
       <div className="h-16 flex flex-col justify-center px-4">
         <div className="flex items-center justify-between">
@@ -74,7 +89,7 @@ const Sidebar = () => {
           )}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors lg:block hidden"
           >
             {isCollapsed ? (
               <PanelLeftOpen className="w-6 h-6 text-[#767676]" />
@@ -82,9 +97,16 @@ const Sidebar = () => {
               <PanelLeftClose className="w-6 h-6 text-[#767676]" />
             )}
           </button>
+          {/* 모바일 닫기 버튼 */}
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors lg:hidden"
+          >
+            <CloseIcon className="w-6 h-6 text-[#767676]" />
+          </button>
         </div>
 
-        <div className="mt-3 h-px w-[268px] bg-[#EBEBEB] self-center" />
+        <div className="mt-3 h-px w-full bg-[#EBEBEB]" />
       </div>
 
       {/* Navigation */}
@@ -236,7 +258,45 @@ const Sidebar = () => {
           </div>
         )}
       </div>
-    </div>
+    </>
+  );
+
+  return (
+    <>
+      {/* 모바일 햄버거 버튼 */}
+      <button
+        onClick={() => setIsMobileMenuOpen(true)}
+        className="lg:hidden fixed top-4 left-4 z-[60] p-2 bg-white rounded-lg shadow-md hover:bg-gray-100 transition-colors"
+      >
+        <Menu className="w-6 h-6 text-gray-700" />
+      </button>
+
+      {/* 데스크톱 사이드바 */}
+      <div 
+        className={`hidden lg:flex h-full bg-white border-r-2 border-[#EEEEEE] flex-col transition-all duration-300 ${
+          isCollapsed ? 'w-16' : 'w-72'
+        }`}
+      >
+        <SidebarContent />
+      </div>
+
+      {/* 모바일 오버레이 */}
+      {isMobileMenuOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* 모바일 사이드바 */}
+      <div 
+        className={`lg:hidden fixed top-0 left-0 h-full w-72 bg-white z-50 transform transition-transform duration-300 ${
+          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        } flex flex-col`}
+      >
+        <SidebarContent />
+      </div>
+    </>
   );
 };
 

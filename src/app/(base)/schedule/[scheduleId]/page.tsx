@@ -60,9 +60,9 @@ export default function ScheduleDetailPage({ params }: PageProps) {
 
   if (isLoading) {
     return (
-      <div className="w-full h-full p-6">
+      <div className="w-full h-full p-4 sm:p-6 pt-20 lg:pt-6">
         <PageHeader title="일정 상세" isBackButton />
-        <div className="mt-6 text-center text-gray-500">
+        <div className="mt-6 text-center text-gray-500 text-sm sm:text-base">
           로딩 중...
         </div>
       </div>
@@ -71,9 +71,9 @@ export default function ScheduleDetailPage({ params }: PageProps) {
 
   if (isError || !schedule) {
     return (
-      <div className="w-full h-full p-6">
+      <div className="w-full h-full p-4 sm:p-6 pt-20 lg:pt-6">
         <PageHeader title="일정 상세" isBackButton />
-        <div className="mt-6 text-center text-gray-500">
+        <div className="mt-6 text-center text-gray-500 text-sm sm:text-base">
           일정을 찾을 수 없습니다.
         </div>
       </div>
@@ -81,22 +81,25 @@ export default function ScheduleDetailPage({ params }: PageProps) {
   }
 
   return (
-    <div className="w-full h-full">
-      <div className="p-6">
+    <div className="w-full h-full pt-20 lg:pt-0">
+      <div className="p-4 sm:p-6">
         <PageHeader title="일정 상세" isBackButton />
       </div>
       
-      <div className="pl-10">
+      <div className="px-4 sm:px-10">
         <div className="bg-white">
-          <div className="flex items-center mb-8">
-            <div 
-              className="w-7 h-7 rounded-full flex-shrink-0" 
-              style={{ backgroundColor: schedule.color }}
-            />
-            <h2 className="text-xl font-semibold text-black ml-3">
-              {schedule.title}
-            </h2>
-            <div className="flex gap-2 ml-[20px]">
+          <div className="flex flex-col sm:flex-row sm:items-center mb-6 sm:mb-8 gap-4">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <div 
+                className="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex-shrink-0" 
+                style={{ backgroundColor: schedule.color }}
+              />
+              <h2 className="text-lg sm:text-xl font-semibold text-black truncate">
+                {schedule.title}
+              </h2>
+            </div>
+            
+            <div className="flex gap-2 sm:ml-[20px]">
               <button
                 onClick={handleEdit}
                 className="w-8 h-8 p-1.5 flex items-center justify-center rounded-lg transition-colors"
@@ -116,8 +119,8 @@ export default function ScheduleDetailPage({ params }: PageProps) {
             </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-8">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
               <div>
                 <div className="text-sm text-[#767676] mb-2">시작일</div>
                 <div className="text-base text-black">
@@ -134,7 +137,7 @@ export default function ScheduleDetailPage({ params }: PageProps) {
 
             <div>
               <div className="text-sm text-[#767676] mb-2">설명</div>
-              <div className="text-base text-black">
+              <div className="text-base text-black break-words">
                 {schedule.description}
               </div>
             </div>

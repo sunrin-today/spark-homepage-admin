@@ -45,10 +45,10 @@ export default function SchedulePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white p-8">
-        <h1 className="text-2xl font-bold mb-8">일정</h1>
+      <div className="min-h-screen bg-white p-4 sm:p-8 pt-20 lg:pt-8">
+        <h1 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8">일정</h1>
         <div className="flex items-center justify-center h-96">
-          <p className="text-gray-500">로딩 중...</p>
+          <p className="text-gray-500 text-sm sm:text-base">로딩 중...</p>
         </div>
       </div>
     );
@@ -56,21 +56,21 @@ export default function SchedulePage() {
 
   if (isError) {
     return (
-      <div className="min-h-screen bg-white p-8">
-        <h1 className="text-2xl font-bold mb-8">일정</h1>
+      <div className="min-h-screen bg-white p-4 sm:p-8 pt-20 lg:pt-8">
+        <h1 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8">일정</h1>
         <div className="flex items-center justify-center h-96">
-          <p className="text-red-500">일정을 불러오는데 실패했습니다.</p>
+          <p className="text-red-500 text-sm sm:text-base">일정을 불러오는데 실패했습니다.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white p-8">
-      <h1 className="text-2xl font-bold mb-8">일정</h1>
+    <div className="min-h-screen bg-white p-4 sm:p-8 pt-20 lg:pt-8">
+      <h1 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8">일정</h1>
       
-      <div className="flex gap-8">
-        <div className="flex-1">
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+        <div className="flex-1 w-full">
           <PageCalendar
             selectedDate={selectedDate}
             onDateSelect={handleDateSelect}
@@ -79,7 +79,7 @@ export default function SchedulePage() {
           />
         </div>
 
-        <div className="w-[427px]">
+        <div className="w-full lg:w-[427px]">
           <ScheduleList
             schedules={schedules}
             onScheduleClick={(schedule) => handleScheduleClick([schedule])}

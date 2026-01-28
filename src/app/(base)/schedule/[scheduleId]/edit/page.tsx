@@ -51,9 +51,9 @@ export default function ScheduleEditPage({ params }: PageProps) {
 
   if (isLoading) {
     return (
-      <div className="w-full h-full p-6">
+      <div className="w-full h-full p-4 sm:p-6 pt-20 lg:pt-6">
         <PageHeader title="일정 수정" isBackButton />
-        <div className="mt-6 text-center text-gray-500">
+        <div className="mt-6 text-center text-gray-500 text-sm sm:text-base">
           로딩 중...
         </div>
       </div>
@@ -62,9 +62,9 @@ export default function ScheduleEditPage({ params }: PageProps) {
 
   if (isError || !schedule) {
     return (
-      <div className="w-full h-full p-6">
+      <div className="w-full h-full p-4 sm:p-6 pt-20 lg:pt-6">
         <PageHeader title="일정 수정" isBackButton />
-        <div className="mt-6 text-center text-gray-500">
+        <div className="mt-6 text-center text-gray-500 text-sm sm:text-base">
           일정을 찾을 수 없습니다.
         </div>
       </div>
@@ -80,12 +80,12 @@ export default function ScheduleEditPage({ params }: PageProps) {
   };
 
   return (
-    <div className="w-full h-full">
-      <div className="p-6">
+    <div className="w-full h-full pt-20 lg:pt-0">
+      <div className="p-4 sm:p-6">
         <PageHeader title="일정 수정" isBackButton />
       </div>
 
-      <div className="px-10 pb-10">
+      <div className="px-4 sm:px-10 pb-10">
         <ScheduleForm
           initialData={initialData}
           onSubmit={handleSubmit}

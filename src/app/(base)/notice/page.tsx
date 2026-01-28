@@ -30,7 +30,6 @@ export default function NoticesPage() {
   const fetchNotices = async () => {
     try {
       const data = await noticesApi.getNotices();
-      console.log('Fetched notices:', data);
       const noticeArray = Array.isArray(data) ? data : [];
       setNotices(noticeArray);
       setFilteredNotices(noticeArray);
@@ -115,7 +114,7 @@ export default function NoticesPage() {
       isSortable: true,
       width: 'auto',
       render: (notice) => (
-        <span className="font-regiular text-black text-base">
+        <span className="font-regular text-black text-base">
           {notice.title}
         </span>
       ),
@@ -132,7 +131,7 @@ export default function NoticesPage() {
         return (
           <div className="flex items-center gap-2">
             {avatarUrl ? (
-              <div className="relative w-6 h-6 rounded-full overflow-hidden">
+              <div className="relative w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
                 <Image
                   src={avatarUrl}
                   alt={authorName}
@@ -142,8 +141,8 @@ export default function NoticesPage() {
                 />
               </div>
             ) : (
-              <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center">
-                <span className="font-regiular text-black text-base">
+              <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0">
+                <span className="font-regular text-black text-base">
                   {authorName.charAt(0)}
                 </span>
               </div>
@@ -159,7 +158,7 @@ export default function NoticesPage() {
       isSortable: true,
       width: '150px',
       render: (notice) => (
-        <span className="font-regiular text-black text-base">
+        <span className="font-regular text-black text-base whitespace-nowrap">
           {notice.createdAt 
             ? new Date(notice.createdAt).toLocaleDateString('ko-KR', {
                 year: 'numeric',
@@ -207,24 +206,26 @@ export default function NoticesPage() {
 
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-7xl mx-auto px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold mb-6">공지사항</h1>
+    <div className="min-h-screen bg-white pt-16 lg:pt-0">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6 sm:py-8">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">공지사항</h1>
 
-          <div className="flex items-center justify-between gap-4">
-            <SearchBar
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              onSubmit={handleSearch}
-              placeholder="검색어를 입력해주세요..."
-              buttonText="검색하기"
-              className="flex-1 max-w-xl"
-            />
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+            <div className="w-full sm:flex-1 sm:max-w-xl">
+              <SearchBar
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                onSubmit={handleSearch}
+                placeholder="검색어를 입력해주세요..."
+                buttonText="검색하기"
+                className="w-full"
+              />
+            </div>
 
             <button
               onClick={() => router.push('/notice/add')}
-              className="px-3 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors whitespace-nowrap font-medium flex items-center gap-2"
+              className="w-full sm:w-auto px-3 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors whitespace-nowrap font-medium flex items-center justify-center gap-2"
             >
               <Plus size={24} />
               <span>등록하기</span>
@@ -234,13 +235,17 @@ export default function NoticesPage() {
 
         {filteredNotices.length > 0 ? (
           <>
-            <DataTable
-              columns={columns}
-              data={currentNotices}
-              onRowClick={(notice) => router.push(`/notice/${notice.id}`)}
-            />
+            <div className="overflow-x-auto">
+              <div className="min-w-[800px]">
+                <DataTable
+                  columns={columns}
+                  data={currentNotices}
+                  onRowClick={(notice) => router.push(`/notice/${notice.id}`)}
+                />
+              </div>
+            </div>
 
-            <div className="mt-8">
+            <div className="mt-6 sm:mt-8 px-4 sm:px-0">
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
@@ -250,8 +255,8 @@ export default function NoticesPage() {
             </div>
           </>
         ) : (
-          <div className="flex items-center justify-center py-20 border border-[#D5D5D5] rounded-2xl">
-            <div className="text-gray-500">
+          <div className="flex items-center justify-center py-20 border border-[#D5D5D5] rounded-2xl mx-4 sm:mx-0">
+            <div className="text-gray-500 text-sm sm:text-base">
               {searchQuery
                 ? '검색 결과가 없습니다.'
                 : '등록된 공지사항이 없습니다.'}
