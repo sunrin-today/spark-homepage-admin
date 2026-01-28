@@ -41,15 +41,6 @@ export default function BaseLayout({
     }
   }, [firebaseUser, authLoading, userInfo, isUserLoading, router, logout]);
 
-  // 로딩 중이거나 인증되지 않은 경우
-  if (authLoading || isUserLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <p className="text-gray">로딩 중...</p>
-      </div>
-    );
-  }
-
   // 인증되지 않은 경우 or ADMIN이 아닌 경우
   if (!firebaseUser || !userInfo || userInfo.role !== "ADMIN") {
     return null;
