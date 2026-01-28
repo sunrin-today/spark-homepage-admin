@@ -212,21 +212,21 @@ export default function NoticesPage() {
     <div className="flex flex-col gap-4 px-8 py-12">
       <PageHeader title="공지사항" />
 
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-        <div className="w-full sm:flex-1 sm:max-w-xl">
-          <SearchBar
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            onSubmit={handleSearch}
-            placeholder="검색어를 입력해주세요..."
-            buttonText="검색하기"
-            className="w-full"
-          />
-        </div>
+      <div className="w-full sm:max-w-xl">
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          onSubmit={handleSearch}
+          placeholder="검색어를 입력해주세요..."
+          buttonText="검색하기"
+          className="w-full"
+        />
+      </div>
 
+      <div className="flex justify-end mt-[10px]">
         <button
           onClick={() => router.push('/notice/add')}
-          className="w-full sm:w-auto px-2 py-1.5 bg-black text-white rounded-lg transition-colors whitespace-nowrap font-medium flex items-center justify-center gap-2"
+          className="w-full sm:w-auto px-3 py-3 bg-black text-white rounded-2xl transition-colors whitespace-nowrap font-medium flex items-center justify-center gap-2"
         >
           <Plus size={24} />
           <span>등록하기</span>
