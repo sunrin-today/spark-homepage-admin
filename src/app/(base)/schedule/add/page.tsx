@@ -52,7 +52,7 @@ export default function ScheduleAddPage() {
   };
 
   return (
-    <div className="w-full h-full pt-20 lg:pt-0">
+    <div className="w-full h-full">
       <div className="px-8 py-12">
         <PageHeader title="일정 추가" isBackButton />
       </div>
