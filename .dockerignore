@@ -1,0 +1,17 @@
+node_modules
+npm-debug.log
+yarn-error.log
+
+.next
+out
+
+.git
+.gitignore
+
+
+.DS_Store
+
+README.md
+*.zip
+*.tar
+*.log
