@@ -45,7 +45,7 @@ export default function BaseLayout({
   if (authLoading || isUserLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <p className="text-gray-500">로딩 중...</p>
+        <p className="text-gray">로딩 중...</p>
       </div>
     );
   }
@@ -58,7 +58,7 @@ export default function BaseLayout({
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
-      <main className="flex-1 overflow-y-auto bg-gray-50">
+      <main className="flex-1 overflow-y-auto bg-white">
         {children}
       </main>
     </div>

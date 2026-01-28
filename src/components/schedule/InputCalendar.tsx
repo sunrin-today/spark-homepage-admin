@@ -47,7 +47,6 @@ const InputCalendar: React.FC<InputCalendarProps> = ({
                       aspect-square flex items-center justify-center text-base
                       relative
                       ${getDateColor(date, dayOfWeek)}
-                      hover:bg-gray-100 transition-colors
                     `}
                   >
                     {isInputDate && (

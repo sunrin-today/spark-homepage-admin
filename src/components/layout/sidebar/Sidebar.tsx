@@ -89,7 +89,7 @@ const Sidebar = () => {
           )}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors lg:block hidden"
+            className="p-2 rounded-lg transition-colors lg:block hidden"
           >
             {isCollapsed ? (
               <PanelLeftOpen className="w-6 h-6 text-[#767676]" />
@@ -100,7 +100,7 @@ const Sidebar = () => {
           {/* 모바일 닫기 버튼 */}
           <button
             onClick={() => setIsMobileMenuOpen(false)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors lg:hidden"
+            className="p-2 rounded-lg transition-colors lg:hidden"
           >
             <CloseIcon className="w-6 h-6 text-[#767676]" />
           </button>
@@ -114,7 +114,7 @@ const Sidebar = () => {
         <div className="mb-4">
           <button
             onClick={() => toggleSection('management')}
-            className="w-full px-4 py-2 flex items-center hover:bg-gray-50 transition-colors"
+            className="w-full px-4 py-2 flex items-center transition-colors"
           >
             {!isCollapsed && (
               <div className="flex items-center gap-1">
@@ -126,7 +126,7 @@ const Sidebar = () => {
                 )}
               </div>
             )}
-            {isCollapsed && <div className="w-full h-px bg-gray-200" />}
+            {isCollapsed && <div className="w-full h-px bg-gray" />}
           </button>
           
           {expandedSections.management && (
@@ -159,7 +159,7 @@ const Sidebar = () => {
         <div>
           <button
             onClick={() => toggleSection('service')}
-            className="w-full px-4 py-2 flex items-center hover:bg-gray-50 transition-colors"
+            className="w-full px-4 py-2 flex items-center transition-colors"
           >
             {!isCollapsed && (
               <div className="flex items-center gap-1">
@@ -171,7 +171,7 @@ const Sidebar = () => {
                 )}
               </div>
             )}
-            {isCollapsed && <div className="w-full h-px bg-gray-200" />}
+            {isCollapsed && <div className="w-full h-px bg-gray" />}
           </button>
           
           {expandedSections.service && (
@@ -203,9 +203,9 @@ const Sidebar = () => {
         <div className="mb-3 h-px w-full bg-[#EBEBEB] self-center" />
         {isLoadingUser ? (
           <div className="flex items-center">
-            <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse flex-shrink-0" />
+            <div className="w-8 h-8 bg-gray rounded-full animate-pulse flex-shrink-0" />
             {!isCollapsed && (
-              <div className="ml-3 h-4 bg-gray-200 rounded w-24 animate-pulse" />
+              <div className="ml-3 h-4 bg-gray rounded w-24 animate-pulse" />
             )}
           </div>
         ) : userInfo ? (
@@ -221,12 +221,12 @@ const Sidebar = () => {
                   />
                 </div>
               ) : (
-                <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 bg-gray rounded-full flex items-center justify-center flex-shrink-0">
                   <User className="w-5 h-5 text-white" />
                 </div>
               )}
               {!isCollapsed && (
-                <span className="ml-3 text-sm text-gray-700 font-medium truncate">
+                <span className="ml-3 text-sm text-black font-medium truncate">
                   {userInfo.name}
                 </span>
               )}
@@ -235,22 +235,22 @@ const Sidebar = () => {
               <button
                 onClick={handleLogout}
                 disabled={logoutMutation.isPending}
-                className={`p-1 hover:bg-gray-100 rounded transition-colors flex-shrink-0 ${
+                className={`p-1 rounded transition-colors flex-shrink-0 ${
                   logoutMutation.isPending ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
-                <LogOut className="w-6 h-6 text-gray-600" />
+                <LogOut className="w-6 h-6 text-gray" />
               </button>
             )}
           </div>
         ) : (
           <div className="flex items-center justify-between">
             <div className="flex items-center min-w-0">
-              <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 bg-gray rounded-full flex items-center justify-center flex-shrink-0">
                 <User className="w-5 h-5 text-white" />
               </div>
               {!isCollapsed && (
-                <span className="ml-3 text-sm text-gray-700 font-medium truncate">
+                <span className="ml-3 text-sm text-black font-medium truncate">
                   로그인 필요
                 </span>
               )}
@@ -266,9 +266,9 @@ const Sidebar = () => {
       {/* 모바일 햄버거 버튼 */}
       <button
         onClick={() => setIsMobileMenuOpen(true)}
-        className="lg:hidden fixed top-4 left-4 z-[60] p-2 bg-white rounded-lg shadow-md hover:bg-gray-100 transition-colors"
+        className="lg:hidden fixed top-4 left-4 z-[60] p-2 bg-white rounded-lg shadow-md transition-colors"
       >
-        <Menu className="w-6 h-6 text-gray-700" />
+        <Menu className="w-6 h-6 text-gray" />
       </button>
 
       {/* 데스크톱 사이드바 */}

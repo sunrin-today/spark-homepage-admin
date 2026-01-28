@@ -135,7 +135,7 @@ export default function NoticeDetailPage() {
   if (!notice) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-gray-500">공지사항을 찾을 수 없습니다.</div>
+        <div className="text-gray">공지사항을 찾을 수 없습니다.</div>
       </div>
     );
   }
@@ -174,7 +174,7 @@ export default function NoticeDetailPage() {
               {imageList.map((imageUrl, index) => (
                 <div
                   key={index}
-                  className="flex-shrink-0 w-[400px] h-[280px] rounded-lg overflow-hidden bg-gray-100 border border-gray-200"
+                  className="flex-shrink-0 w-[400px] h-[280px] rounded-lg overflow-hidden bg-gray border border-gray"
                 >
                   <img
                     src={imageUrl}
@@ -187,7 +187,7 @@ export default function NoticeDetailPage() {
                       const parent = target.parentElement;
                       if (parent) {
                         parent.innerHTML = `
-                          <div class="flex items-center justify-center h-full text-gray-400 text-sm">
+                          <div class="flex items-center justify-center h-full text-gray text-sm">
                             이미지를 불러올 수 없습니다
                           </div>
                         `;

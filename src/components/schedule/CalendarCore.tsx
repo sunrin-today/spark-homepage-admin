@@ -127,7 +127,7 @@ const CalendarCore: React.FC<CalendarCoreProps> = ({
           <button
             type="button"
             onClick={handlePrevMonth}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 rounded-lg transition-colors"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
@@ -135,7 +135,7 @@ const CalendarCore: React.FC<CalendarCoreProps> = ({
           <button
             type="button"
             onClick={handleNextMonth}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 rounded-lg transition-colors"
           >
             <ChevronRight className="w-6 h-6" />
           </button>

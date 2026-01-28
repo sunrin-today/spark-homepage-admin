@@ -53,7 +53,7 @@ export default function ScheduleEditPage({ params }: PageProps) {
     return (
       <div className="w-full h-full p-4 sm:p-6 pt-20 lg:pt-6">
         <PageHeader title="일정 수정" isBackButton />
-        <div className="mt-6 text-center text-gray-500 text-sm sm:text-base">
+        <div className="mt-6 text-center text-gray text-sm sm:text-base">
           로딩 중...
         </div>
       </div>
@@ -64,7 +64,7 @@ export default function ScheduleEditPage({ params }: PageProps) {
     return (
       <div className="w-full h-full p-4 sm:p-6 pt-20 lg:pt-6">
         <PageHeader title="일정 수정" isBackButton />
-        <div className="mt-6 text-center text-gray-500 text-sm sm:text-base">
+        <div className="mt-6 text-center text-gray text-sm sm:text-base">
           일정을 찾을 수 없습니다.
         </div>
       </div>

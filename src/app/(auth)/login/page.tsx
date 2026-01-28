@@ -13,7 +13,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 sm:px-6">
+    <div className="min-h-screen flex items-center justify-center bg-white px-4 sm:px-6">
       <LoginCard>
         <div className="mb-8 sm:mb-12">
           <img 
@@ -27,7 +27,7 @@ export default function LoginPage() {
 
         {/* 로딩 상태 */}
         {loginMutation.isPending && (
-          <p className="mt-4 text-sm text-gray-600 text-center">로그인 중...</p>
+          <p className="mt-4 text-sm text-gray text-center">로그인 중...</p>
         )}
 
         {/* 에러 메시지 */}
@@ -37,7 +37,7 @@ export default function LoginPage() {
               {loginMutation.error?.message || "로그인에 실패했습니다."}
             </p>
             {loginMutation.error?.message?.includes("관리자 권한") && (
-              <p className="text-gray-600 mt-2">
+              <p className="text-gray mt-2">
                 이 페이지는 관리자만 접근할 수 있습니다.
               </p>
             )}

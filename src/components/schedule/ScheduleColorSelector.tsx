@@ -4,11 +4,11 @@ import { useState, useRef, useEffect } from "react";
 import { useFloating, offset, shift, useClick, useDismiss, useInteractions } from "@floating-ui/react";
 
 const COLORS = [
-  { name: "학생회", color: "#6CA9FF" },
-  { name: "정보보호과", color: "#F79447" },
-  { name: "소프트웨어과", color: "#ECB220" },
-  { name: "아이티경영과", color: "#85C879" },
-  { name: "콘텐츠디자인과", color: "#089ED5" },
+  { name: "학생회", key: "council" },
+  { name: "정보보호과", key: "infosec" },
+  { name: "소프트웨어과", key: "software" },
+  { name: "아이티경영과", key: "itmanagement" },
+  { name: "콘텐츠디자인과", key: "contentsdesign" },
 ];
 
 interface ScheduleColorSelectorProps {
@@ -61,17 +61,17 @@ export default function ScheduleColorSelector({
           <div className="space-y-1">
             {COLORS.map((item) => (
               <button
-                key={item.color}
+                key={item.key}
                 type="button"
                 onClick={() => {
-                  onColorSelect(item.color);
+                  onColorSelect(item.key);
                   setIsOpen(false);
                 }}
-                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 transition-colors text-left"
+                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors text-left"
               >
                 <div
                   className="w-5 h-5 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: item.color }}
+                  style={{ backgroundColor: item.key }}
                 />
                 <span className="text-base text-black font-medium">{item.name}</span>
               </button>

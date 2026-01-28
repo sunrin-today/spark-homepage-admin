@@ -83,7 +83,7 @@ const UsersPage = () => {
               />
             </div>
           ) : (
-            <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0">
+            <div className="w-6 h-6 rounded-full bg-gray flex items-center justify-center flex-shrink-0">
               <span className="font-regular text-black text-base">
                 {user.name.charAt(0)}
               </span>
@@ -184,7 +184,7 @@ const UsersPage = () => {
         </>
       ) : (
         <div className="flex items-center justify-center py-20 border border-[#D5D5D5] rounded-2xl mx-4 sm:mx-0">
-          <div className="text-gray-500 text-sm sm:text-base">사용자가 없습니다.</div>
+          <div className="text-gray text-sm sm:text-base">사용자가 없습니다.</div>
         </div>
       )}
     </div>

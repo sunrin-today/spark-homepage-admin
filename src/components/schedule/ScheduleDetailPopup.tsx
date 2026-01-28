@@ -49,7 +49,7 @@ export default function ScheduleDetailPopup({
   return (
     <div 
       ref={popupRef}
-      className="absolute bg-white rounded-2xl shadow-lg border border-gray-200 z-50 overflow-hidden"
+      className="absolute bg-white rounded-2xl shadow-lg border border-gray z-50 overflow-hidden"
       style={{
         top: `${position.top + 10}px`,
         left: `${position.left}px`,
@@ -60,8 +60,8 @@ export default function ScheduleDetailPopup({
         <div 
           key={schedule.id}
           onClick={() => handleScheduleClick(schedule.id)}
-          className={`p-4 flex items-start gap-3 cursor-pointer hover:bg-gray-50 transition-colors ${
-            index !== schedules.length - 1 ? 'border-b border-gray-100' : ''
+          className={`p-4 flex items-start gap-3 cursor-pointer transition-colors ${
+            index !== schedules.length - 1 ? 'border-b border-gray' : ''
           }`}
         >
           <div
@@ -70,10 +70,10 @@ export default function ScheduleDetailPopup({
           />
           
           <div className="flex-1 min-w-0">
-            <h3 className="text-base font-semibold text-gray-900 mb-1">
+            <h3 className="text-base font-semibold text-black mb-1">
               {schedule.title}
             </h3>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray">
               {formatDate(schedule.startDate)}
             </p>
           </div>

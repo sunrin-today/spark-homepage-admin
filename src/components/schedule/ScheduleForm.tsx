@@ -134,7 +134,7 @@ export default function ScheduleForm({
 
         <button
           type="submit"
-          className="px-2 py-1.5 bg-black text-white rounded-lg flex items-center gap-2 hover:bg-gray-800 transition-colors"
+          className="px-2 py-1.5 bg-black text-white rounded-lg flex items-center gap-2 transition-colors"
         >
           <Save size={20} />
           {submitLabel}

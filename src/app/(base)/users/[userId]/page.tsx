@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { ChevronLeft, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { DataTable } from "@/components/common/table/DataTable";
 import Pagination from "@/components/common/pagination/Pagination";
 import { useTableSort } from "@/lib/hooks/useTableSort";
@@ -18,6 +18,7 @@ import Image from "next/image";
 import api from "@/lib/api/api";
 import { useModal } from "@/contexts/ModalContexts";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
+import PageHeader from "@/components/layout/page/PageHeader";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -184,15 +185,7 @@ const UserDetailPage = () => {
 
   return (
     <div className="flex flex-col gap-4 sm:gap-6 p-4 sm:p-8 pt-20 lg:pt-8">
-      <div className="flex items-center gap-3">
-        <button
-          onClick={() => router.back()}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <ChevronLeft className="w-6 h-6" />
-        </button>
-        <h1 className="text-lg sm:text-xl font-semibold">사용자 상세</h1>
-      </div>
+      <PageHeader title="사용자 상세" isBackButton />
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
         {userAvatarUrl ? (
@@ -206,7 +199,7 @@ const UserDetailPage = () => {
             />
           </div>
         ) : (
-          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gray flex items-center justify-center flex-shrink-0">
             <span className="text-xl sm:text-2xl text-white font-semibold">
               {userName.charAt(0)}
             </span>
@@ -269,7 +262,7 @@ const UserDetailPage = () => {
               />
             </div>
             <div className="flex items-center justify-center py-20 border border-[#D5D5D5] rounded-2xl mx-4 sm:mx-0">
-              <div className="text-gray-500 text-sm sm:text-base">대여 기록이 없습니다.</div>
+              <div className="text-gray text-sm sm:text-base">대여 기록이 없습니다.</div>
             </div>
           </div>
         )}
@@ -312,7 +305,7 @@ const UserDetailPage = () => {
               />
             </div>
             <div className="flex items-center justify-center py-20 border border-[#D5D5D5] rounded-2xl mx-4 sm:mx-0">
-              <div className="text-gray-500 text-sm sm:text-base">분실물 기록이 없습니다.</div>
+              <div className="text-gray text-sm sm:text-base">분실물 기록이 없습니다.</div>
             </div>
           </div>
         )}

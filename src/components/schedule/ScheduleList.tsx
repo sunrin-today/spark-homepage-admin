@@ -96,7 +96,7 @@ export default function ScheduleList({
               <div
                 key={schedule.id}
                 onClick={() => handleClick(schedule)}
-                className="flex items-center gap-3 py-2 cursor-pointer hover:bg-gray-50 rounded-lg transition-colors px-2"
+                className="flex items-center gap-3 py-2 cursor-pointer rounded-lg transition-colors px-2"
               >
                 <div
                   className="w-7 h-7 rounded-full flex-shrink-0"
@@ -104,15 +104,15 @@ export default function ScheduleList({
                 />
                 
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-base font-medium text-gray-900 mb-0.5">
+                  <h3 className="text-base font-medium text-black mb-0.5">
                     {schedule.title}
                   </h3>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray">
                     {formatDate(schedule.startDate)}
                   </p>
                 </div>
                 
-                <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" />
+                <ChevronRight className="w-5 h-5 text-[#D9D9D9] flex-shrink-0 ml-2" />
               </div>
             ))}
           </div>

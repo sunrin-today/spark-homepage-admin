@@ -168,7 +168,7 @@ export default function NoticeEditPage() {
               maxLength={MAX_CONTENT_LENGTH}
             />
             <div className="text-center mt-2">
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray">
                 {formData.content.length} / {MAX_CONTENT_LENGTH}
               </span>
             </div>
@@ -178,7 +178,7 @@ export default function NoticeEditPage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="px-6 py-3 text-gray-700 hover:text-gray-900 transition-colors flex items-center gap-2"
+              className="px-6 py-3 text-gray transition-colors flex items-center gap-2"
               disabled={isPending}
             >
               <X className="w-5 h-5" />

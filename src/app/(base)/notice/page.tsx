@@ -141,7 +141,7 @@ export default function NoticesPage() {
                 />
               </div>
             ) : (
-              <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0">
+              <div className="w-6 h-6 rounded-full bg-gray flex items-center justify-center flex-shrink-0">
                 <span className="font-regular text-black text-base">
                   {authorName.charAt(0)}
                 </span>
@@ -225,7 +225,7 @@ export default function NoticesPage() {
 
             <button
               onClick={() => router.push('/notice/add')}
-              className="w-full sm:w-auto px-3 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors whitespace-nowrap font-medium flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-3 py-3 bg-black text-white rounded-lg transition-colors whitespace-nowrap font-medium flex items-center justify-center gap-2"
             >
               <Plus size={24} />
               <span>등록하기</span>
@@ -256,7 +256,7 @@ export default function NoticesPage() {
           </>
         ) : (
           <div className="flex items-center justify-center py-20 border border-[#D5D5D5] rounded-2xl mx-4 sm:mx-0">
-            <div className="text-gray-500 text-sm sm:text-base">
+            <div className="text-gray text-sm sm:text-base">
               {searchQuery
                 ? '검색 결과가 없습니다.'
                 : '등록된 공지사항이 없습니다.'}

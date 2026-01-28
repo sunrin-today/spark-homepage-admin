@@ -109,7 +109,6 @@ const PageCalendar: React.FC<PageCalendarProps> = ({
                       aspect-square flex items-center justify-center text-base
                       relative
                       ${getDateColor(date, dayOfWeek)}
-                      hover:bg-gray-100 transition-colors
                     `}
                   >
                     <span className="relative z-10">

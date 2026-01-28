@@ -2,13 +2,14 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, X, File } from 'lucide-react';
+import { X, File } from 'lucide-react';
 import { noticesApi } from '@/lib/api/notice';
 import { InputWrapper } from '@/components/ui/input/InputWrapper';
 import BaseInput from '@/components/ui/input/Input';
 import { TextareaInput } from '@/components/ui/input/TextareaInput';
 import { DetailImageGrid } from '@/components/image/DetailImageGrid';
 import { FormImageListItem } from '@/lib/types/common';
+import PageHeader from '@/components/layout/page/PageHeader';
 
 const MAX_IMAGES = 10;
 const MAX_CONTENT_LENGTH = 300;
@@ -71,15 +72,8 @@ export default function NoticeAddPage() {
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-4xl mx-auto px-8 py-8">
-        <div className="flex items-center gap-4 mb-8">
-          <button
-            onClick={() => router.back()}
-            className="text-gray-700 hover:text-gray-900"
-            aria-label="뒤로가기"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          <h1 className="text-2xl font-bold">공지사항 추가하기</h1>
+        <div className="mb-8">
+          <PageHeader title="공지사항 추가하기" isBackButton />
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -117,7 +111,7 @@ export default function NoticeAddPage() {
               maxLength={MAX_CONTENT_LENGTH}
             />
             <div className="text-center mt-2">
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray">
                 {formData.content.length} / {MAX_CONTENT_LENGTH}
               </span>
             </div>
@@ -127,7 +121,7 @@ export default function NoticeAddPage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="px-6 py-3 text-gray-700 hover:text-gray-900 transition-colors flex items-center gap-2"
+              className="px-6 py-3 text-gray transition-colors flex items-center gap-2"
               disabled={submitting}
             >
               <X className="w-5 h-5" />
