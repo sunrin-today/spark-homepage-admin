@@ -1,11 +1,11 @@
-version: "3.8"
-
 services:
   next:
-    container_name: homepage-admin
-    build: .
+    image: juyoungk09/spark-homepage-admin:latest
+    container_name: spark-homepage-admin
     ports:
-      - "3000:3000"
+      - "3001:3000"
     env_file:
       - .env
+    volumes:
+      - ./data:/app/data
     restart: always

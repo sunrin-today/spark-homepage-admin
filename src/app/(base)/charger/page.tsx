@@ -26,10 +26,10 @@ export default function ChargerPage() {
     const { sort: requestSort, onSortChange: onRequestSortChange } = useTableSort({ key: "createdAt", order: "DESC" })    
     const { sort, onSortChange } = useTableSort({ key: "chargerId", order: "ASC" })    
     const [requestLimit, setRequestLimit] = useState<number>(5);
-    const { mutate: deleteCharger, isPending: deleteChargerPending, error: deleteChargerError   } = useDeleteCharger()
-    const {mutate: deleteChargerRequest, isPending: deleteChargerRequestPending, error: deleteChargerRequestError   } = useDeleteChargerRequest()
-    const {data: chargers, isLoading, error, refetch: chargerRefresh} = useGetChargers({page:1, limit: 30, column: sort.key, orderDirection: sort.order}, activeTab === "충전기 관리");
-    const { data: rentalRequests, isLoading: isLoadingRentalRequests, error: rentalRequestError, refetch: rentalRequestRefresh } = useChargerRequests({page: requestPage, limit: requestLimit, column: requestSort.key, orderDirection: requestSort.order}, activeTab === "신청서 관리");
+    const { mutate: deleteCharger    } = useDeleteCharger()
+    const {mutate: deleteChargerRequest    } = useDeleteChargerRequest()
+    const {data: chargers, error, refetch: chargerRefresh} = useGetChargers({page:1, limit: 30, column: sort.key, orderDirection: sort.order}, activeTab === "충전기 관리");
+    const { data: rentalRequests, refetch: rentalRequestRefresh } = useChargerRequests({page: requestPage, limit: requestLimit, column: requestSort.key, orderDirection: requestSort.order}, activeTab === "신청서 관리");
     const {open, close} = useModal()
     const columnCharger: Column<Charger>[] = [
          {
@@ -155,7 +155,7 @@ export default function ChargerPage() {
         <div className="px-8 py-12 flex flex-col gap-[32px]">
             <PageHeader title={"충전기 대여 - " + activeTab}/>
             <div className="px-2">
-                {!error && !isLoading && (
+                {!error && (
                     <> 
                         {activeTab === "충전기 관리" && (
                             <DataTable
@@ -177,6 +177,7 @@ export default function ChargerPage() {
                             />
                         )}
                         {activeTab === "신청서 관리" && (
+                        
                         <>
                         <DataTable
                             columns={columnRentalRequest}

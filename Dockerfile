@@ -11,7 +11,7 @@ RUN pnpm install --frozen-lockfile
 FROM base AS build
 
 COPY . .
-
+COPY .env .env
 RUN pnpm run build
 
 FROM base AS deps
