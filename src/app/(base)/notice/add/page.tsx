@@ -77,7 +77,7 @@ export default function NoticeAddPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <InputWrapper label="제목" htmlFor="title">
+          <InputWrapper label="제목" htmlFor="title" className="max-w-[400px]">
             <BaseInput
               name="title"
               value={formData.title}
@@ -89,7 +89,7 @@ export default function NoticeAddPage() {
             />
           </InputWrapper>
 
-          <InputWrapper label="이미지" htmlFor="images">
+          <InputWrapper label="이미지" htmlFor="images" className="max-w-[810px]">
             <DetailImageGrid
               value={formData.images}
               onChange={(images) =>
@@ -99,7 +99,7 @@ export default function NoticeAddPage() {
             />
           </InputWrapper>
 
-          <InputWrapper label="설명" htmlFor="content">
+          <InputWrapper label="설명" htmlFor="content" className="max-w-[400px]">
             <TextareaInput
               name="content"
               value={formData.content}
@@ -109,6 +109,7 @@ export default function NoticeAddPage() {
               placeholder="설명을 입력해주세요..."
               required
               maxLength={MAX_CONTENT_LENGTH}
+              className='h-[188px]'
             />
           </InputWrapper>
 
