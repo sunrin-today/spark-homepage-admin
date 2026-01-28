@@ -106,7 +106,7 @@ const Sidebar = () => {
           </button>
         </div>
 
-        <div className="mt-3 h-px w-full bg-[#EBEBEB]" />
+        <div className="mt-3 border-t border-[#EBEBEB] w-full" />
       </div>
 
       {/* Navigation */}
@@ -126,7 +126,6 @@ const Sidebar = () => {
                 )}
               </div>
             )}
-            {isCollapsed && <div className="w-full h-px bg-gray" />}
           </button>
           
           {expandedSections.management && (
@@ -171,7 +170,6 @@ const Sidebar = () => {
                 )}
               </div>
             )}
-            {isCollapsed && <div className="w-full h-px bg-gray" />}
           </button>
           
           {expandedSections.service && (
@@ -200,7 +198,7 @@ const Sidebar = () => {
 
       {/* User Info */}
       <div className="p-4 flex flex-col">
-        <div className="mb-3 h-px w-full bg-[#EBEBEB] self-center" />
+        <div className="mb-3 border-t border-gray-200 w-full self-center" />
         {isLoadingUser ? (
           <div className="flex items-center">
             <div className="w-8 h-8 bg-gray rounded-full animate-pulse flex-shrink-0" />
