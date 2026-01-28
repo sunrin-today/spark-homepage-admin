@@ -25,7 +25,8 @@ export default function NoticesPage() {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [filteredNotices, setFilteredNotices] = useState<Notice[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(''); // 입력 중인 검색어
+  const [actualSearchQuery, setActualSearchQuery] = useState(''); // 실제 적용된 검색어
   const { page: currentPage, setPage: setCurrentPage } = usePaginationQuery('page', 1);
 
   const fetchNotices = async () => {
@@ -47,22 +48,23 @@ export default function NoticesPage() {
     fetchNotices();
   }, []);
 
+  // actualSearchQuery가 변경될 때만 필터링 실행
   useEffect(() => {
-    if (!searchQuery.trim()) {
+    if (!actualSearchQuery.trim()) {
       setFilteredNotices(notices);
       setCurrentPage(1);
       return;
     }
 
     const filtered = notices.filter((notice) =>
-      notice.title?.toLowerCase().includes(searchQuery.toLowerCase())
+      notice.title?.toLowerCase().includes(actualSearchQuery.toLowerCase())
     );
     setFilteredNotices(filtered);
     setCurrentPage(1);
-  }, [searchQuery, notices]);
+  }, [actualSearchQuery, notices]);
 
   const handleSearch = (searchTerm: string) => {
-    
+    setActualSearchQuery(searchTerm);
   };
 
   const handleDelete = async (noticeId: string, noticeTitle: string) => {
@@ -142,7 +144,7 @@ export default function NoticesPage() {
                 />
               </div>
             ) : (
-              <div className="w-6 h-6 rounded-full bg-gray flex items-center justify-center flex-shrink-0">
+              <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0">
                 <span className="font-regular text-black text-base">
                   {authorName.charAt(0)}
                 </span>
