@@ -10,6 +10,7 @@ import { useModal } from '@/contexts/ModalContexts';
 import ConfirmModal from '@/components/ui/modal/ConfirmModal';
 import { useNotice } from '@/lib/queries/notices/queries';
 import { useDeleteNotice } from '@/lib/queries/notices/mutations';
+import { formatKoreanDate } from '@/utils/date';
 
 export default function NoticeDetailPage() {
   const router = useRouter();
@@ -104,6 +105,13 @@ export default function NoticeDetailPage() {
           <label className="block text-sm text-[#767676] mb-2">제목</label>
           <div className="text-base font-regular text-black">
             {notice.title}
+          </div>
+        </div>
+
+        <div className="mb-[10px]">
+          <label className="block text-sm text-[#767676] mb-2">작성일</label>
+          <div className="text-base font-regular text-black">
+            {formatKoreanDate(notice.createdAt)}
           </div>
         </div>
 
