@@ -24,20 +24,19 @@ export const SearchBar = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className={`flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full ${className}`}>
-      <div className="flex-1 w-full">
+    <form onSubmit={handleSubmit} className={`flex items-center gap-2 w-full ${className}`}>
+      
         <BaseInput
           leftIcon={<Search size={20} />}
           placeholder={placeholder}
           value={value}
           onChange={onChangeText}
-          className="w-full"
+          className="max-w-[400px]"
         />
-      </div>
       {buttonText && (
         <button
           type="submit" 
-          className="w-full sm:w-auto whitespace-nowrap bg-black text-white rounded-[12px] px-[20px] py-[12px] hover:bg-gray-800 transition-colors"
+          className="whitespace-nowrap bg-black text-white rounded-[12px] px-[20px] py-[12px]"
         >
           {buttonText}
         </button>
