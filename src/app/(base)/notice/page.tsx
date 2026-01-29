@@ -18,6 +18,7 @@ import PageHeader from '@/components/layout/page/PageHeader';
 import { useNotices } from '@/lib/queries/notices/queries';
 import { useDeleteNotice } from '@/lib/queries/notices/mutations';
 import { Notice } from '@/lib/types/notice';
+import { formatKoreanDate } from '@/utils/date';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -136,13 +137,7 @@ export default function NoticesPage() {
       width: '150px',
       render: (notice) => (
         <span className="font-regular text-black text-base whitespace-nowrap">
-          {notice.createdAt 
-            ? new Date(notice.createdAt).toLocaleDateString('ko-KR', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-              }).replace(/\. /g, '.').replace(/\.$/, '')
-            : '-'}
+          {notice.createdAt ? formatKoreanDate(notice.createdAt) : '-'}
         </span>
       ),
     },

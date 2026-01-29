@@ -19,6 +19,7 @@ import api from "@/lib/api/api";
 import { useModal } from "@/contexts/ModalContexts";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 import PageHeader from "@/components/layout/page/PageHeader";
+import { formatKoreanDate } from "@/utils/date";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -151,10 +152,9 @@ const UserDetailPage = () => {
       sortKey: "deadline",
       isSortable: true,
       width: "200px",
-      render: (record) => {
-        const date = new Date(record.deadline);
-        return <span className="whitespace-nowrap">{date.getFullYear()}년 {date.getMonth() + 1}월 {date.getDate()}일</span>;
-      },
+      render: (record) => (
+        <span className="whitespace-nowrap">{formatKoreanDate(record.deadline)}</span>
+      ),
     },
   ];
 

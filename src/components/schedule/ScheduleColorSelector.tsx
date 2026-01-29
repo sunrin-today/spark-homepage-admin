@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useFloating, offset, shift, useClick, useDismiss, useInteractions } from "@floating-ui/react";
 
 const COLORS = [
-  { name: "학생회", key: "council" },
-  { name: "정보보호과", key: "infosec" },
-  { name: "소프트웨어과", key: "software" },
-  { name: "아이티경영과", key: "itmanagement" },
-  { name: "콘텐츠디자인과", key: "contentsdesign" },
+  { name: "학생회", key: "council", bgClass: "bg-council" },
+  { name: "정보보호과", key: "infosec", bgClass: "bg-infosec" },
+  { name: "소프트웨어과", key: "software", bgClass: "bg-software" },
+  { name: "아이티경영과", key: "itmanagement", bgClass: "bg-itmanagement" },
+  { name: "콘텐츠디자인과", key: "contentsdesign", bgClass: "bg-contentsdesign" },
 ];
 
 interface ScheduleColorSelectorProps {
@@ -37,14 +37,17 @@ export default function ScheduleColorSelector({
     dismiss,
   ]);
 
+  // selectedColor에 해당하는 bgClass 찾기
+  const selectedItem = COLORS.find(c => c.key === selectedColor);
+  const selectedBgClass = selectedItem?.bgClass || `bg-${selectedColor}`;
+
   return (
     <div className="relative">
       <button
         type="button"
         ref={refs.setReference}
         {...getReferenceProps()}
-        className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center transition-transform hover:scale-110 focus:outline-none"
-        style={{ backgroundColor: selectedColor }}
+        className={`w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center transition-transform focus:outline-none ${selectedBgClass}`}
       />
 
       {isOpen && (
@@ -70,8 +73,7 @@ export default function ScheduleColorSelector({
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors text-left"
               >
                 <div
-                  className="w-5 h-5 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: item.key }}
+                  className={`w-5 h-5 rounded-full flex-shrink-0 ${item.bgClass}`}
                 />
                 <span className="text-base text-black font-medium">{item.name}</span>
               </button>

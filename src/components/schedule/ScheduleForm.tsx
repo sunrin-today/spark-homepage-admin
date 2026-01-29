@@ -34,7 +34,7 @@ export default function ScheduleForm({
       startDate: "",
       endDate: "",
       description: "",
-      color: "#FDC019",
+      color: "council",
     }
   );
 
@@ -126,7 +126,7 @@ export default function ScheduleForm({
         <button
           type="button"
           onClick={onCancel}
-          className="px-2 py-1.5 rounded-lg text-gray hover:bg-gray/10 flex items-center gap-2 transition-colors"
+          className="px-2 py-1.5 rounded-lg text-gray flex items-center gap-2 transition-colors"
         >
           <X size={20} />
           취소

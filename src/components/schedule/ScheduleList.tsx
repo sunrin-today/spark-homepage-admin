@@ -3,14 +3,7 @@ import { ChevronRight, Plus } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Schedule } from '@/lib/types/schedule';
-
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}년 ${month}월 ${day}일`;
-};
+import { formatKoreanDate } from '@/utils/date';
 
 interface ScheduleListProps {
   schedules?: Schedule[];
@@ -108,7 +101,7 @@ export default function ScheduleList({
                     {schedule.title}
                   </h3>
                   <p className="text-sm text-gray">
-                    {formatDate(schedule.startDate)}
+                    {formatKoreanDate(schedule.startDate)}
                   </p>
                 </div>
                 
