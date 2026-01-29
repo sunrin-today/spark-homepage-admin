@@ -28,7 +28,7 @@ export default function ChargerDetailPage() {
     const chargerColumn : Column<ChargerRentalRecord>[] = [
         {
             header: "#",
-            render: (_, index) => index + 1,
+            render: (_, index) => <span className="text-gray font-medium">{index + 1}</span>,
             width: '40px'
         },
         {

@@ -29,7 +29,7 @@ function buildEventUpdatePayload(
 ) {
   const exists = form.detailImages
   .map((item, index) =>
-    item?.type === "exists"
+    item.type === "exists"
       ? { url: item.url, index }
       : null
   )
