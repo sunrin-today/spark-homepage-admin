@@ -2,18 +2,19 @@
 
 import { useState } from "react";
 import { useFloating, offset, shift, useClick, useDismiss, useInteractions } from "@floating-ui/react";
+import { getScheduleColor } from "@/utils/schedule";
 
 const COLORS = [
-  { name: "학생회", key: "council", color: "#6CA9FF" },
-  { name: "정보보호과", key: "infosec", color: "#F79447" },
-  { name: "소프트웨어과", key: "software", color: "#ECB220" },
-  { name: "아이티경영과", key: "itmanagement", color: "#85C879" },
-  { name: "콘텐츠디자인과", key: "contentsdesign", color: "#089ED5" },
+  { name: "학생회", key: "council" },
+  { name: "정보보호과", key: "infosec" },
+  { name: "소프트웨어과", key: "software" },
+  { name: "아이티경영과", key: "itmanagement" },
+  { name: "콘텐츠디자인과", key: "contentsdesign" },
 ];
 
 interface ScheduleColorSelectorProps {
-  selectedColor: string; // hex 코드
-  onColorSelect: (color: string) => void; // hex 코드 전달
+  selectedColor: string;
+  onColorSelect: (color: string) => void;
 }
 
 export default function ScheduleColorSelector({
@@ -32,10 +33,7 @@ export default function ScheduleColorSelector({
   const click = useClick(context);
   const dismiss = useDismiss(context);
 
-  const { getReferenceProps, getFloatingProps } = useInteractions([
-    click,
-    dismiss,
-  ]);
+  const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss]);
 
   return (
     <div className="relative">
@@ -44,7 +42,7 @@ export default function ScheduleColorSelector({
         ref={refs.setReference}
         {...getReferenceProps()}
         className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center transition-transform focus:outline-none"
-        style={{ backgroundColor: selectedColor }}
+        style={{ backgroundColor: getScheduleColor(selectedColor) }}
       />
 
       {isOpen && (
@@ -64,14 +62,14 @@ export default function ScheduleColorSelector({
                 key={item.key}
                 type="button"
                 onClick={() => {
-                  onColorSelect(item.color); // hex 코드 전달
+                  onColorSelect(item.key);
                   setIsOpen(false);
                 }}
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors text-left"
               >
                 <div
                   className="w-5 h-5 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: item.color }}
+                  style={{ backgroundColor: getScheduleColor(item.key) }}
                 />
                 <span className="text-base text-black font-medium">{item.name}</span>
               </button>
