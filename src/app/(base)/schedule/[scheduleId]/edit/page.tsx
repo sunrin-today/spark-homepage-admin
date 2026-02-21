@@ -8,6 +8,7 @@ import { useScheduleById } from "@/lib/queries/schedule/queries";
 import { useUpdateSchedule } from "@/lib/queries/schedule/mutations";
 import { useModal } from "@/contexts/ModalContexts";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
+import { getScheduleColor } from "@/utils/schedule";
 
 interface PageProps {
   params: Promise<{ scheduleId: string }>;
@@ -26,7 +27,6 @@ export default function ScheduleEditPage({ params }: PageProps) {
   const { scheduleId } = use(params);
   const { open, close } = useModal();
 
-  // 일정 조회
   const { data: schedule, isLoading, isError } = useScheduleById(scheduleId);
   const updateScheduleMutation = useUpdateSchedule();
 
@@ -45,7 +45,7 @@ export default function ScheduleEditPage({ params }: PageProps) {
                 description: data.description,
                 startDate: data.startDate,
                 endDate: data.endDate,
-                color: data.color,
+                color: getScheduleColor(data.color),
               },
             });
             close();
