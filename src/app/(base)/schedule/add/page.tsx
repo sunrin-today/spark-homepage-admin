@@ -6,6 +6,7 @@ import ScheduleForm from "@/components/schedule/ScheduleForm";
 import { useCreateSchedule } from "@/lib/queries/schedule/mutations";
 import { useModal } from "@/contexts/ModalContexts";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
+import { getScheduleColor } from "@/utils/schedule";
 
 interface ScheduleFormData {
   title: string;
@@ -33,8 +34,8 @@ export default function ScheduleAddPage() {
               description: data.description,
               startDate: data.startDate,
               endDate: data.endDate,
-              color: data.color,
-              type: "ACADEMIC", 
+              color: getScheduleColor(data.color),
+              type: "ACADEMIC",
             });
             close();
             router.push("/schedule");
