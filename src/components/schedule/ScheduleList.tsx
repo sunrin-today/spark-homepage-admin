@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Schedule } from '@/lib/types/schedule';
 import { formatKoreanDate } from '@/utils/date';
+import { getScheduleColor } from '@/utils/schedule';
 
 interface ScheduleListProps {
   schedules?: Schedule[];
@@ -24,14 +25,9 @@ export default function ScheduleList({
 
     const handleScroll = () => {
       const { scrollTop, scrollHeight, clientHeight } = container;
-      
-      if (scrollTop === 0) {
-        setScrollState('top');
-      } else if (scrollTop + clientHeight >= scrollHeight - 1) {
-        setScrollState('bottom');
-      } else {
-        setScrollState('middle');
-      }
+      if (scrollTop === 0) setScrollState('top');
+      else if (scrollTop + clientHeight >= scrollHeight - 1) setScrollState('bottom');
+      else setScrollState('middle');
     };
 
     handleScroll();
@@ -69,21 +65,13 @@ export default function ScheduleList({
         }}
       >
         {(scrollState === 'middle' || scrollState === 'bottom') && (
-          <div 
-            className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-white to-transparent pointer-events-none z-10"
-          />
+          <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-white to-transparent pointer-events-none z-10" />
         )}
-        
         {(scrollState === 'top' || scrollState === 'middle') && (
-          <div 
-            className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent pointer-events-none z-10"
-          />
+          <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent pointer-events-none z-10" />
         )}
         
-        <div 
-          ref={containerRef}
-          className="p-4 overflow-y-auto h-full"
-        >
+        <div ref={containerRef} className="p-4 overflow-y-auto h-full">
           <div className="space-y-2">
             {schedules.map((schedule) => (
               <div
@@ -93,7 +81,7 @@ export default function ScheduleList({
               >
                 <div
                   className="w-7 h-7 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: schedule.color }}
+                  style={{ backgroundColor: getScheduleColor(schedule.color) }}
                 />
                 
                 <div className="flex-1 min-w-0">

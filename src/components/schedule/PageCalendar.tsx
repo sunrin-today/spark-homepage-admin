@@ -1,6 +1,7 @@
 import React from 'react';
 import CalendarCore from './CalendarCore';
 import { Schedule } from '@/lib/types/schedule';
+import { getScheduleColor } from '@/utils/schedule';
 
 interface PageCalendarProps {
   selectedDate?: Date;
@@ -46,12 +47,7 @@ const PageCalendar: React.FC<PageCalendarProps> = ({
           if (existingRange) {
             existingRange.endCol = col;
           } else {
-            ranges.push({
-              schedule,
-              startCol: col,
-              endCol: col,
-              row,
-            });
+            ranges.push({ schedule, startCol: col, endCol: col, row });
           }
         }
       });
@@ -60,21 +56,15 @@ const PageCalendar: React.FC<PageCalendarProps> = ({
     return ranges;
   };
 
-  const handleScheduleClick = (
-    e: React.MouseEvent,
-    clickedSchedule: Schedule
-  ) => {
+  const handleScheduleClick = (e: React.MouseEvent, clickedSchedule: Schedule) => {
     e.stopPropagation();
-
     if (onScheduleClick) {
       const clickedDate = new Date(clickedSchedule.startDate);
-
       const overlappingSchedules = schedules.filter((s) => {
         const start = new Date(s.startDate);
         const end = new Date(s.endDate);
         return clickedDate >= start && clickedDate <= end;
       });
-
       const rect = e.currentTarget.getBoundingClientRect();
       onScheduleClick(overlappingSchedules, {
         top: rect.bottom + window.scrollY,
@@ -86,12 +76,7 @@ const PageCalendar: React.FC<PageCalendarProps> = ({
   return (
     <CalendarCore selectedDate={selectedDate} onDateSelect={onDateSelect}>
       {(renderProps) => {
-        const {
-          calendarDays,
-          handleDateClick,
-          getDateColor,
-        } = renderProps;
-
+        const { calendarDays, handleDateClick, getDateColor } = renderProps;
         const scheduleRanges = getScheduleRanges(calendarDays);
 
         return (
@@ -99,58 +84,38 @@ const PageCalendar: React.FC<PageCalendarProps> = ({
             <div className="grid grid-cols-7">
               {calendarDays.map((date, index) => {
                 const dayOfWeek = date.getDay();
-
                 return (
                   <button
                     key={index}
                     type="button"
                     onClick={() => handleDateClick(date)}
-                    className={`
-                      aspect-square flex items-center justify-center text-base
-                      relative
-                      ${getDateColor(date, dayOfWeek)}
-                    `}
+                    className={`aspect-square flex items-center justify-center text-base relative ${getDateColor(date, dayOfWeek)}`}
                   >
-                    <span className="relative z-10">
-                      {date.getDate()}
-                    </span>
+                    <span className="relative z-10">{date.getDate()}</span>
                   </button>
                 );
               })}
             </div>
 
-            {/* 일정 띠 */}
             <div className="absolute inset-0 pointer-events-none">
               {scheduleRanges.map((range, idx) => {
                 const rows = Math.ceil(calendarDays.length / 7);
                 const cellWidth = 100 / 7;
                 const cellHeight = 100 / rows;
-
                 const left = range.startCol * cellWidth;
                 const width = (range.endCol - range.startCol + 1) * cellWidth;
-
                 const top = range.row * cellHeight + cellHeight / 2;
 
                 const scheduleStart = new Date(range.schedule.startDate);
                 const scheduleEnd = new Date(range.schedule.endDate);
+                const rowDates = calendarDays.slice(range.row * 7, range.row * 7 + 7);
 
-                // 이 row가 포함하는 실제 날짜들
-                const rowDates = calendarDays.slice(
-                  range.row * 7,
-                  range.row * 7 + 7
+                const isStart = rowDates.some((d, i) =>
+                  i === range.startCol && d.toDateString() === scheduleStart.toDateString()
                 );
-
-                const isStart =
-                  rowDates.some((d, i) =>
-                    i === range.startCol &&
-                    d.toDateString() === scheduleStart.toDateString()
-                  );
-
-                const isEnd =
-                  rowDates.some((d, i) =>
-                    i === range.endCol &&
-                    d.toDateString() === scheduleEnd.toDateString()
-                  );
+                const isEnd = rowDates.some((d, i) =>
+                  i === range.endCol && d.toDateString() === scheduleEnd.toDateString()
+                );
 
                 return (
                   <div
@@ -163,16 +128,9 @@ const PageCalendar: React.FC<PageCalendarProps> = ({
                       transform: 'translateY(-50%)',
                       width: `${width}%`,
                       height: `${cellHeight}%`,
-                      backgroundColor: range.schedule.color,
-                      opacity: 0.15,
-                      borderRadius:
-                        isStart && isEnd
-                          ? '999px'
-                          : isStart
-                          ? '999px 0 0 999px'
-                          : isEnd
-                          ? '0 999px 999px 0'
-                          : '0',
+                      backgroundColor: getScheduleColor(range.schedule.color),
+                      opacity: 0.4,
+                      borderRadius: isStart && isEnd ? '999px' : isStart ? '999px 0 0 999px' : isEnd ? '0 999px 999px 0' : '0',
                       zIndex: 0,
                     }}
                   />

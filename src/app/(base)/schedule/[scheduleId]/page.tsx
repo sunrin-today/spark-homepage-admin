@@ -9,6 +9,7 @@ import { useDeleteSchedule } from "@/lib/queries/schedule/mutations";
 import { useModal } from "@/contexts/ModalContexts";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 import { formatKoreanDate } from "@/utils/date";
+import { getScheduleColor } from "@/utils/schedule";
 
 interface PageProps {
   params: Promise<{ scheduleId: string }>;
@@ -62,6 +63,8 @@ export default function ScheduleDetailPage({ params }: PageProps) {
     );
   }
 
+  const color = getScheduleColor(schedule.color);
+
   return (
     <div className="w-full h-full pt-20 lg:pt-0">
       <div className="px-8 py-12">
@@ -74,7 +77,7 @@ export default function ScheduleDetailPage({ params }: PageProps) {
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <div 
                 className="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex-shrink-0" 
-                style={{ backgroundColor: schedule.color }}
+                style={{ backgroundColor: color }}
               />
               <h2 className="text-lg sm:text-xl font-semibold text-black truncate">
                 {schedule.title}

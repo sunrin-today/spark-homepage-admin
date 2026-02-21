@@ -34,7 +34,7 @@ export default function ScheduleForm({
       startDate: "",
       endDate: "",
       description: "",
-      color: "council",
+      color: "#6CA9FF",
     }
   );
 
