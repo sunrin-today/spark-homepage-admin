@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Schedule } from '@/lib/types/schedule';
 import { formatKoreanDate } from '@/utils/date';
+import { getScheduleColor } from '@/utils/schedule';
 
 interface ScheduleDetailPopupProps {
   schedules: Schedule[];
@@ -20,20 +21,14 @@ export default function ScheduleDetailPopup({
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
+      if (event.key === 'Escape') onClose();
     };
-
     document.addEventListener('keydown', handleEscape);
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-    };
+    return () => document.removeEventListener('keydown', handleEscape);
   }, [onClose]);
 
   const handleScheduleClick = (scheduleId: string) => {
-    onClose(); // 팝업 닫기
+    onClose();
     router.push(`/schedule/${scheduleId}`); 
   };
 
@@ -59,7 +54,7 @@ export default function ScheduleDetailPopup({
         >
           <div
             className="w-10 h-10 rounded-full flex-shrink-0"
-            style={{ backgroundColor: schedule.color }}
+            style={{ backgroundColor: getScheduleColor(schedule.color) }}
           />
           
           <div className="flex-1 min-w-0">
